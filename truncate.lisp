@@ -100,6 +100,11 @@
 ;; EQUIVALENCE THEOREMS FOR TRUNCATE-OVERFLOW
 
 ;; EQUIVALANCE TO LOGAND
+(gl::def-gl-thm truncate-overflow-0-logand-equiv-32-bit-gl
+ :hyp   (and (unsigned-byte-p 32 x))
+ :concl (equal (truncate-overflow x 0) 0)
+ :g-bindings (gl::auto-bindings (:nat x 32)))
+
 (gl::def-gl-thm truncate-overflow-8-logand-equiv-32-bit-gl
  :hyp   (and (unsigned-byte-p 32 x))
  :concl (equal (truncate-overflow x 8) (logand x #xff))
@@ -109,7 +114,6 @@
  :hyp   (and (unsigned-byte-p 64 x))
  :concl (equal (truncate-overflow x 8) (logand x #xff))
  :g-bindings (gl::auto-bindings (:nat x 64)))
-
 
 (gl::def-gl-thm truncate-overflow-16-logand-equiv-32-bit-gl
  :hyp   (and (unsigned-byte-p 32 x))
@@ -141,4 +145,3 @@
  :hyp   (and (unsigned-byte-p 64 x))
  :concl (equal (truncate-overflow x 16) (mod x (expt 2 16)))
  :g-bindings (gl::auto-bindings (:nat x 64)))
-
