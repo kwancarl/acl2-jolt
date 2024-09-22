@@ -121,4 +121,10 @@
  :concl (equal (and-wc x y 8) (andw x y))
  :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
 
+(gl::def-gl-thm andw-and-wc-equiv-64-gl
+ :hyp (and (unsigned-byte-p 64 x)
+           (unsigned-byte-p 64 y))
+ :concl (equal (and-wc x y 8) (andw x y))
+ :g-bindings (gl::auto-bindings (:mix (:nat x 64) (:nat y 64))))
+
 
