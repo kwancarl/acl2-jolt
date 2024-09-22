@@ -87,3 +87,6 @@
 	         :in-theory (e/d ();sra-sign-8)
 				 ((:e create-x-indices)
 				  (:e create-srli-subtable))))))
+
+
+
