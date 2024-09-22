@@ -1,0 +1,13 @@
+verify guards in xor-wc
+refactor to indicate "materialize" at top
+add "instructions / combine lookups" below subtable functions
+clean up include-books 
+
+Note:
+
+Subtable:
+
+ materialize -- create table and fill with math. spec
+ evaluate mle -- 
+
+Instruction
