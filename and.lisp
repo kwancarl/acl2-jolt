@@ -13,29 +13,29 @@
 
 (include-book "subtable")
 
-(defun create-and-subtable (idx-lst)
+(defun materialize-and-subtable (idx-lst)
  (b* (((unless (alistp idx-lst))     nil)
       ((if (atom idx-lst))           nil)
       ((cons idx rst)            idx-lst)
       ((unless (consp idx))          nil)
       ((cons x y)                    idx))
      (cons (cons idx (logand x y))
-           (create-and-subtable rst))))
+           (materialize-and-subtable rst))))
 
-(defthm alistp-of-create-and-subtable
- (alistp (create-and-subtable idx-lst)))
+(defthm alistp-of-materialize-and-subtable
+ (alistp (materialize-and-subtable idx-lst)))
 
-(defthm member-idx-lst-assoc-create-and-subtable
+(defthm member-idx-lst-assoc-materialize-and-subtable
  (implies (and (alistp idx-lst) (member idx idx-lst))
-          (assoc idx (create-and-subtable idx-lst))))
+          (assoc idx (materialize-and-subtable idx-lst))))
 
 (defthm assoc-member-and-subtable
- (implies (assoc (cons i j) (create-and-subtable idx-lst))
+ (implies (assoc (cons i j) (materialize-and-subtable idx-lst))
           (member (cons i j) idx-lst)))
 
 (defthm assoc-and-subtable
- (implies (assoc (cons i j) (create-and-subtable idx-lst))
-          (equal (assoc (cons i j) (create-and-subtable idx-lst))
+ (implies (assoc (cons i j) (materialize-and-subtable idx-lst))
+          (equal (assoc (cons i j) (materialize-and-subtable idx-lst))
                  (cons (cons i j) (logand i j)))))
 
 (defthm and-subtable-correctness
@@ -46,12 +46,23 @@
                (<= i x-hi) 
                (<= j y-hi) )
           (b* ((indices  (create-x-indices x-hi y-hi))
-               (subtable (create-and-subtable indices)))
+               (subtable (materialize-and-subtable indices)))
               (equal (assoc-equal (cons i j) subtable)
                      (cons (cons i j) (logand i j))))))
                  
+(defthm lookup-and-subtable-correctness
+ (implies (and (natp x-hi)
+               (natp y-hi)
+               (natp i)
+               (natp j)
+               (<= i x-hi)
+               (<= j y-hi) )
+          (b* ((indices  (create-x-indices x-hi y-hi))
+               (subtable (materialize-and-subtable indices)))
+              (equal (lookup i j subtable)
+                     (logand i j))))
+ :hints (("Goal" :in-theory (enable lookup))))
 
-      
 
 ;;;;;;;;;;;;;;;
 ;;           ;;

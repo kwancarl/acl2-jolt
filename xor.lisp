@@ -6,29 +6,29 @@
 (include-book "subtable")
 (encapsulate 
  nil
- (defun create-xor-subtable (idx-lst)
+ (defun materialize-xor-subtable (idx-lst)
   (b* (((unless (alistp idx-lst))     nil)
        ((if (atom idx-lst))           nil)
        ((cons idx rst)            idx-lst)
        ((unless (consp idx))          nil)
        ((cons x y)                    idx))
       (cons (cons idx (logxor x y))
-            (create-xor-subtable rst))))
+            (materialize-xor-subtable rst))))
  
- (defthm alistp-of-create-xor-subtable
-  (alistp (create-xor-subtable idx-lst)))
+ (defthm alistp-of-materialize-xor-subtable
+  (alistp (materialize-xor-subtable idx-lst)))
  
- (defthm member-idx-lst-assoc-create-xor-subtable
+ (defthm member-idx-lst-assoc-materialize-xor-subtable
   (implies (and (alistp idx-lst) (member idx idx-lst))
-           (assoc idx (create-xor-subtable idx-lst))))
+           (assoc idx (materialize-xor-subtable idx-lst))))
  
  (defthm assoc-member-xor-subtable
-  (implies (assoc (cons i j) (create-xor-subtable idx-lst))
+  (implies (assoc (cons i j) (materialize-xor-subtable idx-lst))
            (member (cons i j) idx-lst)))
  
  (defthm assoc-xor-subtable
-  (implies (assoc (cons i j) (create-xor-subtable idx-lst))
-           (equal (assoc (cons i j) (create-xor-subtable idx-lst))
+  (implies (assoc (cons i j) (materialize-xor-subtable idx-lst))
+           (equal (assoc (cons i j) (materialize-xor-subtable idx-lst))
                   (cons (cons i j) (logxor i j)))))
  
  (defthm xor-subtable-correctness
@@ -39,9 +39,20 @@
                 (<= i x-hi) 
                 (<= j y-hi) )
            (b* ((indices  (create-x-indices x-hi y-hi))
-                (subtable (create-xor-subtable indices)))
+                (subtable (materialize-xor-subtable indices)))
                (equal (assoc-equal (cons i j) subtable)
-                      (cons (cons i j) (logxor i j)))))))
+                      (cons (cons i j) (logxor i j))))))
+
+ (defthm lookup-xor-subtable-correctness
+  (implies (and (natp x-hi)
+                (natp y-hi)
+                (natp i)
+                (natp j)
+                (<= i x-hi)
+                (<= j y-hi) )
+           (b* ((indices  (create-x-indices x-hi y-hi))
+                (subtable (materialize-xor-subtable indices)))
+               (equal (lookup i j subtable) (logxor i j))))))
 ;; end encapsulate
 
 (include-book "centaur/gl/gl" :dir :system)

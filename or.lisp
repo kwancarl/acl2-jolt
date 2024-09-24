@@ -8,34 +8,35 @@
 (local (include-book "arithmetic/top" :dir :system))
 (local (include-book "ihs/logops-lemmas" :dir :system))
 
+;; Note: In ACL2, the OR operation is named `ior` for inclusive OR
+
 ;; MATERIALIZE SUBTABLES FOR "OR"
 
 (include-book "subtable")
 
-
-(defun create-ior-subtable (idx-lst)
+(defun materialize-ior-subtable (idx-lst)
  (b* (((unless (alistp idx-lst))     nil)
       ((if (atom idx-lst))           nil)
       ((cons idx rst)            idx-lst)
       ((unless (consp idx))          nil)
       ((cons x y)                    idx))
      (cons (cons idx (logior x y))
-           (create-ior-subtable rst))))
+           (materialize-ior-subtable rst))))
 
-(defthm alistp-of-create-ior-subtable
- (alistp (create-ior-subtable idx-lst)))
+(defthm alistp-of-materialize-ior-subtable
+ (alistp (materialize-ior-subtable idx-lst)))
 
-(defthm member-idx-lst-assoc-create-ior-subtable
+(defthm member-idx-lst-assoc-materialize-ior-subtable
  (implies (and (alistp idx-lst) (member idx idx-lst))
-          (assoc idx (create-ior-subtable idx-lst))))
+          (assoc idx (materialize-ior-subtable idx-lst))))
 
 (defthm assoc-member-ior-subtable
- (implies (assoc (cons i j) (create-ior-subtable idx-lst))
+ (implies (assoc (cons i j) (materialize-ior-subtable idx-lst))
           (member (cons i j) idx-lst)))
 
 (defthm assoc-ior-subtable
- (implies (assoc (cons i j) (create-ior-subtable idx-lst))
-          (equal (assoc (cons i j) (create-ior-subtable idx-lst))
+ (implies (assoc (cons i j) (materialize-ior-subtable idx-lst))
+          (equal (assoc (cons i j) (materialize-ior-subtable idx-lst))
                  (cons (cons i j) (logior i j)))))
 
 (defthm ior-subtable-correctness
@@ -46,10 +47,22 @@
                (<= i x-hi) 
                (<= j y-hi) )
           (b* ((indices  (create-x-indices x-hi y-hi))
-               (subtable (create-ior-subtable indices)))
+               (subtable (materialize-ior-subtable indices)))
               (equal (assoc-equal (cons i j) subtable)
                      (cons (cons i j) (logior i j))))))
- 
+                 
+(defthm lookup-ior-subtable-correctness
+ (implies (and (natp x-hi)
+               (natp y-hi)
+               (natp i)
+               (natp j)
+               (<= i x-hi)
+               (<= j y-hi) )
+          (b* ((indices  (create-x-indices x-hi y-hi))
+               (subtable (materialize-ior-subtable indices)))
+              (equal (lookup i j subtable)
+                     (logior i j))))
+ :hints (("Goal" :in-theory (enable lookup))))
 
 ;;;;;;;;;;;;;;
 ;;	    ;;
