@@ -84,7 +84,7 @@
        (w2   (lookup x8-2 y8-2 eq-subtable))
        (?w3  (lookup x8-3 y8-3 eq-subtable))) ;; ignore w3
       ;; COMBINE
-      ;; (- 1 (slt-32 x y))
+      ;; (- 1 (slt-32 x y))))
       (- 1 (b-xor (b-and L (b-xor R 1))
 	     (b-and (b-xor (b-and (b-xor L 1) (b-xor R 1)) (b-and L R))
                     (+    z0
