@@ -31,7 +31,7 @@
           (b* ((subtable (materialize-identity-subtable x-hi)))
               (equal (assoc-equal i subtable)
                      (cons i i)))))
-                 
+
 (defun id-lookup (x subtable) (cdr (assoc x subtable)))
 
 (defthm lookup-identity-subtable-correctness

@@ -63,7 +63,7 @@
  :hints (("Goal" :in-theory (e/d (sub-semantics-32) ((:e materialize-identity-subtable) (:e truncate-indices))))))
 
 
-;; SEMANTIC CORRECTNESS OF sub
+;; SEMANTIC CORRECTNESS OF SUB
 (gl::def-gl-thm sub-semantics-32-correctness
  :hyp (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
  :concl (equal (sub-semantics-32 x y)

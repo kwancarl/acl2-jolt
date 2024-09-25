@@ -48,7 +48,7 @@
        (y8-2 (part-select y :low  8 :width 8))
        (y8-1 (part-select y :low 16 :width 8))
        (y8-0 (part-select y :low 24 :width 8))
-       ;; MATERIALIZE SUBTABLES 
+       ;; MATERIALIZE SUBTABLES
        (indices      (create-x-indices (expt 2 8) (expt 2 8)))
        (xor-subtable  (materialize-xor-subtable  indices))
        ;; LOOKUPS

@@ -9,7 +9,7 @@
 (local (include-book "ihs/logops-lemmas" :dir :system))
 
 
-;; MATERIALIZE SUBTABLES FOR "AND"
+;; MATERIALIZE SUBTABLES FOR "TRUNCATE-OVERFLOW"
 
 (include-book "subtable")
 
@@ -75,7 +75,6 @@
               (equal (lookup i mask subtable)
                      (logand i mask))))
  :hints (("Goal" :in-theory (enable lookup))))
-                 
 
       
 
