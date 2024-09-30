@@ -47,36 +47,38 @@
       ;; COMBINE
       (merge-2-u16s x8-2 x8-3)))
 
-;; Why is it not working??
-;; *** Key checkpoint before reverting to proof by induction: ***
 
-;; Subgoal 1
-;; (IMPLIES
-;;  (AND (< 65536 (LOGTAIL 16 X))
-;;       (INTEGERP X)
-;;       (<= 0 X)
-;;       (< X 4294967296))
-;;  (EQUAL
-;;       (MERGE-2-U16S (CDR (ASSOC-EQUAL (LOGTAIL 16 X)
-;;                                       (MATERIALIZE-IDENTITY-SUBTABLE 65536)))
-;;                     (LOGHEAD 16 X))
-;;       (MERGE-2-U16S (LOGTAIL 16 X)
-;;                     (LOGHEAD 16 X))))
+;; Proof of sw-32 and sw-semantics-32 equivalence
+(encapsulate
+ nil
+ ;; ACL2 rewrites some chunk to "logtail" which could explain why the following
+ ;; two lemmas are necessary, but sw-64 doesn't require these lemmas so perhaps
+ ;; it has something to do with 16 being exactly half of 32
 
-;; ACL2 Error [Failure] in ( DEFTHM SW-32-SW-SEMANTICS-32-EQUIV ...):
-;; See :DOC failure.
-(defthm sw-32-sw-semantics-32-equiv
- (equal (sw-32 x) (sw-semantics-32 x))
- :hints (("Goal" :in-theory (e/d (sw-semantics-32) ((:e materialize-identity-subtable)))
-                 :use ((:instance lookup-identity-subtable-correctness
-                                  (x-hi (expt 2 16))
-                                  (i (logtail 16 x)))))))
+ (local (defthm silly-lemma-1 (natp (expt 2 16))))
+ 
+ (local
+  (gl::def-gl-thm silly-lemma-2
+   :hyp (unsigned-byte-p 32 x)
+   :concl (< (logtail 16 x) (expt 2 16))
+   :g-bindings (gl::auto-bindings (:nat x 32))))
+ 
+ (local (in-theory (disable id-lookup (:e expt))))
+ 
+ (defthm sw-32-sw-semantics-32-equiv
+  (equal (sw-32 x) (sw-semantics-32 x))
+  :hints (("Goal" :in-theory (e/d (sw-semantics-32) ((:e materialize-identity-subtable)))
+                  :use ((:instance lookup-identity-subtable-correctness
+                                   (x-hi (expt 2 16))
+                                   (i (logtail 16 x)))
+ 		       (:instance silly-lemma-2))))))
+;; end encapsulate
 
 ;; SEMANTIC CORRECTNESS OF SW
 (gl::def-gl-thm sw-semantics-32-correctness
  :hyp (unsigned-byte-p 32 x)
  :concl (equal (sw-semantics-32 x)
-	       (logand x #xffff))
+	       (logand x #xffffffff))
  :g-bindings (gl::auto-bindings (:nat x 32)))
 
 ;; Equivalence of sw-32 with its semantics
