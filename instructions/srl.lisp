@@ -53,12 +53,13 @@
        ;; add chunks
       (+ u8-3 u8-2 u8-1 u8-0)))
 
-;; This lemma must be proven with GL and not FGL
-(local
- (gl::def-gl-thm aux-lemma
-  :hyp  (and (integerp x) (<= 0 x) (< x 4294967296))
-  :concl (not (< 256 (logtail 24 x)))
-  :g-bindings (gl::auto-bindings (:nat x 32))))
+;; This lemma must be proven with GL and not FGL.
+;; It's also non-local because SRA depends on it for some reason.
+;; It should be named something else though
+(gl::def-gl-thm aux-lemma
+ :hyp  (and (integerp x) (<= 0 x) (< x 4294967296))
+ :concl (not (< 256 (logtail 24 x)))
+ :g-bindings (gl::auto-bindings (:nat x 32)))
 
 (defthm srl-32-srl-semantics-32-equiv
  (equal (srl-32 x y) (srl-semantics-32 x y))
@@ -68,7 +69,7 @@
  :hyp (and (unsigned-byte-p 32 x) (unsigned-byte-p 5 y))
  :concl (equal (srl-semantics-32 x y) (ash x (- y))))
 
-(defthm srl-chunk-lookup-combine-32-correctness
+(defthm srl-32-correctness
  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 5 y))
           (equal (srl-32 x y) (ash x (- y))))
  :hints (("Goal" :use ((:instance srl-semantics-32-correctness) 
