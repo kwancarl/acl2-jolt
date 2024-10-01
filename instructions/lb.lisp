@@ -9,28 +9,13 @@
 
 (include-book "centaur/bitops/part-select" :DIR :SYSTEM)
 (include-book "centaur/bitops/merge" :DIR :SYSTEM)
+(local (include-book "centaur/bitops/ihsext-basics" :dir :system))
 
 ;; LB returns the lower 8 bits of the input, sign-extended to word size
 ;; Note: semantics for loads and stores are handled in different parts of Jolt,
 ;; and not the scope of this formalization
 
-
-;; (not quite working yet but committing anyway)
-
 ;; 32-BIT VERSION
-
-;(defun sign-extend-m-w (z m w)
-;  (if (= (logbit (1- w) z) 0)
-;      0
-;      (1- (ash 1 m))))
-;
-;(defun sign-extend (z w)
-;  (sign-extend-m-w z 32 w))
-
-;(defthm sign-extend-subtable-equiv-1
-;  (equal (sign-extend z 8)
-;	 (* (logbit (1- 8) z) (1- (expt 2 32)))))
-
 (defun sign-extend (z width)
   (* (logbit (1- width) z) (1- (expt 2 width))))
 
@@ -77,42 +62,12 @@
       ;; COMBINE
       (merge-4-u8s s s s z)))
 
-(defthm sign-extend-subtable-lemma
- (implies (unsigned-byte-p 16 x)
-	  (b* ((subtable (materialize-sign-extend-subtable (expt 2 16) 8)))
-	      (equal (single-lookup x subtable)
-		     (* (logbit 7 x) (1- (expt 2 8))))))
- :hints (("Goal" :in-theory (disable (:e materialize-sign-extend-subtable)))))
+(local 
+ (def-gl-thm loghead-lemma
+  :hyp (AND (INTEGERP X) (<= 0 X) (< X 65536))
+  :concl (EQUAL (LOGHEAD 8 X) (MOD X 256))
+  :g-bindings (gl::auto-bindings (:nat x 16))))
 
-(def-gl-thm truncate-overflow-truncate-subtable-lemma
- :hyp (AND (INTEGERP X) (<= 0 X) (< X 65536))
- :concl (EQUAL (LOGHEAD 8 X) (MOD X 256))
- :g-bindings (gl::auto-bindings (:nat x 16)))
-
-(def-gl-thm truncate-overflow-truncate-subtable-lemma-2
- :hyp (AND (INTEGERP X) (<= 0 X) (< X (expt 2 64)))
- :concl (EQUAL (LOGHEAD 8 X) (MOD X 256))
- :g-bindings (gl::auto-bindings (:nat x 64)))
-
-
-(def-gl-thm truncate-overflow-truncate-subtable-lemma-3
- :hyp (AND (INTEGERP X) (<= 0 X) (< X (expt 2 64)))
- :concl (EQUAL (mod (loghead 16 x) 256)
-	       (mod x 256))
- :g-bindings (gl::auto-bindings (:nat x 64)))
-
-
-(local (include-book "centaur/bitops/ihsext-basics" :dir :system))
-(local (include-book "ihs/logops-lemmas" :dir :system))
-
-(defthm truncate-subtable-lemma
- (implies (unsigned-byte-p 16 x)
-	  (b* ((subtable (materialize-truncate-subtable (expt 2 16) #xff)))
-	      (equal (single-lookup x subtable)
-		     (truncate-overflow x 8))))
- :hints (("Goal" :in-theory (disable (:e materialize-truncate-subtable)))))
-
-(in-theory (disable logbit))
 (defthm lb-32-lb-semantics-32-equiv
  (equal (lb-32 x) (lb-semantics-32 x))
  :hints (("Goal" :in-theory (e/d (lb-semantics-32) ((:e materialize-sign-extend-subtable) (:e materialize-truncate-subtable))))))
@@ -129,104 +84,3 @@
 (defthm lb-32-correctness
  (implies (unsigned-byte-p 32 x)
           (equal (lb-32 x) (logextu 32 8 (logand x #xff))))) 
-
-
-
-
-#|
-
-
-
-
-;; Lemmas
-(local
- (gl::def-gl-thm mask-of-mask-32-16
-  :hyp   (and (unsigned-byte-p 64 x))
-  :concl (equal (logand (logand x #xffff) #xff)
-                (logand x #xff))
-  :g-bindings (gl::auto-bindings (:nat x 64))))
-
-(local 
- (gl::def-gl-thm mask-lower-16-bound
-  :hyp   (unsigned-byte-p 64 x)
-  :concl (<= (logand x #xffff) (expt 2 16))
-  :g-bindings (gl::auto-bindings (:nat x 64))))
-
-
-(local
- (gl::def-gl-thm mask-lower-8-bound
-  :hyp (unsigned-byte-p 64 x)
-  :concl (<= (logand x #xff) (expt 2 8))
-  :g-bindings (gl::auto-bindings (:nat x 64))))
-
-(local
- (gl::def-gl-thm logextu-32-8-of-logand-#xff
-  :hyp (unsigned-byte-p 64 x)
-  :concl (equal (logextu 32 8 (logand x #xff))
-                (logextu 32 8 x))
-  :g-bindings (gl::auto-bindings (:nat x 64))))
-  
-;; This lemma should not be local
-(local 
- (defthm natp-of-logand
-  (implies (and (natp x) (natp y))
-           (natp (logand x y)))))
-
-;; "CHUNK"
-(define lb-chunk ((x :type unsigned-byte) y) 
- :enabled t 
- :ignore-ok t
- :irrelevant-formals-ok t
- (logand x #xffff))
-
-;; "LOOKUP"
-(defun lb-lookup (chunk truncate-subtable sign-extend-subtable) 
- (b* ((trunc (tuple-lookup chunk #xff truncate-subtable))
-      (ext   (tuple-lookup trunc 8    sign-extend-subtable)))
-     (cons trunc ext)))
-
-(defthm lb-lookup-correctness-32
- (implies (and (unsigned-byte-p 64 x))
-          (b* ((chunk (lb-chunk x 0))
-               (truncate-idx  (truncate-indices (expt 2 16) #xff))
-               (truncate-subtable (materialize-truncate-subtable truncate-idx))
-               (sgn-ext-idx (sign-extend-idx (expt 2 16) 8))
-               (sgn-ext-subtable (materialize-sign-extend-subtable-32 sgn-ext-idx))
-               ((cons trunc ext) (lb-lookup chunk truncate-subtable sgn-ext-subtable)))
-              (and (equal trunc (logand x #xff))
-                   (equal ext (logtail 8 (logextu 32 8 (logand x #xff)))))))
- :hints (("Goal" :use ((:instance lookup-truncate-subtable-correctness
-                                  (mask #xff)
-                                  (x-hi (expt 2 16))
-                                  (i (logand x #xffff)))
-                       (:instance lookup-materialize-sign-extend-subtable-32-correctness
-                                  (width 8)
-                                  (z-hi (expt 2 16))
-                                  (i (logand x #xff)))
-                       (:instance mask-lower-16-bound)
-                       (:instance mask-lower-8-bound)))))
-;; "COMBINE"
-(defun lb-combine (trunc ext) (logapp 8 trunc ext))
-
-;; 
-
-(gl::def-gl-thm foo
- :hyp (unsigned-byte-p 64 x)
- :concl (equal (logapp 8 (logand x #xff) (logtail 8 (logextu 32 8 (logand x #xff))))
-               (logextu 32 8 (logand x #xff)))
- :g-bindings (gl::auto-bindings (:nat x 64)))
-
-(defthm lb-correctness-32
- (implies (and (unsigned-byte-p 64 x))
-          (b* ((chunk (lb-chunk x 0))
-               (truncate-idx  (truncate-indices (expt 2 16) #xff))
-               (truncate-subtable (materialize-truncate-subtable truncate-idx))
-               (sgn-ext-idx (sign-extend-idx (expt 2 16) 8))
-               (sgn-ext-subtable (materialize-sign-extend-subtable-32 sgn-ext-idx))
-               ((cons trunc ext) (lb-lookup chunk truncate-subtable sgn-ext-subtable)))
-              (equal (lb-combine trunc ext)
-                     (logextu 32 8 (logand x #xff)))))
- :hints (("Goal" :use ((:instance lb-lookup-correctness-32)
-                       (:instance foo)))))
-         
-|#
