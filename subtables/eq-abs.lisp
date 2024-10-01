@@ -98,5 +98,5 @@
                (subtable (materialize-eq-abs-8-subtable indices)))
               (equal (tuple-lookup i j subtable)
                      (eq-abs-8 i j))))
- :hints (("Goal" :in-theory (e/d (lookup) ()))))
+ :hints (("Goal" :in-theory (e/d (tuple-lookup) ()))))
 

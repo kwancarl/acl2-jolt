@@ -38,5 +38,5 @@
                (<= i x-hi))
           (b* ((subtable (materialize-identity-subtable x-hi)))
               (equal (single-lookup i subtable) i)))
- :hints (("Goal" :in-theory (e/d (lookup) (materialize-identity-subtable))
+ :hints (("Goal" :in-theory (e/d (tuple-lookup) (materialize-identity-subtable))
 	         :use ((:instance identity-subtable-correctness)))))

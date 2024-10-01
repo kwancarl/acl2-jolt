@@ -272,7 +272,7 @@
                (subtable (materialize-sra-sign-subtable-32 indices)))
               (equal (tuple-lookup i j subtable)
                      (sra-sign-8 i j))))
- :hints (("Goal" :in-theory (e/d (lookup) ()))))
+ :hints (("Goal" :in-theory (e/d (tuple-lookup) ()))))
 
 
 

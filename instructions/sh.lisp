@@ -169,7 +169,7 @@
  (single-lookup chunk subtable))
 
 ;; "COMBINE"
-(defun sh-combine (lookup) lookup)
+(defun sh-combine (tuple-lookup) lookup)
 
 ;; This is the same theorem for both 32-bit and 64-bit?
 ;; (defthm sh-correctness

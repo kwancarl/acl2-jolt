@@ -178,7 +178,7 @@
 ;;  (tuple-lookup chunk #xff subtable))
 
 ;; ;; "COMBINE"
-;; (defun sb-combine (lookup) lookup)
+;; (defun sb-combine (tuple-lookup) lookup)
 
 ;; ;; This is the same theorem for both 32-bit and 64-bit?
 ;; (defthm sb-correctness
