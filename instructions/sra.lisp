@@ -36,10 +36,10 @@
        ;; setup subtables
        (indices (create-tuple-indices (expt 2 8) (expt 2 5)))
          ;; SRL subtables
-       (subtable-0 (create-srli-subtable indices  0))
-       (subtable-1 (create-srli-subtable indices  8))
-       (subtable-2 (create-srli-subtable indices 16))
-       (subtable-3 (create-srli-subtable indices 24))
+       (subtable-0 (materialize-srli-subtable indices  0))
+       (subtable-1 (materialize-srli-subtable indices  8))
+       (subtable-2 (materialize-srli-subtable indices 16))
+       (subtable-3 (materialize-srli-subtable indices 24))
        (subtable-4 (materialize-sra-sign-subtable-32 indices))
          ;; SRA-sign-subtables
        ;; chunk
@@ -65,7 +65,7 @@
 	         :do-not-induct t
 	         :in-theory (e/d ();sra-sign-8)
 				 ((:e create-tuple-indices)
-				  (:e create-srli-subtable))))))
+				  (:e materialize-srli-subtable))))))
 
 (defthm sra-correctness-1
  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 5 y))
@@ -75,7 +75,7 @@
  :hints (("GoaL" :use ((:instance srl-chunk-lookup-combine-32-correctness))
 	         :in-theory (e/d ();sra-sign-8)
 				 ((:e create-tuple-indices)
-				  (:e create-srli-subtable))))))
+				  (:e materialize-srli-subtable))))))
 
 
 (defthm sra-correctness-2
@@ -86,7 +86,7 @@
 		       (:instance sra-correctness-1))
 	         :in-theory (e/d ();sra-sign-8)
 				 ((:e create-tuple-indices)
-				  (:e create-srli-subtable))))))
+				  (:e materialize-srli-subtable))))))
 
 
 
