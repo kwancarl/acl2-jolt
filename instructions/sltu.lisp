@@ -98,7 +98,7 @@
 ;; CORRECTNESS OF SLTU
 (defthm sltu-32-correctness
  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
-          (equal (sltu-semantics-32 x y) (if (< x y) 1 0))))
+          (equal (sltu-32 x y) (if (< x y) 1 0))))
 
 
 ;; 64-BIT VERSION
@@ -225,4 +225,4 @@
 ;; CORRECTNESS OF SLTU
 (defthm sltu-64-correctness
  (implies (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
-          (equal (sltu-semantics-64 x y) (if (< x y) 1 0))))
+          (equal (sltu-64 x y) (if (< x y) 1 0))))

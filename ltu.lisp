@@ -25,6 +25,7 @@
     (implies (and (bitp x) (bitp y))
 	     (equal (b-ltu x y)
 		    (if (< x y) 1 0)))))
+
 (define ltu-i ((x :type unsigned-byte)
 	       (y :type unsigned-byte)
                (i natp))

@@ -55,10 +55,10 @@
  ;; two lemmas are necessary, but sw-64 doesn't require these lemmas so perhaps
  ;; it has something to do with 16 being exactly half of 32
 
- (local (defthm silly-lemma-1 (natp (expt 2 16))))
+ (local (defthm auxiliary-lemma-1 (natp (expt 2 16))))
  
  (local
-  (gl::def-gl-thm silly-lemma-2
+  (gl::def-gl-thm auxiliary-lemma-2
    :hyp (unsigned-byte-p 32 x)
    :concl (< (logtail 16 x) (expt 2 16))
    :g-bindings (gl::auto-bindings (:nat x 32))))
@@ -71,7 +71,7 @@
                   :use ((:instance lookup-identity-subtable-correctness
                                    (x-hi (expt 2 16))
                                    (i (logtail 16 x)))
- 		       (:instance silly-lemma-2))))))
+ 		       (:instance auxiliary-lemma-2))))))
 ;; end encapsulate
 
 ;; SEMANTIC CORRECTNESS OF SW

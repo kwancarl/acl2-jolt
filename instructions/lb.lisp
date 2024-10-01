@@ -3,8 +3,99 @@
 (include-book "std/util/define" :dir :system)
 (include-book "centaur/gl/gl" :dir :system)
 
+(include-book "../identity")
 (include-book "../truncate")
 (include-book "../sign-extend")
+
+(include-book "centaur/bitops/ihsext-basics" :dir :system)
+(include-book "ihs/logops-lemmas" :dir :system)
+(include-book "centaur/bitops/part-select" :DIR :SYSTEM)
+(include-book "centaur/bitops/merge" :DIR :SYSTEM)
+
+;; LB returns the lower 8 bits of the input, sign-extended to word size
+;; Note: semantics for loads and stores are handled in different parts of Jolt,
+;; and not the scope of this formalization
+
+
+;; (not quite working yet but committing anyway)
+
+;; 32-BIT VERSION
+
+(defun sign-extend-m-w (z m w)
+  (if (= (logbit (1- w) z) 0)
+      0
+      (1- (ash 1 m))))
+
+(defun sign-extend (z w)
+  (sign-extend-m-w z 32 w))
+
+(define lb-semantics-32 ((x (unsigned-byte-p 32 x)))
+  :verify-guards nil
+  (b* (((unless (unsigned-byte-p 32 x)) 0)
+       ;; CHUNK
+       (x8-3 (part-select x :low  0 :width 16))
+       (x8-2 (part-select x :low 16 :width 16))
+       (x8-1 (part-select x :low 32 :width 16))
+       (x8-0 (part-select x :low 48 :width 16))
+       ;; LOOKUP SEMANTICS
+       (?x8-0 x8-0)
+       (?x8-1 x8-1)
+       (?x8-2 x8-2)
+       (z (truncate-overflow x8-3 8))
+       (s (sign-extend x8-3 8)))
+      ;; COMBINE
+      (merge-4-u8s s s s z)))
+
+(define lb-32 ((x (unsigned-byte-p 32 x)))
+  :verify-guards nil
+  :enabled t
+  (b* (((unless (unsigned-byte-p 32 x)) 0)
+       ;; CHUNK
+       (x8-3 (part-select x :low  0 :width 16))
+       (x8-2 (part-select x :low 16 :width 16))
+       (x8-1 (part-select x :low 32 :width 16))
+       (x8-0 (part-select x :low 48 :width 16))
+       ;; MATERIALIZE SUBTABLES
+       (indices            (create-x-indices (expt 2 8) (expt 2 8)))
+       (id-subtable        (materialize-identity-subtable (expt 2 16)))
+       (sign-extend-subtable (materialize-sign-extend-subtable-32 indices))
+       (truncate-indices      (truncate-indices (expt 2 16) #xff))
+       (truncate-subtable (materialize-truncate-subtable truncate-indices))
+       ;; LOOKUP SEMANTICS
+       ;; Note that the `id` lookups are present in the Jolt codebase for reasons not related to the immediate semantics of SB
+       ;; Instead they are used as range checks for the input value, which is necessary for other parts of the Jolt's constraint system
+       ;; We include them here for completeness
+       (?x8-0 (id-lookup x8-0 id-subtable))
+       (?x8-1 (id-lookup x8-1 id-subtable))
+       (?x8-2 (id-lookup x8-2 id-subtable))
+       (s (lookup x8-3 8 sign-extend-subtable))
+       (z (lookup x8-3 #xff truncate-subtable)))
+      ;; COMBINE
+      (merge-4-u8s s s s z)))
+
+(defthm lb-32-lb-semantics-32-equiv
+ (equal (lb-32 x) (lb-semantics-32 x))
+ :hints (("Goal" :in-theory (e/d (lb-semantics-32) ((:e materialize-sign-extend-subtable-32) (:e truncate-indices))))))
+
+;; SEMANTIC CORRECTNESS OF LB
+(gl::def-gl-thm lb-semantics-32-correctness
+ :hyp (unsigned-byte-p 32 x)
+ :concl (equal (lb-semantics-32 x)
+	       (logext 32 (logand x #xff)))
+ :g-bindings (gl::auto-bindings (:nat x 32)))
+
+;; Equivalence of lb-32 with its semantics
+(defthm lb-32-correctness
+ (implies (unsigned-byte-p 32 x)
+          (equal (lb-32 x) (logext 32 (logand x #xff))))) 
+
+
+
+
+
+
+
+
 
 ;; Lemmas
 (local
