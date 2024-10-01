@@ -49,7 +49,7 @@
                (subtable (materialize-and-subtable indices)))
               (equal (assoc-equal (cons i j) subtable)
                      (cons (cons i j) (logand i j))))))
-                 
+
 (defthm lookup-and-subtable-correctness
  (implies (and (natp x-hi)
                (natp y-hi)
@@ -61,7 +61,7 @@
                (subtable (materialize-and-subtable indices)))
               (equal (tuple-lookup i j subtable)
                      (logand i j))))
- :hints (("Goal" :in-theory (enable lookup))))
+ :hints (("Goal" :in-theory (enable tuple-lookup))))
 
 
 ;;;;;;;;;;;;;;;

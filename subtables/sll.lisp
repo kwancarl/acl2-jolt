@@ -177,7 +177,7 @@
                 (subtable (materialize-sll-subtable  indices k)))
                (equal (tuple-lookup i j subtable)
                       (ash (ash i k) j)))))
-  :hints (("Goal" :in-theory (enable lookup)))
+  :hints (("Goal" :in-theory (enable tuple-lookup)))
  
  (local (in-theory (disable ash)))
  (local (include-book "ihs/logops-lemmas" :dir :system))

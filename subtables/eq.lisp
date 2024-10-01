@@ -222,5 +222,5 @@
                (subtable (materialize-eq-subtable indices)))
               (equal (tuple-lookup i j subtable)
                      (if (= i j) 1 0))))
- :hints (("Goal" :in-theory (enable lookup))))
+ :hints (("Goal" :in-theory (enable tuple-lookup))))
 

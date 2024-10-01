@@ -122,7 +122,7 @@
 	       (logextu 64 16 x))
  :g-bindings (gl::auto-bindings (:nat x 64)))
 
-;; Equivalence of lb-64 with its semantics
+;; Equivalence of lh-64 with its semantics
 (defthm lh-64-correctness
  (implies (unsigned-byte-p 64 x)
           (equal (lh-64 x) (logextu 64 16 x))))

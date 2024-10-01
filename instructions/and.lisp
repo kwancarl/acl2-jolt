@@ -13,6 +13,12 @@
 (include-book "centaur/bitops/part-select" :DIR :SYSTEM)
 (include-book "centaur/bitops/merge" :DIR :SYSTEM)
 
+(local
+ (gl::def-gl-thm logtail-24-lemma
+  :hyp  (and (integerp x) (<= 0 x) (< x 4294967296))
+  :concl (<= (logtail 24 x) 255)
+  :g-bindings (gl::auto-bindings (:nat x 32))))
+
 ;; 32-BIT VERSION
 
 (define and-semantics-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
@@ -49,7 +55,7 @@
        (y8-1 (part-select y :low 16 :width 8))
        (y8-0 (part-select y :low 24 :width 8))
        ;; MATERIALIZE SUBTABLES 
-       (indices      (create-tuple-indices (expt 2 8) (expt 2 8)))
+       (indices      (create-tuple-indices (1- (expt 2 8)) (1- (expt 2 8))))
        (and-subtable  (materialize-and-subtable  indices))
        ;; LOOKUPS
        (w0   (tuple-lookup x8-0 y8-0 and-subtable))
@@ -61,7 +67,7 @@
 
 (defthm and-32-and-semantics-32-equiv
  (equal (and-32 x y) (and-semantics-32 x y))
- :hints (("Goal" :in-theory (e/d (and-32 and-semantics-32) ((:e expt))))))
+ :hints (("Goal" :in-theory (e/d (and-32 and-semantics-32) ((:e create-tuple-indices))))))
 
 ;; SEMANTIC CORRECTNESS OF AND
 (gl::def-gl-thm and-semantics-32-correctness
