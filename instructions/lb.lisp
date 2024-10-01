@@ -167,6 +167,8 @@
 ;; "COMBINE"
 (defun lb-combine (trunc ext) (logapp 8 trunc ext))
 
+;; 
+
 (gl::def-gl-thm foo
  :hyp (unsigned-byte-p 64 x)
  :concl (equal (logapp 8 (logand x #xff) (logtail 8 (logextu 32 8 (logand x #xff))))

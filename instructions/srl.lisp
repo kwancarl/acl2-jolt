@@ -22,6 +22,10 @@
 (include-book "centaur/bitops/part-select" :DIR :SYSTEM)
 (include-book "centaur/bitops/merge" :DIR :SYSTEM)
 
+(include-book "centaur/fgl/top" :dir :system)
+;; start an external shell from which the SAT solver can be called
+(value-triple (acl2::tshell-ensure))
+
 (gl::def-gl-thm part-select-lemma-1
  :hyp (unsigned-byte-p 32 x)
  :concl (equal (ash (part-select x :low 8 :width 8) 8)
@@ -129,7 +133,7 @@
 				     (:e create-tuple-indices)
 				     (:e materialize-srli-subtable)))))
 
-(gl::def-gl-thm silly-bounds-lemma-due-to-logtail-rewrite
+(gl::def-gl-thm aux-lemma
  :hyp  (and (integerp x)
 	       (<= 0 x)
 	       (< x 4294967296))
@@ -179,12 +183,6 @@
  (equal (srl-chunk-lookup-combine-32 x y)
         (chunk-and-shift-32 x y))
  :hints (("Goal" :in-theory (disable (:e create-tuple-indices)))))
-
-
-
-(include-book "centaur/fgl/top" :dir :system :uncertified-okp :ignore-certs)
-;; start an external shell from which the SAT solver can be called
-(value-triple (acl2::tshell-ensure))
 
 
 ;(defthm lookup-srl-0-subtable-correctness
@@ -309,9 +307,6 @@
 ; :hyp (and (unsigned-byte-p 32 x) (unsigned-byte-p 5 y))
 ; :concl (equal (ash (ash (loghead 8 (logtail 8 x)) 8) (- y))
 ;	       (ash (
-
-
-
 
 (define srl-combine (chunks)
   (if (atom chunks)

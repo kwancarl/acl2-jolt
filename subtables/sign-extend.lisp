@@ -112,7 +112,7 @@
                (<= i x-hi))
           (b* ((subtable (materialize-sign-extend-subtable x-hi width)))
               (equal (single-lookup i subtable)
-                     (* (logbit (1- width) i) (1- (expt 2 width)))))))
+                     (cons i (* (logbit (1- width) i) (1- (expt 2 width))))))))
  :hints (("Goal" :in-theory (e/d (single-lookup) (materialize-sign-extend-subtable))
 	         :use ((:instance materialize-sign-extend-subtable-correctness))))
 
