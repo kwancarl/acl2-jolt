@@ -7,8 +7,6 @@
 (include-book "../subtables/truncate")
 (include-book "../subtables/sign-extend")
 
-(include-book "centaur/bitops/ihsext-basics" :dir :system)
-(include-book "ihs/logops-lemmas" :dir :system)
 (include-book "centaur/bitops/part-select" :DIR :SYSTEM)
 (include-book "centaur/bitops/merge" :DIR :SYSTEM)
 
@@ -21,13 +19,20 @@
 
 ;; 32-BIT VERSION
 
-(defun sign-extend-m-w (z m w)
-  (if (= (logbit (1- w) z) 0)
-      0
-      (1- (ash 1 m))))
+;(defun sign-extend-m-w (z m w)
+;  (if (= (logbit (1- w) z) 0)
+;      0
+;      (1- (ash 1 m))))
+;
+;(defun sign-extend (z w)
+;  (sign-extend-m-w z 32 w))
 
-(defun sign-extend (z w)
-  (sign-extend-m-w z 32 w))
+;(defthm sign-extend-subtable-equiv-1
+;  (equal (sign-extend z 8)
+;	 (* (logbit (1- 8) z) (1- (expt 2 32)))))
+
+(defun sign-extend (z width)
+  (* (logbit (1- width) z) (1- (expt 2 width))))
 
 (define lb-semantics-32 ((x (unsigned-byte-p 32 x)))
   :verify-guards nil
@@ -46,6 +51,7 @@
       ;; COMBINE
       (merge-4-u8s s s s z)))
 
+
 (define lb-32 ((x (unsigned-byte-p 32 x)))
   :verify-guards nil
   :enabled t
@@ -56,11 +62,9 @@
        (x8-1 (part-select x :low 32 :width 16))
        (x8-0 (part-select x :low 48 :width 16))
        ;; MATERIALIZE SUBTABLES
-       (indices            (create-tuple-indices (expt 2 8) (expt 2 8)))
-       (id-subtable        (materialize-identity-subtable (expt 2 16)))
-       (sign-extend-subtable (materialize-sign-extend-subtable-32 indices))
-       (truncate-indices      (truncate-indices (expt 2 16) #xff))
-       (truncate-subtable (materialize-truncate-subtable truncate-indices))
+       (id-subtable          (materialize-identity-subtable (expt 2 16)))
+       (sign-extend-subtable (materialize-sign-extend-subtable (expt 2 16) 8))
+       (truncate-subtable    (materialize-truncate-subtable (expt 2 16) #xff))
        ;; LOOKUP SEMANTICS
        ;; Note that the `id` lookups are present in the Jolt codebase for reasons not related to the immediate semantics of SB
        ;; Instead they are used as range checks for the input value, which is necessary for other parts of the Jolt's constraint system
@@ -68,31 +72,68 @@
        (?x8-0 (single-lookup x8-0 id-subtable))
        (?x8-1 (single-lookup x8-1 id-subtable))
        (?x8-2 (single-lookup x8-2 id-subtable))
-       (s (tuple-lookup x8-3 8 sign-extend-subtable))
-       (z (tuple-lookup x8-3 #xff truncate-subtable)))
+       (s     (single-lookup x8-3 sign-extend-subtable))
+       (z     (single-lookup x8-3 truncate-subtable)))
       ;; COMBINE
       (merge-4-u8s s s s z)))
 
+(defthm sign-extend-subtable-lemma
+ (implies (unsigned-byte-p 16 x)
+	  (b* ((subtable (materialize-sign-extend-subtable (expt 2 16) 8)))
+	      (equal (single-lookup x subtable)
+		     (* (logbit 7 x) (1- (expt 2 8))))))
+ :hints (("Goal" :in-theory (disable (:e materialize-sign-extend-subtable)))))
+
+(def-gl-thm truncate-overflow-truncate-subtable-lemma
+ :hyp (AND (INTEGERP X) (<= 0 X) (< X 65536))
+ :concl (EQUAL (LOGHEAD 8 X) (MOD X 256))
+ :g-bindings (gl::auto-bindings (:nat x 16)))
+
+(def-gl-thm truncate-overflow-truncate-subtable-lemma-2
+ :hyp (AND (INTEGERP X) (<= 0 X) (< X (expt 2 64)))
+ :concl (EQUAL (LOGHEAD 8 X) (MOD X 256))
+ :g-bindings (gl::auto-bindings (:nat x 64)))
+
+
+(def-gl-thm truncate-overflow-truncate-subtable-lemma-3
+ :hyp (AND (INTEGERP X) (<= 0 X) (< X (expt 2 64)))
+ :concl (EQUAL (mod (loghead 16 x) 256)
+	       (mod x 256))
+ :g-bindings (gl::auto-bindings (:nat x 64)))
+
+
+(local (include-book "centaur/bitops/ihsext-basics" :dir :system))
+(local (include-book "ihs/logops-lemmas" :dir :system))
+
+(defthm truncate-subtable-lemma
+ (implies (unsigned-byte-p 16 x)
+	  (b* ((subtable (materialize-truncate-subtable (expt 2 16) #xff)))
+	      (equal (single-lookup x subtable)
+		     (truncate-overflow x 8))))
+ :hints (("Goal" :in-theory (disable (:e materialize-truncate-subtable)))))
+
+(in-theory (disable logbit))
 (defthm lb-32-lb-semantics-32-equiv
  (equal (lb-32 x) (lb-semantics-32 x))
- :hints (("Goal" :in-theory (e/d (lb-semantics-32) ((:e materialize-sign-extend-subtable-32) (:e truncate-indices))))))
+ :hints (("Goal" :in-theory (e/d (lb-semantics-32) ((:e materialize-sign-extend-subtable) (:e materialize-truncate-subtable))))))
 
 ;; SEMANTIC CORRECTNESS OF LB
 (gl::def-gl-thm lb-semantics-32-correctness
  :hyp (unsigned-byte-p 32 x)
  :concl (equal (lb-semantics-32 x)
-	       (logext 32 (logand x #xff)))
+	       (logextu 32 8 (logand x #xff)))
  :g-bindings (gl::auto-bindings (:nat x 32)))
+
 
 ;; Equivalence of lb-32 with its semantics
 (defthm lb-32-correctness
  (implies (unsigned-byte-p 32 x)
-          (equal (lb-32 x) (logext 32 (logand x #xff))))) 
+          (equal (lb-32 x) (logextu 32 8 (logand x #xff))))) 
 
 
 
 
-
+#|
 
 
 
@@ -188,4 +229,4 @@
  :hints (("Goal" :use ((:instance lb-lookup-correctness-32)
                        (:instance foo)))))
          
-
+|#
