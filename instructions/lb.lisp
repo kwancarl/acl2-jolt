@@ -43,7 +43,7 @@
        (truncate-subtable    (materialize-truncate-subtable (expt 2 16) #xff))
        ;; LOOKUP SEMANTICS
        ;; Note that the `id` lookups are present in the Jolt codebase for reasons not related to
-       ;; the immediate semantics of SB. Instead they are used as range checks for the input value,
+       ;; the immediate semantics of LB. Instead they are used as range checks for the input value,
        ;; which is necessary for other parts of the Jolt's constraint system.
        ;; We include them here for completeness.
        (?x8-0 (single-lookup x8-0 id-subtable))
