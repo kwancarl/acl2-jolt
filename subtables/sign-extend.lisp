@@ -2,12 +2,6 @@
 (include-book "std/util/bstar" :dir :system)
 (include-book "std/util/define" :dir :system)
 (include-book "centaur/gl/gl" :dir :system)
-;(local (include-book "ihs/basic-definitions" :dir :system))
-(local (include-book "centaur/bitops/ihsext-basics" :dir :system))
-;(local (include-book "centaur/bitops/fast-logext" :dir :system))
-;(local (include-book "arithmetic/top" :dir :system))
-(local (include-book "ihs/logops-lemmas" :dir :system))
-
 
 ;; MATERIALIZE SUBTABLES FOR "Sign-extend"
 
@@ -96,6 +90,15 @@
 ;; width i))))))
 
 
+(defthm assoc-materialize-sign-extend-subtable
+ (implies (and (natp x-hi)
+               (natp width) 
+               (natp i) 
+               (<= i x-hi))
+          (b* ((subtable (materialize-sign-extend-subtable x-hi width)))
+              (assoc-equal i subtable))))
+
+
 (defthm materialize-sign-extend-subtable-correctness
  (implies (and (natp x-hi)
                (natp width) 
@@ -103,7 +106,7 @@
                (<= i x-hi))
           (b* ((subtable (materialize-sign-extend-subtable x-hi width)))
               (equal (assoc-equal i subtable)
-                     (cons i (* (logbit (1- width) i) (1- (expt 2 width))))))))
+		     (cons i (* (logbit (1- width) i) (1- (expt 2 width))))))))
 
 (defthm lookup-materialize-sign-extend-subtable-correctness
  (implies (and (natp x-hi) 
@@ -112,11 +115,16 @@
                (<= i x-hi))
           (b* ((subtable (materialize-sign-extend-subtable x-hi width)))
               (equal (single-lookup i subtable)
-                     (cons i (* (logbit (1- width) i) (1- (expt 2 width))))))))
- :hints (("Goal" :in-theory (e/d (single-lookup) (materialize-sign-extend-subtable))
-	         :use ((:instance materialize-sign-extend-subtable-correctness))))
+                     (* (logbit (1- width) i) (1- (expt 2 width))))))
+ :hints (("Goal" :in-theory (e/d (single-lookup) (materialize-sign-extend-subtable)))))
 
 ;; CORRECTNESS OF SUBTABLES WRT LOGAPP
+
+(local (include-book "ihs/basic-definitions" :dir :system))
+(local (include-book "centaur/bitops/ihsext-basics" :dir :system))
+(local (include-book "centaur/bitops/fast-logext" :dir :system))
+(local (include-book "arithmetic/top" :dir :system))
+(local (include-book "ihs/logops-lemmas" :dir :system))
 
 (defthmd loghead-logextu-reverse-32
   (implies (and (<= width 32)
@@ -229,3 +237,4 @@ width i))))))
               (equal (tuple-lookup i width subtable)
                      (logtail width (logextu 32 width i)))))
  :hints (("Goal" :in-theory (e/d (tuple-lookup) ()))))
+|#
