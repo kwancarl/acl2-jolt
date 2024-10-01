@@ -7,8 +7,8 @@
 (include-book "centaur/bitops/ihsext-basics" :dir :system)
 (include-book "centaur/bitops/fast-logext" :dir :system)
 
-(include-book "../truncate")
-(include-book "../identity")
+(include-book "../subtables/truncate")
+(include-book "../subtables/identity")
 
 (include-book "ihs/logops-lemmas" :dir :system)
 (include-book "centaur/bitops/part-select" :DIR :SYSTEM)

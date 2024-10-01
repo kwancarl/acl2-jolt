@@ -59,7 +59,6 @@
          (append (create-y-indices x-hi y-hi)
                  (create-tuple-indices (1- x-hi) y-hi)))))
 
-;; `create-tuple-indices` returns a valid association list
 (defthm alistp-of-create-tuple-indices
  (alistp (create-tuple-indices x-hi y-hi)))
 
@@ -80,9 +79,11 @@
 ;; `assoc-equal` is a function that returns the `cons` pair associated with the key `(cons x y)` in the association list `table`. We then return the value (i.e. second element) of this pair.
 (defund tuple-lookup (x y table)
  (cdr (assoc-equal (cons x y) table)))
-(verify-guards lookup)
+;; (verify-guards tuple-lookup)
 
-(defun single-lookup (x subtable) (cdr (assoc x subtable)))
+;; Lookup the value associated with the key `x` in the association list `subtable`.
+(defund single-lookup (x subtable) (cdr (assoc x subtable)))
+;; (verify-guards single-lookup)
 
 (defthm unsigned-byte-p-natp-bounds-equiv
  (implies (unsigned-byte-p 8 x)

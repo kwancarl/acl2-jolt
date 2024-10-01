@@ -7,7 +7,7 @@
 (include-book "centaur/bitops/ihsext-basics" :dir :system)
 (include-book "centaur/bitops/fast-logext" :dir :system)
 
-(include-book "../eq")
+(include-book "../subtables/eq")
 
 (include-book "ihs/logops-lemmas" :dir :system)
 (include-book "centaur/bitops/part-select" :DIR :SYSTEM)

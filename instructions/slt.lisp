@@ -7,12 +7,12 @@
 (include-book "centaur/bitops/ihsext-basics" :dir :system)
 (include-book "centaur/bitops/fast-logext" :dir :system)
 
-(include-book "../ltu")
-(include-book "../eq")
-(include-book "../eq-abs")
-(include-book "../lt-abs")
-(include-book "../left-msb")
-(include-book "../right-msb")
+(include-book "../subtables/ltu")
+(include-book "../subtables/eq")
+(include-book "../subtables/eq-abs")
+(include-book "../subtables/lt-abs")
+(include-book "../subtables/left-msb")
+(include-book "../subtables/right-msb")
 
 (include-book "ihs/logops-lemmas" :dir :system)
 (include-book "centaur/bitops/part-select" :DIR :SYSTEM)

@@ -7,7 +7,7 @@
 (include-book "centaur/bitops/part-select" :dir :system)
 (include-book "centaur/bitops/merge" :DIR :SYSTEM)
 
-(include-book "../identity")
+(include-book "../subtables/identity")
 
 ;; SH returns the lowest 16 bits of the input, zero-extended to word size
 

@@ -14,7 +14,7 @@
 (include-book "centaur/fgl/top" :dir :system)
 
 (include-book "srl")
-(include-book "../sra-sign")
+(include-book "../subtables/sra-sign")
 
 ;;;;;;;;;;;;;
 ;;

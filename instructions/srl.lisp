@@ -7,7 +7,7 @@
 (include-book "centaur/bitops/ihsext-basics" :dir :system)
 (include-book "centaur/bitops/fast-logext" :dir :system)
 
-(include-book "../srl")
+(include-book "../subtables/srl")
 
 ;;;;;;;;;;;;;
 ;;

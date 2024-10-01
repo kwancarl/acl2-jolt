@@ -3,9 +3,9 @@
 (include-book "std/util/define" :dir :system)
 (include-book "centaur/gl/gl" :dir :system)
 
-(include-book "../identity")
-(include-book "../truncate")
-(include-book "../sign-extend")
+(include-book "../subtables/identity")
+(include-book "../subtables/truncate")
+(include-book "../subtables/sign-extend")
 
 (include-book "centaur/bitops/ihsext-basics" :dir :system)
 (include-book "ihs/logops-lemmas" :dir :system)

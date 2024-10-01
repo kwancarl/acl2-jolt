@@ -7,7 +7,7 @@
 (include-book "centaur/bitops/ihsext-basics" :dir :system)
 (include-book "centaur/bitops/fast-logext" :dir :system)
 
-(include-book "../or")
+(include-book "../subtables/or")
 ;; Note: In ACL2, the OR operation is named `ior` for inclusive OR
 
 (include-book "ihs/logops-lemmas" :dir :system)
