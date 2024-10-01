@@ -82,6 +82,8 @@
  (cdr (assoc-equal (cons x y) table)))
 (verify-guards lookup)
 
+(defun single-lookup (x subtable) (cdr (assoc x subtable)))
+
 (defthm unsigned-byte-p-natp-bounds-equiv
  (implies (unsigned-byte-p 8 x)
           (and (natp x)

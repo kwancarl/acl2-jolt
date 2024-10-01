@@ -39,10 +39,10 @@
        ;; MATERIALIZE SUBTABLES 
        (id-subtable       (materialize-identity-subtable (expt 2 16)))
        ;; LOOKUP SEMANTICS
-       (?x8-0 (id-lookup x8-0 id-subtable))
-       (?x8-1 (id-lookup x8-1 id-subtable))
-       (?x8-2 (id-lookup x8-2 id-subtable))
-       (x8-3 (id-lookup x8-3 id-subtable)))
+       (?x8-0 (single-lookup x8-0 id-subtable))
+       (?x8-1 (single-lookup x8-1 id-subtable))
+       (?x8-2 (single-lookup x8-2 id-subtable))
+       (x8-3 (single-lookup x8-3 id-subtable)))
       ;; COMBINE
       x8-3))
 
@@ -105,14 +105,14 @@
        ;; MATERIALIZE SUBTABLES 
        (id-subtable       (materialize-identity-subtable (expt 2 16)))
        ;; LOOKUP SEMANTICS
-       (?x8-0 (id-lookup x8-0 id-subtable))
-       (?x8-1 (id-lookup x8-1 id-subtable))
-       (?x8-2 (id-lookup x8-2 id-subtable))
-       (?x8-3 (id-lookup x8-3 id-subtable))
-       (?x8-4 (id-lookup x8-4 id-subtable))
-       (?x8-5 (id-lookup x8-5 id-subtable))
-       (?x8-6 (id-lookup x8-6 id-subtable))
-       (x8-7 (id-lookup x8-7 id-subtable)))
+       (?x8-0 (single-lookup x8-0 id-subtable))
+       (?x8-1 (single-lookup x8-1 id-subtable))
+       (?x8-2 (single-lookup x8-2 id-subtable))
+       (?x8-3 (single-lookup x8-3 id-subtable))
+       (?x8-4 (single-lookup x8-4 id-subtable))
+       (?x8-5 (single-lookup x8-5 id-subtable))
+       (?x8-6 (single-lookup x8-6 id-subtable))
+       (x8-7 (single-lookup x8-7 id-subtable)))
       ;; COMBINE
       x8-7))
 
@@ -166,7 +166,7 @@
 
 ;; "LOOKUP"
 (defun sh-lookup (chunk subtable) 
- (id-lookup chunk subtable))
+ (single-lookup chunk subtable))
 
 ;; "COMBINE"
 (defun sh-combine (lookup) lookup)

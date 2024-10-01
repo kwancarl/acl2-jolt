@@ -32,13 +32,11 @@
               (equal (assoc-equal i subtable)
                      (cons i i)))))
 
-(defun id-lookup (x subtable) (cdr (assoc x subtable)))
-
 (defthm lookup-identity-subtable-correctness
  (implies (and (natp x-hi) 
                (natp i) 
                (<= i x-hi))
           (b* ((subtable (materialize-identity-subtable x-hi)))
-              (equal (id-lookup i subtable) i)))
+              (equal (single-lookup i subtable) i)))
  :hints (("Goal" :in-theory (e/d (lookup) (materialize-identity-subtable))
 	         :use ((:instance identity-subtable-correctness)))))

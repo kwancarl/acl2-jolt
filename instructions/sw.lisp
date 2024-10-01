@@ -40,10 +40,10 @@
        ;; MATERIALIZE SUBTABLES 
        (id-subtable       (materialize-identity-subtable (expt 2 16)))
        ;; LOOKUP SEMANTICS
-       (?x8-0 (id-lookup x8-0 id-subtable))
-       (?x8-1 (id-lookup x8-1 id-subtable))
-       (x8-2 (id-lookup x8-2 id-subtable))
-       (x8-3 (id-lookup x8-3 id-subtable)))
+       (?x8-0 (single-lookup x8-0 id-subtable))
+       (?x8-1 (single-lookup x8-1 id-subtable))
+       (x8-2 (single-lookup x8-2 id-subtable))
+       (x8-3 (single-lookup x8-3 id-subtable)))
       ;; COMBINE
       (merge-2-u16s x8-2 x8-3)))
 
@@ -63,7 +63,7 @@
    :concl (< (logtail 16 x) (expt 2 16))
    :g-bindings (gl::auto-bindings (:nat x 32))))
  
- (local (in-theory (disable id-lookup (:e expt))))
+ (local (in-theory (disable single-lookup (:e expt))))
  
  (defthm sw-32-sw-semantics-32-equiv
   (equal (sw-32 x) (sw-semantics-32 x))
@@ -129,14 +129,14 @@
        ;; MATERIALIZE SUBTABLES 
        (id-subtable       (materialize-identity-subtable (expt 2 16)))
        ;; LOOKUP SEMANTICS
-       (?x8-0 (id-lookup x8-0 id-subtable))
-       (?x8-1 (id-lookup x8-1 id-subtable))
-       (?x8-2 (id-lookup x8-2 id-subtable))
-       (?x8-3 (id-lookup x8-3 id-subtable))
-       (?x8-4 (id-lookup x8-4 id-subtable))
-       (?x8-5 (id-lookup x8-5 id-subtable))
-       (x8-6 (id-lookup x8-6 id-subtable))
-       (x8-7 (id-lookup x8-7 id-subtable)))
+       (?x8-0 (single-lookup x8-0 id-subtable))
+       (?x8-1 (single-lookup x8-1 id-subtable))
+       (?x8-2 (single-lookup x8-2 id-subtable))
+       (?x8-3 (single-lookup x8-3 id-subtable))
+       (?x8-4 (single-lookup x8-4 id-subtable))
+       (?x8-5 (single-lookup x8-5 id-subtable))
+       (x8-6 (single-lookup x8-6 id-subtable))
+       (x8-7 (single-lookup x8-7 id-subtable)))
       ;; COMBINE
       (merge-2-u16s x8-6 x8-7)))
 

@@ -65,9 +65,9 @@
        ;; Note that the `id` lookups are present in the Jolt codebase for reasons not related to the immediate semantics of SB
        ;; Instead they are used as range checks for the input value, which is necessary for other parts of the Jolt's constraint system
        ;; We include them here for completeness
-       (?x8-0 (id-lookup x8-0 id-subtable))
-       (?x8-1 (id-lookup x8-1 id-subtable))
-       (?x8-2 (id-lookup x8-2 id-subtable))
+       (?x8-0 (single-lookup x8-0 id-subtable))
+       (?x8-1 (single-lookup x8-1 id-subtable))
+       (?x8-2 (single-lookup x8-2 id-subtable))
        (s (tuple-lookup x8-3 8 sign-extend-subtable))
        (z (tuple-lookup x8-3 #xff truncate-subtable)))
       ;; COMBINE

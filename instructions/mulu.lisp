@@ -53,8 +53,8 @@
        ;; LOOKUP SEMANTICS
        (z8-0 (tuple-lookup z8-0 0 truncate-subtable))
        (z8-1 (tuple-lookup z8-1 0 truncate-subtable))
-       (z8-2 (id-lookup z8-2 id-subtable))
-       (z8-3 (id-lookup z8-3 id-subtable)))
+       (z8-2 (single-lookup z8-2 id-subtable))
+       (z8-3 (single-lookup z8-3 id-subtable)))
       ;; COMBINE
       (merge-4-u16s z8-0 z8-1 z8-2 z8-3)))
 
@@ -129,10 +129,10 @@
        (z8-1 (tuple-lookup z8-1 0 truncate-subtable))
        (z8-2 (tuple-lookup z8-2 0 truncate-subtable))
        (z8-3 (tuple-lookup z8-3 0 truncate-subtable))
-       (z8-4 (id-lookup z8-4 id-subtable))
-       (z8-5 (id-lookup z8-5 id-subtable))
-       (z8-6 (id-lookup z8-6 id-subtable))
-       (z8-7 (id-lookup z8-7 id-subtable)))
+       (z8-4 (single-lookup z8-4 id-subtable))
+       (z8-5 (single-lookup z8-5 id-subtable))
+       (z8-6 (single-lookup z8-6 id-subtable))
+       (z8-7 (single-lookup z8-7 id-subtable)))
       ;; COMBINE
       (merge-8-u16s z8-0 z8-1 z8-2 z8-3 z8-4 z8-5 z8-6 z8-7)))
 

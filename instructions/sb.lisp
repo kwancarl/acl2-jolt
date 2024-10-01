@@ -52,9 +52,9 @@
        ;; Note that the `id` lookups are present in the Jolt codebase for reasons not related to the immediate semantics of SB
        ;; Instead they are used as range checks for the input value, which is necessary for other parts of the Jolt's constraint system
        ;; We include them here for completeness
-       (?x8-0 (id-lookup x8-0 id-subtable))
-       (?x8-1 (id-lookup x8-1 id-subtable))
-       (?x8-2 (id-lookup x8-2 id-subtable))
+       (?x8-0 (single-lookup x8-0 id-subtable))
+       (?x8-1 (single-lookup x8-1 id-subtable))
+       (?x8-2 (single-lookup x8-2 id-subtable))
        (x8-3 (tuple-lookup x8-3 #xff truncate-subtable)))
       ;; COMBINE
       x8-3))
@@ -118,13 +118,13 @@
        (truncate-idx      (truncate-indices (expt 2 16) #xff))
        (truncate-subtable (materialize-truncate-subtable truncate-idx))
        ;; LOOKUP SEMANTICS
-       (?x8-0 (id-lookup x8-0 id-subtable))
-       (?x8-1 (id-lookup x8-1 id-subtable))
-       (?x8-2 (id-lookup x8-2 id-subtable))
-       (?x8-3 (id-lookup x8-3 id-subtable))
-       (?x8-4 (id-lookup x8-4 id-subtable))
-       (?x8-5 (id-lookup x8-5 id-subtable))
-       (?x8-6 (id-lookup x8-6 id-subtable))
+       (?x8-0 (single-lookup x8-0 id-subtable))
+       (?x8-1 (single-lookup x8-1 id-subtable))
+       (?x8-2 (single-lookup x8-2 id-subtable))
+       (?x8-3 (single-lookup x8-3 id-subtable))
+       (?x8-4 (single-lookup x8-4 id-subtable))
+       (?x8-5 (single-lookup x8-5 id-subtable))
+       (?x8-6 (single-lookup x8-6 id-subtable))
        (x8-7 (tuple-lookup x8-7 #xff truncate-subtable)))
       ;; COMBINE
       x8-7))
