@@ -3,27 +3,12 @@
 (include-book "std/util/define" :dir :system)
 (include-book "centaur/gl/gl" :dir :system)
 
-;; MATERIALIZE SUBTABLES FOR "Sign-extend"
+;; MATERIALIZE SUBTABLES FOR "SIGN-EXTEND"
 
 (include-book "subtable")
 
-
-;; (define sign-extend-idx (z-hi width)
-;;  :enabled t
-;;  :returns (lst alistp)
-;;  :measure (acl2-count z-hi)
-;;  (if (not (natp z-hi))
-;;      nil
-;;      (if (zerop z-hi)
-;;          (cons (cons z-hi width) nil)
-;;          (cons (cons z-hi width) 
-;;                (sign-extend-idx (1- z-hi) width)))))
-
-;; (defthm sign-extend-idx-correctness
-;;  (implies (and (natp z-hi) 
-;;                (natp i) 
-;;                (<= i z-hi))
-;;           (member (cons i width) (sign-extend-idx z-hi width))))
+(defun sign-extend (z width)
+  (* (logbit (1- width) z) (1- (expt 2 width))))
 
 (define materialize-sign-extend-subtable (x-hi width)
  :enabled t
@@ -33,62 +18,9 @@
  (if (or (not (natp x-hi)) (not (natp width)))
      nil
      (if (zerop x-hi)
-         (cons (cons x-hi (* (logbit (1- width) x-hi) (1- (expt 2 width)))) nil)
-         (cons (cons x-hi (* (logbit (1- width) x-hi) (1- (expt 2 width))))
+         (cons (cons x-hi (sign-extend x-hi width)) nil)
+         (cons (cons x-hi (sign-extend x-hi width))
                (materialize-sign-extend-subtable (1- x-hi) width)))))
-
-;; (defun materialize-sign-extend-subtable-32 (idx-lst)
-;;  (b* (((unless (alistp idx-lst))     nil)
-;;       ((if (atom idx-lst))           nil)
-;;       ((cons idx rst)            idx-lst)
-;;       ((unless (consp idx))          nil)
-;;       ((cons z width)                 idx))
-;;      (cons (cons idx (if (logbit (1- width) z) (1- (expt 2 (- 32 width))) 0))
-;;            (materialize-sign-extend-subtable-32 rst))))
-
-;; (defun materialize-sign-extend-subtable-64 (idx-lst)
-;;  (b* (((unless (alistp idx-lst))     nil)
-;;       ((if (atom idx-lst))           nil)
-;;       ((cons idx rst)            idx-lst)
-;;       ((unless (consp idx))          nil)
-;;       ((cons z width)                 idx))
-;;      (cons (cons idx (logtail width (logextu 64 width z)))
-;;            (materialize-sign-extend-subtable-64 rst))))
-
-;; (defthm alistp-of-materialize-sign-extend-subtable
-;;  (alistp (materialize-sign-extend-subtable x-hi width)))
-
-;; (defthm alistp-of-materialize-sign-extend-subtable-64
-;;  (alistp (materialize-sign-extend-subtable-64 idx-lst)))
-
-;; (defthm member-idx-lst-assoc-materialize-sign-extend-subtable-32
-;;  (implies (and (alistp idx-lst) (member idx idx-lst))
-;;           (assoc idx (materialize-sign-extend-subtable-32 idx-lst))))
-
-;; (defthm member-idx-lst-assoc-materialize-sign-extend-subtable-64
-;;  (implies (and (alistp idx-lst) (member idx idx-lst))
-;;           (assoc idx (materialize-sign-extend-subtable-64 idx-lst))))
-
-;; (defthm assoc-member-materialize-sign-extend-subtable-32
-;;  (implies (assoc (cons z width) (materialize-sign-extend-subtable-32 idx-lst))
-;;           (member (cons z width) idx-lst)))
-
-;; (defthm assoc-member-materialize-sign-extend-subtable-64
-;;  (implies (assoc (cons z width) (materialize-sign-extend-subtable-64 idx-lst))
-;;           (member (cons z width) idx-lst)))
-
-;; (defthm assoc-materialize-sign-extend-subtable-32
-;;  (implies (assoc (cons i width) (materialize-sign-extend-subtable-32 idx-lst))
-;;           (equal (assoc (cons i width) (materialize-sign-extend-subtable-32 idx-lst))
-;;                  (cons (cons i width) (logtail width (logextu 32
-;; width i))))))
-
-;; (defthm assoc-materialize-sign-extend-subtable-64
-;;  (implies (assoc (cons i width) (materialize-sign-extend-subtable-64 idx-lst))
-;;           (equal (assoc (cons i width) (materialize-sign-extend-subtable-64 idx-lst))
-;;                  (cons (cons i width) (logtail width (logextu 64
-;; width i))))))
-
 
 (defthm assoc-materialize-sign-extend-subtable
  (implies (and (natp x-hi)
@@ -98,7 +30,6 @@
           (b* ((subtable (materialize-sign-extend-subtable x-hi width)))
               (assoc-equal i subtable))))
 
-
 (defthm materialize-sign-extend-subtable-correctness
  (implies (and (natp x-hi)
                (natp width) 
@@ -106,7 +37,7 @@
                (<= i x-hi))
           (b* ((subtable (materialize-sign-extend-subtable x-hi width)))
               (equal (assoc-equal i subtable)
-		     (cons i (* (logbit (1- width) i) (1- (expt 2 width))))))))
+                     (cons i (sign-extend i width))))))
 
 (defthm lookup-materialize-sign-extend-subtable-correctness
  (implies (and (natp x-hi) 
@@ -115,7 +46,7 @@
                (<= i x-hi))
           (b* ((subtable (materialize-sign-extend-subtable x-hi width)))
               (equal (single-lookup i subtable)
-                     (* (logbit (1- width) i) (1- (expt 2 width))))))
+                     (sign-extend i width))))
  :hints (("Goal" :in-theory (e/d (single-lookup) (materialize-sign-extend-subtable)))))
 
 ;; CORRECTNESS OF SUBTABLES WRT LOGAPP
