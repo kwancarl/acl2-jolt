@@ -56,7 +56,7 @@
        (x8-1 (part-select x :low 32 :width 16))
        (x8-0 (part-select x :low 48 :width 16))
        ;; MATERIALIZE SUBTABLES
-       (indices            (create-x-indices (expt 2 8) (expt 2 8)))
+       (indices            (create-tuple-indices (expt 2 8) (expt 2 8)))
        (id-subtable        (materialize-identity-subtable (expt 2 16)))
        (sign-extend-subtable (materialize-sign-extend-subtable-32 indices))
        (truncate-indices      (truncate-indices (expt 2 16) #xff))
@@ -68,8 +68,8 @@
        (?x8-0 (id-lookup x8-0 id-subtable))
        (?x8-1 (id-lookup x8-1 id-subtable))
        (?x8-2 (id-lookup x8-2 id-subtable))
-       (s (lookup x8-3 8 sign-extend-subtable))
-       (z (lookup x8-3 #xff truncate-subtable)))
+       (s (tuple-lookup x8-3 8 sign-extend-subtable))
+       (z (tuple-lookup x8-3 #xff truncate-subtable)))
       ;; COMBINE
       (merge-4-u8s s s s z)))
 
@@ -140,8 +140,8 @@
 
 ;; "LOOKUP"
 (defun lb-lookup (chunk truncate-subtable sign-extend-subtable) 
- (b* ((trunc (lookup chunk #xff truncate-subtable))
-      (ext   (lookup trunc 8    sign-extend-subtable)))
+ (b* ((trunc (tuple-lookup chunk #xff truncate-subtable))
+      (ext   (tuple-lookup trunc 8    sign-extend-subtable)))
      (cons trunc ext)))
 
 (defthm lb-lookup-correctness-32

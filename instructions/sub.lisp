@@ -51,8 +51,8 @@
        (truncate-idx      (truncate-indices (expt 2 16) 0))
        (truncate-subtable (materialize-truncate-subtable truncate-idx))
        ;; LOOKUP SEMANTICS
-       (z8-0 (lookup z8-0 0 truncate-subtable))
-       (z8-1 (lookup z8-1 0 truncate-subtable))
+       (z8-0 (tuple-lookup z8-0 0 truncate-subtable))
+       (z8-1 (tuple-lookup z8-1 0 truncate-subtable))
        (z8-2 (id-lookup z8-2 id-subtable))
        (z8-3 (id-lookup z8-3 id-subtable)))
       ;; COMBINE
@@ -124,10 +124,10 @@
        (truncate-idx      (truncate-indices (expt 2 16) 0))
        (truncate-subtable (materialize-truncate-subtable truncate-idx))
        ;; LOOKUP SEMANTICS
-       (z8-0 (lookup z8-0 0 truncate-subtable))
-       (z8-1 (lookup z8-1 0 truncate-subtable))
-       (z8-2 (lookup z8-2 0 truncate-subtable))
-       (z8-3 (lookup z8-3 0 truncate-subtable))
+       (z8-0 (tuple-lookup z8-0 0 truncate-subtable))
+       (z8-1 (tuple-lookup z8-1 0 truncate-subtable))
+       (z8-2 (tuple-lookup z8-2 0 truncate-subtable))
+       (z8-3 (tuple-lookup z8-3 0 truncate-subtable))
        (z8-4 (id-lookup z8-4 id-subtable))
        (z8-5 (id-lookup z8-5 id-subtable))
        (z8-6 (id-lookup z8-6 id-subtable))

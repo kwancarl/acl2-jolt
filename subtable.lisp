@@ -50,35 +50,35 @@
 ;; Generate a list of `cons` values, where pairs are of the form `(cons i j)` with `i` ranging from `x-hi` to `0` and `j` ranging from `y-hi` to `0`.
 ;; If `x-hi` or `y-hi` is not a natural number, return `nil`.
 ;; If `x-hi` is `0`, return the list returned by `create-y-indices` with `x-hi` and `y-hi`.
-;; Otherwise, return the list returned by `create-y-indices` with `x-hi` and `y-hi` appended to the result of recursively calling `create-x-indices` with `(x-hi - 1)` and `y-hi`.
-(defun create-x-indices (x-hi y-hi)
+;; Otherwise, return the list returned by `create-y-indices` with `x-hi` and `y-hi` appended to the result of recursively calling `create-tuple-indices` with `(x-hi - 1)` and `y-hi`.
+(defun create-tuple-indices (x-hi y-hi)
  (if (or (not (natp x-hi)) (not (natp y-hi)))
      nil
      (if (zerop x-hi)
          (create-y-indices x-hi y-hi)
          (append (create-y-indices x-hi y-hi)
-                 (create-x-indices (1- x-hi) y-hi)))))
+                 (create-tuple-indices (1- x-hi) y-hi)))))
 
-;; `create-x-indices` returns a valid association list
-(defthm alistp-of-create-x-indices
- (alistp (create-x-indices x-hi y-hi)))
+;; `create-tuple-indices` returns a valid association list
+(defthm alistp-of-create-tuple-indices
+ (alistp (create-tuple-indices x-hi y-hi)))
 
 (verify-guards create-y-indices)
-(verify-guards create-x-indices)
+(verify-guards create-tuple-indices)
 
-;; For any natural numbers `x`, `y-hi`, `i`, and `j`, if `i` is less than or equal to `x-hi` and `j` is less than or equal to `y-hi`, then `(cons i j)` is a member of the list returned by `create-x-indices` with `x-hi` and `y-hi`.
-(defthm create-x-indices-correctness
+;; For any natural numbers `x`, `y-hi`, `i`, and `j`, if `i` is less than or equal to `x-hi` and `j` is less than or equal to `y-hi`, then `(cons i j)` is a member of the list returned by `create-tuple-indices` with `x-hi` and `y-hi`.
+(defthm create-tuple-indices-correctness
  (implies (and (natp x-hi) 
                (natp y-hi) 
                (natp i) 
                (natp j) 
                (<= i x-hi) 
                (<= j y-hi) )
-          (member (cons i j) (create-x-indices x-hi y-hi))))
+          (member (cons i j) (create-tuple-indices x-hi y-hi))))
 
 ;; Lookup the value associated with the key `(cons x y)` in the association list `table`.
 ;; `assoc-equal` is a function that returns the `cons` pair associated with the key `(cons x y)` in the association list `table`. We then return the value (i.e. second element) of this pair.
-(defund lookup (x y table)
+(defund tuple-lookup (x y table)
  (cdr (assoc-equal (cons x y) table)))
 (verify-guards lookup)
 

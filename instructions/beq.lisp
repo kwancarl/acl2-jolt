@@ -49,13 +49,13 @@
        (y8-1 (part-select y :low 16 :width 8))
        (y8-0 (part-select y :low 24 :width 8))
        ;; MATERIALIZE SUBTABLES 
-       (indices      (create-x-indices (expt 2 8) (expt 2 8)))
+       (indices      (create-tuple-indices (expt 2 8) (expt 2 8)))
        (eq-subtable  (materialize-eq-subtable  indices))
        ;; LOOKUPS
-       (w0   (lookup x8-0 y8-0 eq-subtable))
-       (w1   (lookup x8-1 y8-1 eq-subtable))
-       (w2   (lookup x8-2 y8-2 eq-subtable))
-       (w3   (lookup x8-3 y8-3 eq-subtable)))
+       (w0   (tuple-lookup x8-0 y8-0 eq-subtable))
+       (w1   (tuple-lookup x8-1 y8-1 eq-subtable))
+       (w2   (tuple-lookup x8-2 y8-2 eq-subtable))
+       (w3   (tuple-lookup x8-3 y8-3 eq-subtable)))
       ;; COMBINE
       (* w0 w1 w2 w3)))
 
@@ -130,17 +130,17 @@
        (y8-1 (part-select y :low 48 :width 8))
        (y8-0 (part-select y :low 56 :width 8))
        ;; MATERIALIZE SUBTABLES 
-       (indices      (create-x-indices (expt 2 8) (expt 2 8)))
+       (indices      (create-tuple-indices (expt 2 8) (expt 2 8)))
        (eq-subtable  (materialize-eq-subtable  indices))
        ;; LOOKUPS
-       (w0   (lookup x8-0 y8-0 eq-subtable))
-       (w1   (lookup x8-1 y8-1 eq-subtable))
-       (w2   (lookup x8-2 y8-2 eq-subtable))
-       (w3   (lookup x8-3 y8-3 eq-subtable))
-       (w4   (lookup x8-4 y8-4 eq-subtable))
-       (w5   (lookup x8-5 y8-5 eq-subtable))
-       (w6   (lookup x8-6 y8-6 eq-subtable))
-       (w7   (lookup x8-7 y8-7 eq-subtable)))
+       (w0   (tuple-lookup x8-0 y8-0 eq-subtable))
+       (w1   (tuple-lookup x8-1 y8-1 eq-subtable))
+       (w2   (tuple-lookup x8-2 y8-2 eq-subtable))
+       (w3   (tuple-lookup x8-3 y8-3 eq-subtable))
+       (w4   (tuple-lookup x8-4 y8-4 eq-subtable))
+       (w5   (tuple-lookup x8-5 y8-5 eq-subtable))
+       (w6   (tuple-lookup x8-6 y8-6 eq-subtable))
+       (w7   (tuple-lookup x8-7 y8-7 eq-subtable)))
       ;; COMBINE
       (* w0 w1 w2 w3 w4 w5 w6 w7)))
 

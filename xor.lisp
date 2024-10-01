@@ -38,7 +38,7 @@
                 (natp j) 
                 (<= i x-hi) 
                 (<= j y-hi) )
-           (b* ((indices  (create-x-indices x-hi y-hi))
+           (b* ((indices  (create-tuple-indices x-hi y-hi))
                 (subtable (materialize-xor-subtable indices)))
                (equal (assoc-equal (cons i j) subtable)
                       (cons (cons i j) (logxor i j))))))
@@ -50,9 +50,9 @@
                 (natp j)
                 (<= i x-hi)
                 (<= j y-hi) )
-           (b* ((indices  (create-x-indices x-hi y-hi))
+           (b* ((indices  (create-tuple-indices x-hi y-hi))
                 (subtable (materialize-xor-subtable indices)))
-               (equal (lookup i j subtable) (logxor i j))))))
+               (equal (tuple-lookup i j subtable) (logxor i j))))))
 ;; end encapsulate
 
 (include-book "centaur/gl/gl" :dir :system)

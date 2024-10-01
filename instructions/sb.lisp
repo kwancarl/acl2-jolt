@@ -55,7 +55,7 @@
        (?x8-0 (id-lookup x8-0 id-subtable))
        (?x8-1 (id-lookup x8-1 id-subtable))
        (?x8-2 (id-lookup x8-2 id-subtable))
-       (x8-3 (lookup x8-3 #xff truncate-subtable)))
+       (x8-3 (tuple-lookup x8-3 #xff truncate-subtable)))
       ;; COMBINE
       x8-3))
 
@@ -125,7 +125,7 @@
        (?x8-4 (id-lookup x8-4 id-subtable))
        (?x8-5 (id-lookup x8-5 id-subtable))
        (?x8-6 (id-lookup x8-6 id-subtable))
-       (x8-7 (lookup x8-7 #xff truncate-subtable)))
+       (x8-7 (tuple-lookup x8-7 #xff truncate-subtable)))
       ;; COMBINE
       x8-7))
 
@@ -175,7 +175,7 @@
 
 ;; ;; "LOOKUP"
 ;; (defun sb-lookup (chunk subtable) 
-;;  (lookup chunk #xff subtable))
+;;  (tuple-lookup chunk #xff subtable))
 
 ;; ;; "COMBINE"
 ;; (defun sb-combine (lookup) lookup)

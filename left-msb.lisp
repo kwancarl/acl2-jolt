@@ -67,7 +67,7 @@
                (natp j)
                (<= i x-hi)
                (<= j y-hi))
-          (b* ((indices  (create-x-indices x-hi y-hi))
+          (b* ((indices  (create-tuple-indices x-hi y-hi))
                (subtable (materialize-left-msb-8-subtable indices)))
               (equal (assoc-equal (cons i j) subtable)
                      (cons (cons i j)
@@ -80,11 +80,11 @@
                (natp j)
                (<= i x-hi)
                (<= j y-hi))
-          (b* ((indices  (create-x-indices x-hi y-hi))
+          (b* ((indices  (create-tuple-indices x-hi y-hi))
                (subtable (materialize-left-msb-8-subtable indices)))
-              (equal (lookup i j subtable)
+              (equal (tuple-lookup i j subtable)
                      (logbit 7 i))))
- :hints (("Goal" :in-theory (e/d (lookup left-msb-8) ()))))
+ :hints (("Goal" :in-theory (e/d (tuple-lookup left-msb-8) ()))))
 
 (in-theory (disable left-msb-8))
 

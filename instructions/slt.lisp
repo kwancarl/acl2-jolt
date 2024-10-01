@@ -65,7 +65,7 @@
        (y8-1 (part-select y :low 16 :width 8))
        (y8-0 (part-select y :low 24 :width 8))
        ;; MATERIALIZE SUBTABLES 
-       (indices            (create-x-indices (expt 2 8) (expt 2 8)))
+       (indices            (create-tuple-indices (expt 2 8) (expt 2 8)))
        (eq-subtable        (materialize-eq-subtable          indices))
        (ltu-subtable       (materialize-ltu-subtable         indices))
        (eq-abs-subtable    (materialize-eq-abs-8-subtable    indices))
@@ -73,20 +73,20 @@
        (left-msb-subtable  (materialize-left-msb-8-subtable  indices))
        (right-msb-subtable (materialize-right-msb-8-subtable indices))
        ;; LOOKUPS
-       (L    (lookup x8-0 y8-0 left-msb-subtable))
-       (R    (lookup x8-0 y8-0 right-msb-subtable))
+       (L    (tuple-lookup x8-0 y8-0 left-msb-subtable))
+       (R    (tuple-lookup x8-0 y8-0 right-msb-subtable))
 
-       (Z0   (lookup x8-0 y8-0 lt-abs-subtable))
+       (Z0   (tuple-lookup x8-0 y8-0 lt-abs-subtable))
 
-       (z1   (lookup x8-1 y8-1 ltu-subtable))
-       (z2   (lookup x8-2 y8-2 ltu-subtable))
-       (z3   (lookup x8-3 y8-3 ltu-subtable))
+       (z1   (tuple-lookup x8-1 y8-1 ltu-subtable))
+       (z2   (tuple-lookup x8-2 y8-2 ltu-subtable))
+       (z3   (tuple-lookup x8-3 y8-3 ltu-subtable))
 
-       (W0   (lookup x8-0 y8-0 eq-abs-subtable))
+       (W0   (tuple-lookup x8-0 y8-0 eq-abs-subtable))
 
-       (w1   (lookup x8-1 y8-1 eq-subtable))
-       (w2   (lookup x8-2 y8-2 eq-subtable))
-       (?w3  (lookup x8-3 y8-3 eq-subtable))) ;; ignore w3
+       (w1   (tuple-lookup x8-1 y8-1 eq-subtable))
+       (w2   (tuple-lookup x8-2 y8-2 eq-subtable))
+       (?w3  (tuple-lookup x8-3 y8-3 eq-subtable))) ;; ignore w3
       ;; COMBINE
       (b-xor (b-and L (b-xor R 1))
 	     (b-and (b-xor (b-and (b-xor L 1) (b-xor R 1)) (b-and L R))
@@ -98,7 +98,7 @@
 (defthm slt-32-slt-semantics-32-equiv
  (equal (slt-32 x y)
 	(slt-semantics-32 x y))
- :hints (("Goal" :in-theory (e/d (slt-32 slt-semantics-32) ((:e expt) (:e create-x-indices))))))
+ :hints (("Goal" :in-theory (e/d (slt-32 slt-semantics-32) ((:e expt) (:e create-tuple-indices))))))
 
 ;; SEMANTIC CORRECTNESS OF SLT
 (gl::def-gl-thm slt-semantics-32-correctness
@@ -192,7 +192,7 @@
        (y8-1 (part-select y :low 48 :width 8))
        (y8-0 (part-select y :low 56 :width 8))
        ;; MATERIALIZE SUBTABLES 
-       (indices            (create-x-indices (expt 2 8) (expt 2 8)))
+       (indices            (create-tuple-indices (expt 2 8) (expt 2 8)))
        (eq-subtable        (materialize-eq-subtable          indices))
        (ltu-subtable       (materialize-ltu-subtable         indices))
        (eq-abs-subtable    (materialize-eq-abs-8-subtable    indices))
@@ -200,28 +200,28 @@
        (left-msb-subtable  (materialize-left-msb-8-subtable  indices))
        (right-msb-subtable (materialize-right-msb-8-subtable indices))
        ;; LOOKUPS
-       (L    (lookup x8-0 y8-0 left-msb-subtable))
-       (R    (lookup x8-0 y8-0 right-msb-subtable))
+       (L    (tuple-lookup x8-0 y8-0 left-msb-subtable))
+       (R    (tuple-lookup x8-0 y8-0 right-msb-subtable))
 
-       (Z0   (lookup x8-0 y8-0 lt-abs-subtable))
+       (Z0   (tuple-lookup x8-0 y8-0 lt-abs-subtable))
 
-       (z1   (lookup x8-1 y8-1 ltu-subtable))
-       (z2   (lookup x8-2 y8-2 ltu-subtable))
-       (z3   (lookup x8-3 y8-3 ltu-subtable))
-       (z4   (lookup x8-4 y8-4 ltu-subtable))
-       (z5   (lookup x8-5 y8-5 ltu-subtable))
-       (z6   (lookup x8-6 y8-6 ltu-subtable))
-       (z7   (lookup x8-7 y8-7 ltu-subtable))
+       (z1   (tuple-lookup x8-1 y8-1 ltu-subtable))
+       (z2   (tuple-lookup x8-2 y8-2 ltu-subtable))
+       (z3   (tuple-lookup x8-3 y8-3 ltu-subtable))
+       (z4   (tuple-lookup x8-4 y8-4 ltu-subtable))
+       (z5   (tuple-lookup x8-5 y8-5 ltu-subtable))
+       (z6   (tuple-lookup x8-6 y8-6 ltu-subtable))
+       (z7   (tuple-lookup x8-7 y8-7 ltu-subtable))
 
-       (W0   (lookup x8-0 y8-0 eq-abs-subtable))
+       (W0   (tuple-lookup x8-0 y8-0 eq-abs-subtable))
 
-       (w1   (lookup x8-1 y8-1 eq-subtable))
-       (w2   (lookup x8-2 y8-2 eq-subtable))
-       (w3   (lookup x8-3 y8-3 eq-subtable))
-       (w4   (lookup x8-4 y8-4 eq-subtable))
-       (w5   (lookup x8-5 y8-5 eq-subtable))
-       (w6   (lookup x8-6 y8-6 eq-subtable))
-       (?w7  (lookup x8-7 y8-7 eq-subtable))) ;; ignore w7
+       (w1   (tuple-lookup x8-1 y8-1 eq-subtable))
+       (w2   (tuple-lookup x8-2 y8-2 eq-subtable))
+       (w3   (tuple-lookup x8-3 y8-3 eq-subtable))
+       (w4   (tuple-lookup x8-4 y8-4 eq-subtable))
+       (w5   (tuple-lookup x8-5 y8-5 eq-subtable))
+       (w6   (tuple-lookup x8-6 y8-6 eq-subtable))
+       (?w7  (tuple-lookup x8-7 y8-7 eq-subtable))) ;; ignore w7
       ;; COMBINE
       ;; L * (1 - R) + ((1 - L) * (1 - R) + L * R) * rest
       (b-xor (b-and L (b-xor R 1))
@@ -238,7 +238,7 @@
 (defthm slt-64-slt-semantics-64-equiv
  (equal (slt-64 x y)
 	(slt-semantics-64 x y))
- :hints (("Goal" :in-theory (e/d (slt-64 slt-semantics-64) ((:e expt) (:e create-x-indices))))))
+ :hints (("Goal" :in-theory (e/d (slt-64 slt-semantics-64) ((:e expt) (:e create-tuple-indices))))))
 
 ;; SEMANTIC CORRECTNESS OF SLT
 (gl::def-gl-thm slt-semantics-64-correctness

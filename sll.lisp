@@ -126,5 +126,72 @@
    :hints (("Goal" :cases ((zp y) (posp y)))))))
 
 
+(encapsulate 
+ nil
 
+ (defun materialize-sll-subtable (idx-lst i)
+  (b* (((unless (alistp idx-lst))     nil)
+       ((if (atom idx-lst))           nil)
+       ((cons idx rst)            idx-lst)
+       ((unless (consp idx))          nil)
+       ((cons x y)                    idx))
+      (cons (cons idx (ash (ash x i) y))
+            (materialize-sll-subtable rst i))))
+ 
+ (defthm alistp-of-materialize-sll-subtable
+  (alistp (materialize-sll-subtable idx-lst i)))
+ 
+ (defthm member-idx-lst-assoc-materialize-sll-subtable
+  (implies (and (alistp idx-lst) (member idx idx-lst))
+           (assoc idx (materialize-sll-subtable idx-lst i))))
+ 
+ (defthm assoc-member-sll-subtable
+  (implies (assoc (cons i j) (materialize-sll-subtable idx-lst k))
+           (member (cons i j) idx-lst)))
+ 
+ (defthm assoc-srli-subtable
+  (implies (assoc (cons i j) (materialize-sll-subtable idx-lst k))
+           (equal (assoc (cons i j) (materialize-sll-subtable idx-lst k))
+                  (cons (cons i j) (ash (ash i k) j)))))
+ 
+ (defthm srli-subtable-correctness
+  (implies (and (natp x-hi)
+                (natp y-hi)
+                (natp i)
+                (natp j)
+                (<= i x-hi)
+                (<= j y-hi) )
+           (b* ((indices  (create-tuple-indices x-hi y-hi))
+                (subtable (materialize-sll-subtable indices k)))
+               (equal (assoc-equal (cons i j) subtable)
+                      (cons (cons i j) (ash (ash i k) j))))))
 
+ (defthm lookup-sll-subtable-correctness
+  (implies (and (natp x-hi) 
+                (natp y-hi)
+                (natp i) 
+                (natp j) 
+                (<= i x-hi)
+                (<= j y-hi))
+           (b* ((indices  (create-tuple-indices x-hi y-hi))
+                (subtable (materialize-sll-subtable  indices k)))
+               (equal (tuple-lookup i j subtable)
+                      (ash (ash i k) j)))))
+  :hints (("Goal" :in-theory (enable lookup)))
+ 
+ (local (in-theory (disable ash)))
+ (local (include-book "ihs/logops-lemmas" :dir :system))
+ (local (defthm lemma-1 (implies (integerp i) (equal (ash i 0) i)) :hints (("Goal" :use ((:instance ash* (count 0)))))))
+
+ (defthm lookup-sll-32-64-subtable-correctness
+  (implies (and (natp i) 
+                (natp j) 
+                (<= i (expt 2 8))
+                (<= j (expt 2 6)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 6)))
+                (subtable (materialize-sll-subtable indices 32)))
+               (equal (tuple-lookup i j subtable)
+                      (ash (ash i 32) j)))))
+  :hints (("Goal" :in-theory (disable (:e materialize-sll-subtable) (:e create-tuple-indices))
+	          :use ((:instance lookup-sll-subtable-correctness (x-hi (expt 2 8)) (y-hi (expt 2 6))))))
+)

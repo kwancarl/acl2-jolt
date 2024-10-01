@@ -57,18 +57,18 @@
        (y8-1 (part-select y :low 16 :width 8))
        (y8-0 (part-select y :low 24 :width 8))
        ;; MATERIALIZE SUBTABLES 
-       (indices      (create-x-indices (expt 2 8) (expt 2 8)))
+       (indices      (create-tuple-indices (expt 2 8) (expt 2 8)))
        (ltu-subtable (materialize-ltu-subtable indices))
        (eq-subtable  (materialize-eq-subtable indices))
        ;; LOOKUPS
-       (z0   (lookup x8-0 y8-0 ltu-subtable))
-       (z1   (lookup x8-1 y8-1 ltu-subtable))
-       (z2   (lookup x8-2 y8-2 ltu-subtable))
-       (z3   (lookup x8-3 y8-3 ltu-subtable))
-       (w0   (lookup x8-0 y8-0  eq-subtable))
-       (w1   (lookup x8-1 y8-1  eq-subtable))
-       (w2   (lookup x8-2 y8-2  eq-subtable))
-       (?w3  (lookup x8-3 y8-3  eq-subtable))) ;; ignore w3
+       (z0   (tuple-lookup x8-0 y8-0 ltu-subtable))
+       (z1   (tuple-lookup x8-1 y8-1 ltu-subtable))
+       (z2   (tuple-lookup x8-2 y8-2 ltu-subtable))
+       (z3   (tuple-lookup x8-3 y8-3 ltu-subtable))
+       (w0   (tuple-lookup x8-0 y8-0  eq-subtable))
+       (w1   (tuple-lookup x8-1 y8-1  eq-subtable))
+       (w2   (tuple-lookup x8-2 y8-2  eq-subtable))
+       (?w3  (tuple-lookup x8-3 y8-3  eq-subtable))) ;; ignore w3
       ;; COMBINE
       (- 1 (+ z0
         (* z1 w0)
@@ -80,7 +80,7 @@
 (defthm bgeu-32-bgeu-semantics-32-equiv
  (equal (bgeu-32 x y)
 	(bgeu-semantics-32 x y))
- :hints (("goal" :in-theory (e/d (bgeu-32 bgeu-semantics-32) ((:e create-x-indices))))))
+ :hints (("goal" :in-theory (e/d (bgeu-32 bgeu-semantics-32) ((:e create-tuple-indices))))))
 	         
 ;; SEMANTIC CORRECTNESS OF BGEU
 (gl::def-gl-thm bgeu-semantics-32-correctness
@@ -167,26 +167,26 @@
        (y8-1 (part-select y :low 48 :width 8))
        (y8-0 (part-select y :low 56 :width 8))
        ;; MATERIALIZE SUBTABLES 
-       (indices      (create-x-indices (expt 2 8) (expt 2 8)))
+       (indices      (create-tuple-indices (expt 2 8) (expt 2 8)))
        (ltu-subtable (materialize-ltu-subtable indices))
        (eq-subtable  (materialize-eq-subtable indices))
        ;; LOOKUPS
-       (z0   (lookup x8-0 y8-0 ltu-subtable))
-       (z1   (lookup x8-1 y8-1 ltu-subtable))
-       (z2   (lookup x8-2 y8-2 ltu-subtable))
-       (z3   (lookup x8-3 y8-3 ltu-subtable))
-       (z4   (lookup x8-4 y8-4 ltu-subtable))
-       (z5   (lookup x8-5 y8-5 ltu-subtable))
-       (z6   (lookup x8-6 y8-6 ltu-subtable))
-       (z7   (lookup x8-7 y8-7 ltu-subtable))
-       (w0   (lookup x8-0 y8-0  eq-subtable))
-       (w1   (lookup x8-1 y8-1  eq-subtable))
-       (w2   (lookup x8-2 y8-2  eq-subtable))
-       (w3   (lookup x8-3 y8-3  eq-subtable))
-       (w4   (lookup x8-4 y8-4  eq-subtable))
-       (w5   (lookup x8-5 y8-5  eq-subtable))
-       (w6   (lookup x8-6 y8-6  eq-subtable))
-       (?w7  (lookup x8-7 y8-7  eq-subtable))) ;; ignore w7
+       (z0   (tuple-lookup x8-0 y8-0 ltu-subtable))
+       (z1   (tuple-lookup x8-1 y8-1 ltu-subtable))
+       (z2   (tuple-lookup x8-2 y8-2 ltu-subtable))
+       (z3   (tuple-lookup x8-3 y8-3 ltu-subtable))
+       (z4   (tuple-lookup x8-4 y8-4 ltu-subtable))
+       (z5   (tuple-lookup x8-5 y8-5 ltu-subtable))
+       (z6   (tuple-lookup x8-6 y8-6 ltu-subtable))
+       (z7   (tuple-lookup x8-7 y8-7 ltu-subtable))
+       (w0   (tuple-lookup x8-0 y8-0  eq-subtable))
+       (w1   (tuple-lookup x8-1 y8-1  eq-subtable))
+       (w2   (tuple-lookup x8-2 y8-2  eq-subtable))
+       (w3   (tuple-lookup x8-3 y8-3  eq-subtable))
+       (w4   (tuple-lookup x8-4 y8-4  eq-subtable))
+       (w5   (tuple-lookup x8-5 y8-5  eq-subtable))
+       (w6   (tuple-lookup x8-6 y8-6  eq-subtable))
+       (?w7  (tuple-lookup x8-7 y8-7  eq-subtable))) ;; ignore w7
       ;; COMBINE
       (- 1 (+ z0
         (* z1 w0)
@@ -202,7 +202,7 @@
 (defthm bgeu-64-bgeu-semantics-64-equiv
  (equal (bgeu-64 x y)
 	(bgeu-semantics-64 x y))
- :hints (("goal" :in-theory (e/d (bgeu-64 bgeu-semantics-64) ((:e create-x-indices))))))
+ :hints (("goal" :in-theory (e/d (bgeu-64 bgeu-semantics-64) ((:e create-tuple-indices))))))
 
 ;; SEMANTIC CORRECTNESS OF SLTU
 (gl::def-gl-thm bgeu-semantics-64-correctness

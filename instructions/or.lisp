@@ -50,13 +50,13 @@
        (y8-1 (part-select y :low 16 :width 8))
        (y8-0 (part-select y :low 24 :width 8))
        ;; MATERIALIZE SUBTABLES 
-       (indices      (create-x-indices (expt 2 8) (expt 2 8)))
+       (indices      (create-tuple-indices (expt 2 8) (expt 2 8)))
        (ior-subtable  (materialize-ior-subtable  indices))
        ;; LOOKUPS
-       (w0   (lookup x8-0 y8-0 ior-subtable))
-       (w1   (lookup x8-1 y8-1 ior-subtable))
-       (w2   (lookup x8-2 y8-2 ior-subtable))
-       (w3   (lookup x8-3 y8-3 ior-subtable)))
+       (w0   (tuple-lookup x8-0 y8-0 ior-subtable))
+       (w1   (tuple-lookup x8-1 y8-1 ior-subtable))
+       (w2   (tuple-lookup x8-2 y8-2 ior-subtable))
+       (w3   (tuple-lookup x8-3 y8-3 ior-subtable)))
       ;; COMBINE
       (merge-4-u8s w0 w1 w2 w3)))
 
@@ -132,17 +132,17 @@
        (y8-1 (part-select y :low 48 :width 8))
        (y8-0 (part-select y :low 56 :width 8))
        ;; MATERIALIZE SUBTABLES 
-       (indices            (create-x-indices (expt 2 8) (expt 2 8)))
+       (indices            (create-tuple-indices (expt 2 8) (expt 2 8)))
        (ior-subtable        (materialize-ior-subtable  indices))
        ;; LOOKUPS
-       (w0   (lookup x8-0 y8-0 ior-subtable))
-       (w1   (lookup x8-1 y8-1 ior-subtable))
-       (w2   (lookup x8-2 y8-2 ior-subtable))
-       (w3   (lookup x8-3 y8-3 ior-subtable))
-       (w4   (lookup x8-4 y8-4 ior-subtable))
-       (w5   (lookup x8-5 y8-5 ior-subtable))
-       (w6   (lookup x8-6 y8-6 ior-subtable))
-       (w7   (lookup x8-7 y8-7 ior-subtable)))
+       (w0   (tuple-lookup x8-0 y8-0 ior-subtable))
+       (w1   (tuple-lookup x8-1 y8-1 ior-subtable))
+       (w2   (tuple-lookup x8-2 y8-2 ior-subtable))
+       (w3   (tuple-lookup x8-3 y8-3 ior-subtable))
+       (w4   (tuple-lookup x8-4 y8-4 ior-subtable))
+       (w5   (tuple-lookup x8-5 y8-5 ior-subtable))
+       (w6   (tuple-lookup x8-6 y8-6 ior-subtable))
+       (w7   (tuple-lookup x8-7 y8-7 ior-subtable)))
       ;; COMBINE
       (merge-8-u8s w0 w1 w2 w3 w4 w5 w6 w7)))
 

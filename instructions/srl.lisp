@@ -94,39 +94,39 @@
  (implies (and (unsigned-byte-p 32 x)
 	       (natp j)
 	       (<= j (expt 2 5)))
-          (b* ((indices  (create-x-indices (expt 2 8) (expt 2 5)))
+          (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 5)))
                (subtable (materialize-srli-subtable indices 0))
                (i (part-select x :low 0 :width 8)))
-              (equal (lookup i j subtable)
+              (equal (tuple-lookup i j subtable)
                      (ash i (- j)))))
  :hints (("Goal" :in-theory (disable materialize-srli-subtable
-				     (:e create-x-indices)
+				     (:e create-tuple-indices)
 				     (:e materialize-srli-subtable)))))
 
 (defthm srl-8-subtable-part-select
  (implies (and (unsigned-byte-p 32 x)
 	       (natp j)
 	       (<= j (expt 2 5)))
-          (b* ((indices  (create-x-indices (expt 2 8) (expt 2 5)))
+          (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 5)))
                (subtable (materialize-srli-subtable indices 8))
                (i (part-select x :low 8 :width 8)))
-              (equal (lookup i j subtable)
+              (equal (tuple-lookup i j subtable)
                      (ash (ash i 8) (- j)))))
  :hints (("Goal" :in-theory (disable materialize-srli-subtable
-				     (:e create-x-indices)
+				     (:e create-tuple-indices)
 				     (:e materialize-srli-subtable)))))
 
 (defthm srl-16-subtable-part-select
  (implies (and (unsigned-byte-p 32 x)
 	       (natp j)
 	       (<= j (expt 2 5)))
-          (b* ((indices  (create-x-indices (expt 2 8) (expt 2 5)))
+          (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 5)))
                (subtable (materialize-srli-subtable indices 16))
                (i (part-select x :low 16 :width 8)))
-              (equal (lookup i j subtable)
+              (equal (tuple-lookup i j subtable)
                      (ash (ash i 16) (- j)))))
  :hints (("Goal" :in-theory (disable materialize-srli-subtable
-				     (:e create-x-indices)
+				     (:e create-tuple-indices)
 				     (:e materialize-srli-subtable)))))
 
 (gl::def-gl-thm silly-bounds-lemma-due-to-logtail-rewrite
@@ -140,13 +140,13 @@
  (implies (and (unsigned-byte-p 32 x)
 	       (natp j)
 	       (<= j (expt 2 5)))
-          (b* ((indices  (create-x-indices (expt 2 8) (expt 2 5)))
+          (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 5)))
                (subtable (materialize-srli-subtable indices 24))
                (i (part-select x :low 24 :width 8)))
-              (equal (lookup i j subtable)
+              (equal (tuple-lookup i j subtable)
                      (ash (ash i 24) (- j)))))
  :hints (("Goal" :in-theory (disable materialize-srli-subtable
-				     (:e create-x-indices)
+				     (:e create-tuple-indices)
 				     (:e materialize-srli-subtable))
 	         :use ((:instance lookup-srl-24-32-subtable-correctness (i (logtail 24 x)))))))
 
@@ -157,7 +157,7 @@
   (b* (((unless (unsigned-byte-p 32 x)) 0)
        ((unless (unsigned-byte-p  5 y)) 0)
        ;; setup subtables
-       (indices (create-x-indices (expt 2 8) (expt 2 5)))
+       (indices (create-tuple-indices (expt 2 8) (expt 2 5)))
        (subtable-0 (materialize-srli-subtable indices  0))
        (subtable-1 (materialize-srli-subtable indices  8))
        (subtable-2 (materialize-srli-subtable indices 16))
@@ -168,17 +168,17 @@
        (u8-2 (part-select x :low 16 :width 8))
        (u8-3 (part-select x :low 24 :width 8))
        ;; shift chunks
-       (u8-0 (lookup u8-0 y subtable-0))
-       (u8-1 (lookup u8-1 y subtable-1))
-       (u8-2 (lookup u8-2 y subtable-2))
-       (u8-3 (lookup u8-3 y subtable-3)))
+       (u8-0 (tuple-lookup u8-0 y subtable-0))
+       (u8-1 (tuple-lookup u8-1 y subtable-1))
+       (u8-2 (tuple-lookup u8-2 y subtable-2))
+       (u8-3 (tuple-lookup u8-3 y subtable-3)))
        ;; add chunks
       (+ u8-3 u8-2 u8-1 u8-0)))
 
 (defthm srl-equal-stuff
  (equal (srl-chunk-lookup-combine-32 x y)
         (chunk-and-shift-32 x y))
- :hints (("Goal" :in-theory (disable (:e create-x-indices)))))
+ :hints (("Goal" :in-theory (disable (:e create-tuple-indices)))))
 
 
 
@@ -192,11 +192,11 @@
 ;                (natp j)
 ;                (<= i (expt 2  8))
 ;                (<= j (expt 2  5)))
-;           (b* ((indices  (create-x-indices (expt 2 8) (expt 2 5)))
+;           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 5)))
 ;                (subtable (materialize-srli-subtable indices 0)))
-;               (equal (lookup i j subtable)
+;               (equal (tuple-lookup i j subtable)
 ;                      (ash i (- j)))))
-;  :hints (("Goal" :in-theory (disable (:e materialize-srli-subtable) (:e create-x-indices))
+;  :hints (("Goal" :in-theory (disable (:e materialize-srli-subtable) (:e create-tuple-indices))
 ;                  :use ((:instance lookup-srli-subtable-correctness (x-hi (expt 2 8)) (y-hi (expt 2 5)))))))
 ;
 ;(fgl::def-fgl-param-thm lemma-1

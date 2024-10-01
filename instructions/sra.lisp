@@ -34,7 +34,7 @@
   (b* (((unless (unsigned-byte-p 32 x)) 0)
        ((unless (unsigned-byte-p  5 y)) 0)
        ;; setup subtables
-       (indices (create-x-indices (expt 2 8) (expt 2 5)))
+       (indices (create-tuple-indices (expt 2 8) (expt 2 5)))
          ;; SRL subtables
        (subtable-0 (create-srli-subtable indices  0))
        (subtable-1 (create-srli-subtable indices  8))
@@ -47,12 +47,12 @@
        (u8-1 (part-select x :low  8 :width 8))
        (u8-2 (part-select x :low 16 :width 8))
        (u8-3 (part-select x :low 24 :width 8))
-       ;; lookup chunks
-       (sign (lookup u8-3 y subtable-4))
-       (u8-0 (lookup u8-0 y subtable-0))
-       (u8-1 (lookup u8-1 y subtable-1))
-       (u8-2 (lookup u8-2 y subtable-2))
-       (u8-3 (lookup u8-3 y subtable-3)))
+       ;; tuple-lookup chunks
+       (sign (tuple-lookup u8-3 y subtable-4))
+       (u8-0 (tuple-lookup u8-0 y subtable-0))
+       (u8-1 (tuple-lookup u8-1 y subtable-1))
+       (u8-2 (tuple-lookup u8-2 y subtable-2))
+       (u8-3 (tuple-lookup u8-3 y subtable-3)))
        ;; add chunks
       (+ sign u8-3 u8-2 u8-1 u8-0)))
 
@@ -64,7 +64,7 @@
  :hints (("GoaL" 
 	         :do-not-induct t
 	         :in-theory (e/d ();sra-sign-8)
-				 ((:e create-x-indices)
+				 ((:e create-tuple-indices)
 				  (:e create-srli-subtable))))))
 
 (defthm sra-correctness-1
@@ -74,7 +74,7 @@
 	            (ash x (- y)))))
  :hints (("GoaL" :use ((:instance srl-chunk-lookup-combine-32-correctness))
 	         :in-theory (e/d ();sra-sign-8)
-				 ((:e create-x-indices)
+				 ((:e create-tuple-indices)
 				  (:e create-srli-subtable))))))
 
 
@@ -85,7 +85,7 @@
  :hints (("GoaL" :use ((:instance sra-sign-8-correctness)
 		       (:instance sra-correctness-1))
 	         :in-theory (e/d ();sra-sign-8)
-				 ((:e create-x-indices)
+				 ((:e create-tuple-indices)
 				  (:e create-srli-subtable))))))
 
 

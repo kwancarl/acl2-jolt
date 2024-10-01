@@ -71,7 +71,7 @@
                (<= i x-hi))
           (b* ((indices  (truncate-indices x-hi mask))
                (subtable (materialize-truncate-subtable indices)))
-              (equal (lookup i mask subtable)
+              (equal (tuple-lookup i mask subtable)
                      (logand i mask))))
  :hints (("Goal" :in-theory (enable lookup))))
 
