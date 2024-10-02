@@ -38,22 +38,34 @@
   (b-and (b-ltu (logbit 1 x) (logbit 1 y))
 	 (eqw (logtail 1 x) (logtail 1 y))))
 
-(define ltuw ((x :type unsigned-byte) (y :type unsigned-byte))
+(local
+  (defthm loghead-logcar-equiv
+   (implies (natp x)
+	    (equal (logcar x) (loghead 1 x)))
+   :hints (("Goal" :in-theory (enable loghead logcar)))))
+
+(local
+  (defthm logcdr-logtail-equiv
+   (implies (natp x)
+	    (equal (logcdr x) (logtail 1 x)))
+   :hints (("Goal" :in-theory (enable logcdr logtail)))))
+
+(define ltu-w ((x :type unsigned-byte) (y :type unsigned-byte))
   :measure (max (integer-length x) (integer-length y))
   (b* (((unless (and (natp x) (natp y))) 0)
        ((if (and (zerop (integer-length x)) (zerop (integer-length y)))) 0)
-       (xcar (loghead 1 x))
-       (ycar (loghead 1 y))
-       (xcdr (logtail 1 x))
-       (ycdr (logtail 1 y))
-       (ltu0 (b-and (b-and (b-xor 1 xcar) ycar)
-		    (eqw xcdr ycdr))))
-      (b-xor ltu0 (ltuw xcdr ycdr))))
+       (x-0    (logcar x))
+       (y-0    (logcar y))
+       (x-rest (logcdr x))
+       (y-rest (logcdr y))
+       (ltu-0  (b-and (b-and (b-xor 1 x-0) y-0)
+	 	      (eq-w x-rest y-rest))))
+      (b-xor ltu-0 (ltu-w x-rest y-rest))))
 
 (gl::def-gl-thm ltu-<-equiv-gl
   :hyp   (and (unsigned-byte-p 32 x)
               (unsigned-byte-p 32 y))
-  :concl (equal (ltuw x y)
+  :concl (equal (ltu-w x y)
       	  	(if (< x y) 1 0))
   :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
 
@@ -69,7 +81,7 @@
             (cdr-chunk-x    (logtail wc x))
             (cdr-chunk-y    (logtail wc y))
             (cdr-chunk-eq   (eqw cdr-chunk-x cdr-chunk-y))
-            (car-chunk-ltuw (ltuw car-chunk-x car-chunk-y)))
+            (car-chunk-ltuw (ltu-w car-chunk-x car-chunk-y)))
            (b-xor (b-and car-chunk-ltuw cdr-chunk-eq)
      	     (ltuwc cdr-chunk-x cdr-chunk-y wc)))
        :exec
@@ -79,7 +91,7 @@
             (cdr-chunk-x    (logtail wc x))
             (cdr-chunk-y    (logtail wc y))
             (cdr-chunk-eq   (eqw cdr-chunk-x cdr-chunk-y))
-            (car-chunk-ltuw (ltuw car-chunk-x car-chunk-y)))
+            (car-chunk-ltuw (ltu-w car-chunk-x car-chunk-y)))
            (b-xor (b-and car-chunk-ltuw cdr-chunk-eq)
      	     (ltuwc cdr-chunk-x cdr-chunk-y wc)))))
 
@@ -146,7 +158,7 @@
                (subtable (materialize-ltu-subtable indices)))
               (equal (tuple-lookup i j subtable)
                      (if (< i j) 1 0))))
- :hints (("Goal" :in-theory (enable lookup))))
+ :hints (("Goal" :in-theory (enable tuple-lookup))))
 
 
 ;(verify-guards materialize-ltu-subtable)
