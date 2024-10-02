@@ -3,3 +3,4 @@
 *.port
 *.fasl
 Makefile-tmp
+*.DS_Store

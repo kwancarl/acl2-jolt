@@ -1,4 +1,4 @@
-# Jolt
+# Copy of Jolt on Oct 2, 2024
 
 ![imgs/jolt_alpha.png](imgs/jolt_alpha.png)
 
