@@ -3,7 +3,7 @@
 (include-book "std/util/define" :dir :system)
 (include-book "centaur/gl/gl" :dir :system)
 (include-book "arithmetic/top" :dir :system)
-;; idk why the following two books are necessary
+
 (include-book "centaur/bitops/ihsext-basics" :dir :system)
 (include-book "centaur/bitops/fast-logext" :dir :system)
 
@@ -48,11 +48,10 @@
        (z8-0 (part-select z :low 48 :width 16))
        ;; MATERIALIZE SUBTABLES 
        (id-subtable       (materialize-identity-subtable (expt 2 16)))
-       (truncate-idx      (truncate-indices (expt 2 16) 0))
-       (truncate-subtable (materialize-truncate-subtable truncate-idx))
+       (truncate-subtable (materialize-truncate-subtable (expt 2 16) 0))
        ;; LOOKUP SEMANTICS
-       (z8-0 (tuple-lookup z8-0 0 truncate-subtable))
-       (z8-1 (tuple-lookup z8-1 0 truncate-subtable))
+       (z8-0 (single-lookup z8-0 truncate-subtable))
+       (z8-1 (single-lookup z8-1 truncate-subtable))
        (z8-2 (single-lookup z8-2 id-subtable))
        (z8-3 (single-lookup z8-3 id-subtable)))
       ;; COMBINE
@@ -60,20 +59,21 @@
 
 (defthm add-32-add-semantics-32-equiv
  (equal (add-32 x y) (add-semantics-32 x y))
- :hints (("Goal" :in-theory (e/d (add-semantics-32) ((:e materialize-identity-subtable) (:e truncate-indices))))))
+ :hints (("Goal" :in-theory (e/d (add-semantics-32) 
+                                 ((:e materialize-identity-subtable) 
+                                  (:e materialize-truncate-subtable))))))
 
 
 ;; SEMANTIC CORRECTNESS OF ADD
 (gl::def-gl-thm add-semantics-32-correctness
  :hyp (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
  :concl (equal (add-semantics-32 x y)
-	       (logand (+ x y) #xffffffff))
+	       (logand (+ x y) (1- (expt 2 32))))
  :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
 
 (defthm add-32-correctness
  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
-          (equal (add-32 x y) (logand (+ x y) #xffffffff)))) 
-
+          (equal (add-32 x y) (logand (+ x y) (1- (expt 2 32)))))) 
 
 
 ;; 64-BIT VERSION
@@ -122,13 +122,12 @@
        (z8-0 (part-select z :low 112 :width 16))
        ;; MATERIALIZE SUBTABLES 
        (id-subtable       (materialize-identity-subtable (expt 2 16)))
-       (truncate-idx      (truncate-indices (expt 2 16) 0))
-       (truncate-subtable (materialize-truncate-subtable truncate-idx))
+       (truncate-subtable (materialize-truncate-subtable (expt 2 16) 0))
        ;; LOOKUP SEMANTICS
-       (z8-0 (tuple-lookup z8-0 0 truncate-subtable))
-       (z8-1 (tuple-lookup z8-1 0 truncate-subtable))
-       (z8-2 (tuple-lookup z8-2 0 truncate-subtable))
-       (z8-3 (tuple-lookup z8-3 0 truncate-subtable))
+       (z8-0 (single-lookup z8-0 truncate-subtable))
+       (z8-1 (single-lookup z8-1 truncate-subtable))
+       (z8-2 (single-lookup z8-2 truncate-subtable))
+       (z8-3 (single-lookup z8-3 truncate-subtable))
        (z8-4 (single-lookup z8-4 id-subtable))
        (z8-5 (single-lookup z8-5 id-subtable))
        (z8-6 (single-lookup z8-6 id-subtable))
@@ -138,16 +137,18 @@
 
 (defthm add-64-add-semantics-64-equiv
  (equal (add-64 x y) (add-semantics-64 x y))
- :hints (("Goal" :in-theory (e/d (add-semantics-64) ((:e materialize-identity-subtable) (:e truncate-indices))))))
+ :hints (("Goal" :in-theory (e/d (add-semantics-64) 
+                                 ((:e materialize-identity-subtable) 
+                                  (:e materialize-truncate-subtable))))))
 
 
 ;; SEMANTIC CORRECTNESS OF ADD
 (gl::def-gl-thm add-semantics-64-correctness
  :hyp (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
  :concl (equal (add-semantics-64 x y)
-	       (logand (+ x y) #xffffffffffffffff))
+	       (logand (+ x y) (1- (expt 2 64))))
  :g-bindings (gl::auto-bindings (:mix (:nat x 64) (:nat y 64))))
 
 (defthm add-64-correctness
  (implies (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
-          (equal (add-64 x y) (logand (+ x y) #xffffffffffffffff)))) 
+          (equal (add-64 x y) (logand (+ x y) (1- (expt 2 64)))))) 

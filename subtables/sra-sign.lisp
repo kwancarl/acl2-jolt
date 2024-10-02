@@ -200,6 +200,14 @@
 		   (ash x (- y))))
   :g-bindings (gl::auto-bindings (:nat y 5) (:nat x 32)))
 
+;; (gl::def-gl-thm sra-sign-64-correctness
+;;   :hyp (and (unsigned-byte-p 6 y) 
+;; 	    (unsigned-byte-p 64 x))
+;;   :concl (equal (logextu 64 (- 64 y) (ash x (- y)))
+;; 		(+ (sra-sign-8 x y)
+;; 		   (ash x (- y))))
+;;   :g-bindings (gl::auto-bindings (:nat y 6) (:nat x 64)))
+
 (gl::def-gl-thm sra-sign-8-correctness
   :hyp (and (unsigned-byte-p 5 y) 
 	    (unsigned-byte-p 32 x))
@@ -223,32 +231,32 @@
 ;;					;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun materialize-sra-sign-subtable-32 (idx-lst)
+(defun materialize-sra-sign-subtable-8 (idx-lst)
  (b* (((unless (alistp idx-lst))     nil)
       ((if (atom idx-lst))           nil)
       ((cons idx rst)            idx-lst)
       ((unless (consp idx))          nil)
       ((cons x y)                    idx))
      (cons (cons idx (sra-sign-8 x y))
-           (materialize-sra-sign-subtable-32 rst))))
+           (materialize-sra-sign-subtable-8 rst))))
 
-(defthm alistp-of-materialize-sra-sign-subtable-32
- (alistp (materialize-sra-sign-subtable-32 idx-lst)))
+(defthm alistp-of-materialize-sra-sign-subtable-8
+ (alistp (materialize-sra-sign-subtable-8 idx-lst)))
 
-(defthm member-idx-lst-assoc-materialize-sra-sign-subtable-32
+(defthm member-idx-lst-assoc-materialize-sra-sign-subtable-8
  (implies (and (alistp idx-lst) (member idx idx-lst))
-          (assoc idx (materialize-sra-sign-subtable-32 idx-lst))))
+          (assoc idx (materialize-sra-sign-subtable-8 idx-lst))))
 
-(defthm assoc-member-materialize-sra-sign-subtable-32
- (implies (assoc (cons x y) (materialize-sra-sign-subtable-32 idx-lst))
+(defthm assoc-member-materialize-sra-sign-subtable-8
+ (implies (assoc (cons x y) (materialize-sra-sign-subtable-8 idx-lst))
           (member (cons x y) idx-lst)))
 
-(defthm assoc-materialize-sra-sign-subtable-32
- (implies (assoc (cons i j) (materialize-sra-sign-subtable-32 idx-lst))
-          (equal (assoc (cons i j) (materialize-sra-sign-subtable-32 idx-lst))
+(defthm assoc-materialize-sra-sign-subtable-8
+ (implies (assoc (cons i j) (materialize-sra-sign-subtable-8 idx-lst))
+          (equal (assoc (cons i j) (materialize-sra-sign-subtable-8 idx-lst))
                  (cons (cons i j) (sra-sign-8 i j)))))
 
-(defthm materialize-sra-sign-subtable-32-correctness
+(defthm materialize-sra-sign-subtable-8-correctness
  (implies (and (natp x-hi) 
    	       (natp y-hi) 
                (natp i) 
@@ -256,12 +264,12 @@
                (<= i x-hi)
                (<= j y-hi))
           (b* ((indices  (create-tuple-indices x-hi y-hi))
-               (subtable (materialize-sra-sign-subtable-32 indices)))
+               (subtable (materialize-sra-sign-subtable-8 indices)))
               (equal (assoc-equal (cons i j) subtable)
                      (cons (cons i j)
                            (sra-sign-8 i j))))))
 
-(defthm lookup-materialize-sra-sign-subtable-32-correctness
+(defthm lookup-materialize-sra-sign-subtable-8-correctness
  (implies (and (natp x-hi) 
    	       (natp y-hi) 
                (natp i) 
@@ -269,7 +277,7 @@
                (<= i x-hi)
                (<= j y-hi))
           (b* ((indices  (create-tuple-indices x-hi y-hi))
-               (subtable (materialize-sra-sign-subtable-32 indices)))
+               (subtable (materialize-sra-sign-subtable-8 indices)))
               (equal (tuple-lookup i j subtable)
                      (sra-sign-8 i j))))
  :hints (("Goal" :in-theory (e/d (tuple-lookup) ()))))

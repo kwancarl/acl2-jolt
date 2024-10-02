@@ -46,8 +46,7 @@
        (x8-0 (part-select x :low 48 :width 16))
        ;; MATERIALIZE SUBTABLES
        (id-subtable       (materialize-identity-subtable (expt 2 16)))
-       (truncate-idx      (truncate-indices (expt 2 16) #xff))
-       (truncate-subtable (materialize-truncate-subtable truncate-idx))
+       (truncate-subtable (materialize-truncate-subtable (expt 2 16) #xff))
        ;; LOOKUP SEMANTICS
        ;; Note that the `id` lookups are present in the Jolt codebase for reasons not related to the immediate semantics of SB
        ;; Instead they are used as range checks for the input value, which is necessary for other parts of the Jolt's constraint system
@@ -55,13 +54,14 @@
        (?x8-0 (single-lookup x8-0 id-subtable))
        (?x8-1 (single-lookup x8-1 id-subtable))
        (?x8-2 (single-lookup x8-2 id-subtable))
-       (x8-3 (tuple-lookup x8-3 #xff truncate-subtable)))
+       (x8-3  (single-lookup x8-3 truncate-subtable)))
       ;; COMBINE
       x8-3))
 
 (defthm sb-32-sb-semantics-32-equiv
  (equal (sb-32 x) (sb-semantics-32 x))
- :hints (("Goal" :in-theory (e/d (sb-semantics-32) ((:e materialize-identity-subtable) (:e truncate-indices))))))
+ :hints (("Goal" :in-theory (e/d (sb-semantics-32) 
+                                 ((:e materialize-identity-subtable) (:e materialize-truncate-subtable))))))
 
 ;; SEMANTIC CORRECTNESS OF SB
 (gl::def-gl-thm sb-semantics-32-correctness
@@ -115,8 +115,7 @@
        (x8-0 (part-select x :low 112 :width 16))
        ;; MATERIALIZE SUBTABLES 
        (id-subtable       (materialize-identity-subtable (expt 2 16)))
-       (truncate-idx      (truncate-indices (expt 2 16) #xff))
-       (truncate-subtable (materialize-truncate-subtable truncate-idx))
+       (truncate-subtable (materialize-truncate-subtable (expt 2 16) #xff))
        ;; LOOKUP SEMANTICS
        (?x8-0 (single-lookup x8-0 id-subtable))
        (?x8-1 (single-lookup x8-1 id-subtable))
@@ -125,13 +124,14 @@
        (?x8-4 (single-lookup x8-4 id-subtable))
        (?x8-5 (single-lookup x8-5 id-subtable))
        (?x8-6 (single-lookup x8-6 id-subtable))
-       (x8-7 (tuple-lookup x8-7 #xff truncate-subtable)))
+       (x8-7  (single-lookup x8-7 truncate-subtable)))
       ;; COMBINE
       x8-7))
 
 (defthm sb-64-sb-semantics-64-equiv
  (equal (sb-64 x) (sb-semantics-64 x))
- :hints (("Goal" :in-theory (e/d (sb-semantics-64) ((:e materialize-identity-subtable) (:e truncate-indices))))))
+ :hints (("Goal" :in-theory (e/d (sb-semantics-64)
+                                 ((:e materialize-identity-subtable) (:e materialize-truncate-subtable))))))
 
 ;; SEMANTIC CORRECTNESS OF SB
 (gl::def-gl-thm sb-semantics-64-correctness
@@ -144,52 +144,3 @@
 (defthm sb-64-correctness
  (implies (unsigned-byte-p 64 x)
           (equal (sb-64 x) (logand x #xff)))) 
-
-
-;; Lemmas
-;; (local
-;;  (gl::def-gl-thm mask-of-mask-32-16
-;;   :hyp   (and (unsigned-byte-p 64 x))
-;;   :concl (equal (logand (logand x #xffff) #xff)
-;;                 (logand x #xff))
-;;   :g-bindings (gl::auto-bindings (:nat x 64))))
-
-;; (local 
-;;  (gl::def-gl-thm mask-lower-16-bound
-;;   :hyp   (unsigned-byte-p 64 x)
-;;   :concl (<= (logand x #xffff) (expt 2 16))
-;;   :g-bindings (gl::auto-bindings (:nat x 64))))
-
-;; ;; This lemma should not be local
-;; (local 
-;;  (defthm natp-of-logand
-;;   (implies (and (natp x) (natp y))
-;;            (natp (logand x y)))))
-
-;; ;; "CHUNK"
-;; (define sb-chunk ((x :type unsigned-byte) y) 
-;;  :enabled t 
-;;  :ignore-ok t
-;;  :irrelevant-formals-ok t
-;;  (logand x #xffff))
-
-;; ;; "LOOKUP"
-;; (defun sb-lookup (chunk subtable) 
-;;  (tuple-lookup chunk #xff subtable))
-
-;; ;; "COMBINE"
-;; (defun sb-combine (tuple-lookup) lookup)
-
-;; ;; This is the same theorem for both 32-bit and 64-bit?
-;; (defthm sb-correctness
-;;  (implies (unsigned-byte-p 64 x)
-;;           (b* ((indices  (truncate-indices (expt 2 16) #xff))
-;;                (subtable (materialize-truncate-subtable indices)))
-;;               (equal (sb-lookup (sb-chunk x 0) subtable)
-;;                      (logand x #xff))))
-;;  :hints (("Goal" :use ((:instance lookup-truncate-subtable-correctness
-;;                                   (mask #xff)
-;;                                   (x-hi (expt 2 16))
-;;                                   (i (logand x #xffff)))
-;;                        (:instance mask-lower-16-bound)))))
-

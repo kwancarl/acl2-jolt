@@ -3,7 +3,7 @@
 (include-book "std/util/define" :dir :system)
 (include-book "centaur/gl/gl" :dir :system)
 (include-book "arithmetic/top" :dir :system)
-;; idk why the following two books are necessary
+
 (include-book "centaur/bitops/ihsext-basics" :dir :system)
 (include-book "centaur/bitops/fast-logext" :dir :system)
 

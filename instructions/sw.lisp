@@ -78,13 +78,13 @@
 (gl::def-gl-thm sw-semantics-32-correctness
  :hyp (unsigned-byte-p 32 x)
  :concl (equal (sw-semantics-32 x)
-	       (logand x #xffffffff))
+	       (logand x (1- (expt 2 32))))
  :g-bindings (gl::auto-bindings (:nat x 32)))
 
 ;; Equivalence of sw-32 with its semantics
 (defthm sw-32-correctness
  (implies (unsigned-byte-p 32 x)
-          (equal (sw-32 x) (logand x #xffffffff)))) 
+          (equal (sw-32 x) (logand x (1- (expt 2 32)))))) 
 
 
 
@@ -148,10 +148,10 @@
 (gl::def-gl-thm sw-semantics-64-correctness
  :hyp (unsigned-byte-p 64 x)
  :concl (equal (sw-semantics-64 x)
-	       (logand x #xffffffff))
+	       (logand x (1- (expt 2 32))))
  :g-bindings (gl::auto-bindings (:nat x 64)))
 
 ;; Equivalence of sw-64 with its semantics
 (defthm sw-64-correctness
  (implies (unsigned-byte-p 64 x)
-          (equal (sw-64 x) (logand x #xffffffff))))
+          (equal (sw-64 x) (logand x (1- (expt 2 32))))))

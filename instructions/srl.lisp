@@ -14,47 +14,47 @@
 
 ;; 32-BIT
 
-;; SRL-semantics-32
+;; SRL-32 WITH LOOKUP SEMANTICS
 (define srl-semantics-32 (x y)
   (b* (((unless (unsigned-byte-p 32 x)) 0)
        ((unless (unsigned-byte-p 32 y)) 0)
-       ;; chunk
+       ;; CHUNK
        (u8-0 (part-select x :low  0 :width 8))
        (u8-1 (part-select x :low  8 :width 8))
        (u8-2 (part-select x :low 16 :width 8))
        (u8-3 (part-select x :low 24 :width 8))
        (shift-amount (part-select y :low 0 :width 5))
-       ;; shift chunks
+       ;; LOOKUP SEMANTICS
        (u8-0 (ash      u8-0     (- shift-amount)))
        (u8-1 (ash (ash u8-1  8) (- shift-amount)))
        (u8-2 (ash (ash u8-2 16) (- shift-amount)))
        (u8-3 (ash (ash u8-3 24) (- shift-amount))))
-       ;; add chunks
+      ;; COMBINE
       (+ u8-3 u8-2 u8-1 u8-0)))
 
-;; SRL-32 (with lookups)
+;; SRL-32
 (define srl-32 (x y)
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 32 x)) 0)
        ((unless (unsigned-byte-p 32 y)) 0)
-       ;; setup subtables
-       (indices (create-tuple-indices (expt 2 8) (expt 2 5)))
-       (subtable-0 (materialize-srli-subtable indices  0))
-       (subtable-1 (materialize-srli-subtable indices  8))
-       (subtable-2 (materialize-srli-subtable indices 16))
-       (subtable-3 (materialize-srli-subtable indices 24))
-       ;; chunk
+       ;; CHUNK
        (u8-0 (part-select x :low  0 :width 8))
        (u8-1 (part-select x :low  8 :width 8))
        (u8-2 (part-select x :low 16 :width 8))
        (u8-3 (part-select x :low 24 :width 8))
        (shift-amount (part-select y :low 0 :width 5))
-       ;; shift chunks
-       (u8-0 (tuple-lookup u8-0 shift-amount subtable-0))
-       (u8-1 (tuple-lookup u8-1 shift-amount subtable-1))
-       (u8-2 (tuple-lookup u8-2 shift-amount subtable-2))
-       (u8-3 (tuple-lookup u8-3 shift-amount subtable-3)))
-       ;; add chunks
+       ;; MATERIALIZE SUBTABLES
+       (indices (create-tuple-indices (expt 2 8) (expt 2 5)))
+       (srli-subtable-0 (materialize-srli-subtable indices  0))
+       (srli-subtable-1 (materialize-srli-subtable indices  8))
+       (srli-subtable-2 (materialize-srli-subtable indices 16))
+       (srli-subtable-3 (materialize-srli-subtable indices 24))
+       ;; LOOKUPS
+       (u8-0 (tuple-lookup u8-0 shift-amount srli-subtable-0))
+       (u8-1 (tuple-lookup u8-1 shift-amount srli-subtable-1))
+       (u8-2 (tuple-lookup u8-2 shift-amount srli-subtable-2))
+       (u8-3 (tuple-lookup u8-3 shift-amount srli-subtable-3)))
+      ;; COMBINE
       (+ u8-3 u8-2 u8-1 u8-0)))
 
 ;; This lemma must be proven with GL and not FGL
@@ -85,7 +85,7 @@
 (define srl-semantics-64 (x y)
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ((unless (unsigned-byte-p 64 y)) 0)
-       ;; chunk
+       ;; CHUNK
        (u8-7 (part-select x :low  0 :width 8))
        (u8-6 (part-select x :low  8 :width 8))
        (u8-5 (part-select x :low 16 :width 8))
@@ -95,7 +95,7 @@
        (u8-1 (part-select x :low 48 :width 8))
        (u8-0 (part-select x :low 56 :width 8))
        (shift-amount (part-select y :low 0 :width 6))
-       ;; shift chunks
+       ;; LOOKUP SEMANTICS
        (u8-7 (ash      u8-7     (- shift-amount)))
        (u8-6 (ash (ash u8-6  8) (- shift-amount)))
        (u8-5 (ash (ash u8-5 16) (- shift-amount)))
@@ -104,7 +104,7 @@
        (u8-2 (ash (ash u8-2 40) (- shift-amount)))
        (u8-1 (ash (ash u8-1 48) (- shift-amount)))
        (u8-0 (ash (ash u8-0 56) (- shift-amount))))
-       ;; add chunks
+      ;; COMBINE
       (+ u8-7 u8-6 u8-5 u8-4 u8-3 u8-2 u8-1 u8-0)))
 
 ;; SRL-64 (with lookups)
@@ -112,17 +112,7 @@
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ((unless (unsigned-byte-p 64 y)) 0)
-       ;; setup subtables
-       (indices (create-tuple-indices (expt 2 8) (expt 2 6)))
-       (subtable-0 (materialize-srli-subtable indices  0))
-       (subtable-1 (materialize-srli-subtable indices  8))
-       (subtable-2 (materialize-srli-subtable indices 16))
-       (subtable-3 (materialize-srli-subtable indices 24))
-       (subtable-4 (materialize-srli-subtable indices 32))
-       (subtable-5 (materialize-srli-subtable indices 40))
-       (subtable-6 (materialize-srli-subtable indices 48))
-       (subtable-7 (materialize-srli-subtable indices 56))
-       ;; chunk
+       ;; CHUNK
        (u8-0 (part-select x :low  0 :width 8))
        (u8-1 (part-select x :low  8 :width 8))
        (u8-2 (part-select x :low 16 :width 8))
@@ -132,7 +122,17 @@
        (u8-6 (part-select x :low 48 :width 8))
        (u8-7 (part-select x :low 56 :width 8))
        (shift-amount (part-select y :low 0 :width 6))
-       ;; shift chunks
+       ;; MATERIALIZE SUBTABLES
+       (indices (create-tuple-indices (expt 2 8) (expt 2 6)))
+       (subtable-0 (materialize-srli-subtable indices  0))
+       (subtable-1 (materialize-srli-subtable indices  8))
+       (subtable-2 (materialize-srli-subtable indices 16))
+       (subtable-3 (materialize-srli-subtable indices 24))
+       (subtable-4 (materialize-srli-subtable indices 32))
+       (subtable-5 (materialize-srli-subtable indices 40))
+       (subtable-6 (materialize-srli-subtable indices 48))
+       (subtable-7 (materialize-srli-subtable indices 56))
+       ;; LOOKUPS
        (u8-0 (tuple-lookup u8-0 shift-amount subtable-0))
        (u8-1 (tuple-lookup u8-1 shift-amount subtable-1))
        (u8-2 (tuple-lookup u8-2 shift-amount subtable-2))
@@ -141,7 +141,7 @@
        (u8-5 (tuple-lookup u8-5 shift-amount subtable-5))
        (u8-6 (tuple-lookup u8-6 shift-amount subtable-6))
        (u8-7 (tuple-lookup u8-7 shift-amount subtable-7)))
-       ;; add chunks
+      ;; COMBINE
       (+ u8-7 u8-6 u8-5 u8-4 u8-3 u8-2 u8-1 u8-0)))
 
 ;; This lemma must be proven with GL and not FGL
