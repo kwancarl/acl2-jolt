@@ -84,40 +84,34 @@ mod test {
     //     # );
 
     print_subtable_test!(and_subtable, AndSubtable<Fr>, Fr, 2, true);
-    print_subtable_test!(div_by_zero_subtable, DivByZeroSubtable<Fr>, Fr, 2, false);
-    print_subtable_test!(eq_subtable, EqSubtable<Fr>, Fr, 2, false);
-    print_subtable_test!(eq_abs_subtable, EqAbsSubtable<Fr>, Fr, 2, false);
-    print_subtable_test!(identity_subtable, IdentitySubtable<Fr>, Fr, 2, false);
-    print_subtable_test!(left_is_zero_subtable, LeftIsZeroSubtable<Fr>, Fr, 2, false);
-    print_subtable_test!(left_msb_subtable, LeftMSBSubtable<Fr>, Fr, 2, false);
-    print_subtable_test!(lt_abs_subtable, LtAbsSubtable<Fr>, Fr, 2, false);
-    print_subtable_test!(ltu_subtable, LtuSubtable<Fr>, Fr, 2, false);
-    print_subtable_test!(or_subtable, OrSubtable<Fr>, Fr, 2, false);
-    print_subtable_test!(
-        right_is_zero_subtable,
-        RightIsZeroSubtable<Fr>,
-        Fr,
-        2,
-        false
-    );
-    print_subtable_test!(right_msb_subtable, RightMSBSubtable<Fr>, Fr, 2, false);
-    print_subtable_test!(sign_extend_subtable_8, SignExtendSubtable<Fr, 8>, Fr, 2, false);
-    print_subtable_test!(sign_extend_subtable_16, SignExtendSubtable<Fr, 16>, Fr, 2, false);
-    print_subtable_test!(sll_subtable_0_32, SllSubtable<Fr, 0, 32>, Fr, 2, false);
-    print_subtable_test!(sll_subtable_1_32, SllSubtable<Fr, 1, 32>, Fr, 2, false);
-    print_subtable_test!(sll_subtable_2_32, SllSubtable<Fr, 2, 32>, Fr, 2, false);
-    print_subtable_test!(sll_subtable_3_32, SllSubtable<Fr, 3, 32>, Fr, 2, false);
-    print_subtable_test!(sra_sign_subtable_8, SraSignSubtable<Fr, 8>, Fr, 2, false);
-    print_subtable_test!(srl_subtable_0_32, SrlSubtable<Fr, 0, 32>, Fr, 2, false);
-    print_subtable_test!(srl_subtable_1_32, SrlSubtable<Fr, 1, 32>, Fr, 2, false);
-    print_subtable_test!(srl_subtable_2_32, SrlSubtable<Fr, 2, 32>, Fr, 2, false);
-    print_subtable_test!(srl_subtable_3_32, SrlSubtable<Fr, 3, 32>, Fr, 2, false);
+    print_subtable_test!(div_by_zero_subtable, DivByZeroSubtable<Fr>, Fr, 2, true);
+    print_subtable_test!(eq_subtable, EqSubtable<Fr>, Fr, 2, true);
+    print_subtable_test!(eq_abs_subtable, EqAbsSubtable<Fr>, Fr, 2, true);
+    print_subtable_test!(identity_subtable, IdentitySubtable<Fr>, Fr, 2, true);
+    print_subtable_test!(left_is_zero_subtable, LeftIsZeroSubtable<Fr>, Fr, 2, true);
+    print_subtable_test!(left_msb_subtable, LeftMSBSubtable<Fr>, Fr, 2, true);
+    print_subtable_test!(lt_abs_subtable, LtAbsSubtable<Fr>, Fr, 2, true);
+    print_subtable_test!(ltu_subtable, LtuSubtable<Fr>, Fr, 2, true);
+    print_subtable_test!(or_subtable, OrSubtable<Fr>, Fr, 2, true);
+    print_subtable_test!(right_is_zero_subtable, RightIsZeroSubtable<Fr>, Fr, 2, true);
+    print_subtable_test!(right_msb_subtable, RightMSBSubtable<Fr>, Fr, 2, true);
+    print_subtable_test!(sign_extend_subtable_8, SignExtendSubtable<Fr, 8>, Fr, 2, true);
+    print_subtable_test!(sign_extend_subtable_16, SignExtendSubtable<Fr, 16>, Fr, 2, true);
+    print_subtable_test!(sll_subtable_0_32, SllSubtable<Fr, 0, 32>, Fr, 2, true);
+    print_subtable_test!(sll_subtable_1_32, SllSubtable<Fr, 1, 32>, Fr, 2, true);
+    print_subtable_test!(sll_subtable_2_32, SllSubtable<Fr, 2, 32>, Fr, 2, true);
+    print_subtable_test!(sll_subtable_3_32, SllSubtable<Fr, 3, 32>, Fr, 2, true);
+    print_subtable_test!(sra_sign_subtable_8, SraSignSubtable<Fr, 8>, Fr, 2, true);
+    print_subtable_test!(srl_subtable_0_32, SrlSubtable<Fr, 0, 32>, Fr, 2, true);
+    print_subtable_test!(srl_subtable_1_32, SrlSubtable<Fr, 1, 32>, Fr, 2, true);
+    print_subtable_test!(srl_subtable_2_32, SrlSubtable<Fr, 2, 32>, Fr, 2, true);
+    print_subtable_test!(srl_subtable_3_32, SrlSubtable<Fr, 3, 32>, Fr, 2, true);
     print_subtable_test!(
         truncate_overflow_subtable_8,
         TruncateOverflowSubtable<Fr, 8>,
         Fr,
         2,
-        false
+        true
     );
     print_subtable_test!(truncate_overflow_subtable_32, TruncateOverflowSubtable<Fr, 32>, Fr, 2, true);
     print_subtable_test!(xor_subtable, XorSubtable<Fr>, Fr, 2, true);

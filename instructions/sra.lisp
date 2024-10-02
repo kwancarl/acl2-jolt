@@ -78,7 +78,7 @@
 	  (equal (sra-32 x y)
 		 (logextu 32 (- 32 y) (ash x (- y)))))
  :hints (("Goal" :use ((:instance sra-sign-8-correctness)
-		       (:instance sra-correctness-lemma))
+		       (:instance sra-correctness-32-lemma))
 	         :in-theory (e/d ()
 				 ((:e create-tuple-indices)
 				  (:e materialize-srli-subtable))))))
