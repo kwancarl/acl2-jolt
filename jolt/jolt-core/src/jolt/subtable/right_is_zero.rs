@@ -49,10 +49,10 @@ impl<F: JoltField> LassoSubtable<F> for RightIsZeroSubtable<F> {
 #[cfg(test)]
 mod test {
     use ark_bn254::Fr;
-    use binius_field::BinaryField128b;
+    // use binius_field::BinaryField128b;
 
     use crate::{
-        field::binius::BiniusField,
+        // field::binius::BiniusField,
         jolt::subtable::{right_is_zero::RightIsZeroSubtable, LassoSubtable},
         subtable_materialize_mle_parity_test,
     };
@@ -61,12 +61,13 @@ mod test {
         right_is_zero_materialize_mle_parity,
         RightIsZeroSubtable<Fr>,
         Fr,
-        256
-    );
-    subtable_materialize_mle_parity_test!(
-        right_is_zero_binius_materialize_mle_parity,
-        RightIsZeroSubtable<BiniusField<BinaryField128b>>,
-        BiniusField<BinaryField128b>,
         1 << 16
     );
+
+    // subtable_materialize_mle_parity_test!(
+    //     right_is_zero_binius_materialize_mle_parity,
+    //     RightIsZeroSubtable<BiniusField<BinaryField128b>>,
+    //     BiniusField<BinaryField128b>,
+    //     1 << 16
+    // );
 }

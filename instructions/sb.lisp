@@ -6,7 +6,7 @@
 (include-book "centaur/bitops/ihsext-basics" :dir :system)
 (include-book "centaur/bitops/part-select" :dir :system)
 
-(include-book "../subtables/truncate")
+(include-book "../subtables/truncate-overflow")
 (include-book "../subtables/identity")
 
 ;; SB returns the lower 8 bits of the input, zero-extended to word size

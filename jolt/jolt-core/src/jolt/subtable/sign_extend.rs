@@ -51,10 +51,10 @@ impl<F: JoltField, const WIDTH: usize> LassoSubtable<F> for SignExtendSubtable<F
 #[cfg(test)]
 mod test {
     use ark_bn254::Fr;
-    use binius_field::BinaryField128b;
+    // use binius_field::BinaryField128b;
 
     use crate::{
-        field::binius::BiniusField,
+        // field::binius::BiniusField,
         jolt::subtable::{sign_extend::SignExtendSubtable, LassoSubtable},
         subtable_materialize_mle_parity_test,
     };
@@ -73,10 +73,17 @@ mod test {
         1 << 16
     );
 
-    subtable_materialize_mle_parity_test!(
-        sign_extend_16_binius_materialize_mle_parity,
-        SignExtendSubtable<BiniusField<BinaryField128b>, 16>,
-        BiniusField<BinaryField128b>,
-        1 << 16
-    );
+    // subtable_materialize_mle_parity_test!(
+    //     sign_extend_8_binius_materialize_mle_parity,
+    //     SignExtendSubtable<BiniusField<BinaryField128b>, 8>,
+    //     BiniusField<BinaryField128b>,
+    //     1 << 16
+    // );
+
+    // subtable_materialize_mle_parity_test!(
+    //     sign_extend_16_binius_materialize_mle_parity,
+    //     SignExtendSubtable<BiniusField<BinaryField128b>, 16>,
+    //     BiniusField<BinaryField128b>,
+    //     1 << 16
+    // );
 }

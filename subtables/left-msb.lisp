@@ -31,7 +31,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                      ;;
-;;    MATERIALIZE left-msb SUBTABLE   ;;
+;;    MATERIALIZE LEFT-MSB SUBTABLE   ;;
 ;;                                      ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

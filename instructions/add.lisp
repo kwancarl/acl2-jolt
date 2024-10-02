@@ -7,7 +7,7 @@
 (include-book "centaur/bitops/ihsext-basics" :dir :system)
 (include-book "centaur/bitops/fast-logext" :dir :system)
 
-(include-book "../subtables/truncate")
+(include-book "../subtables/truncate-overflow")
 (include-book "../subtables/identity")
 
 (include-book "ihs/logops-lemmas" :dir :system)

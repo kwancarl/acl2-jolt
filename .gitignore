@@ -4,3 +4,4 @@
 *.fasl
 Makefile-tmp
 *.DS_Store
+*.txt

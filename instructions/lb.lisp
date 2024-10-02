@@ -4,7 +4,7 @@
 (include-book "centaur/gl/gl" :dir :system)
 
 (include-book "../subtables/identity")
-(include-book "../subtables/truncate")
+(include-book "../subtables/truncate-overflow")
 (include-book "../subtables/sign-extend")
 
 (include-book "centaur/bitops/part-select" :DIR :SYSTEM)

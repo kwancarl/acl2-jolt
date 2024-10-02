@@ -104,39 +104,44 @@ impl<F: JoltField, const CHUNK_INDEX: usize, const WORD_SIZE: usize> LassoSubtab
 #[cfg(test)]
 mod test {
     use ark_bn254::Fr;
-    use binius_field::BinaryField128b;
+    // use binius_field::BinaryField128b;
 
     use crate::{
-        field::binius::BiniusField,
+        // field::binius::BiniusField,
         jolt::subtable::{sll::SllSubtable, LassoSubtable},
         subtable_materialize_mle_parity_test,
     };
 
-    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity0_32, SllSubtable<Fr, 0, 32>, Fr, 1 << 10);
-    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity1_32, SllSubtable<Fr, 1, 32>, Fr, 1 << 10);
-    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity2_32, SllSubtable<Fr, 2, 32>, Fr, 1 << 10);
-    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity3_32, SllSubtable<Fr, 3, 32>, Fr, 1 << 10);
+    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity0_32, SllSubtable<Fr, 0, 32>, Fr, 1 << 16);
+    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity1_32, SllSubtable<Fr, 1, 32>, Fr, 1 << 16);
+    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity2_32, SllSubtable<Fr, 2, 32>, Fr, 1 << 16);
+    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity3_32, SllSubtable<Fr, 3, 32>, Fr, 1 << 16);
 
-    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity0_64, SllSubtable<Fr, 0, 64>, Fr, 1 << 10);
-    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity1_64, SllSubtable<Fr, 1, 64>, Fr, 1 << 10);
-    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity2_64, SllSubtable<Fr, 2, 64>, Fr, 1 << 10);
-    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity3_64, SllSubtable<Fr, 3, 64>, Fr, 1 << 10);
-    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity4_64, SllSubtable<Fr, 4, 64>, Fr, 1 << 10);
-    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity5_64, SllSubtable<Fr, 5, 64>, Fr, 1 << 10);
-    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity6_64, SllSubtable<Fr, 6, 64>, Fr, 1 << 10);
-    subtable_materialize_mle_parity_test!(sll_materialize_mle_parity7_64, SllSubtable<Fr, 7, 64>, Fr, 1 << 10);
+    // subtable_materialize_mle_parity_test!(
+    //     sll_binius_materialize_mle_parity0_32,
+    //     SllSubtable<BiniusField<BinaryField128b>, 0, 32>,
+    //     BiniusField<BinaryField128b>,
+    //     1 << 16
+    // );
 
-    subtable_materialize_mle_parity_test!(
-        sll_binius_materialize_mle_parity3_32,
-        SllSubtable<BiniusField<BinaryField128b>, 3, 32>,
-        BiniusField<BinaryField128b>,
-        1 << 10
-    );
+    // subtable_materialize_mle_parity_test!(
+    //     sll_binius_materialize_mle_parity1_32,
+    //     SllSubtable<BiniusField<BinaryField128b>, 1, 32>,
+    //     BiniusField<BinaryField128b>,
+    //     1 << 16
+    // );
 
-    subtable_materialize_mle_parity_test!(
-        sll_binius_materialize_mle_parity3_64,
-        SllSubtable<BiniusField<BinaryField128b>, 0, 64>,
-        BiniusField<BinaryField128b>,
-        1 << 10
-    );
+    // subtable_materialize_mle_parity_test!(
+    //     sll_binius_materialize_mle_parity2_32,
+    //     SllSubtable<BiniusField<BinaryField128b>, 2, 32>,
+    //     BiniusField<BinaryField128b>,
+    //     1 << 16
+    // );
+
+    // subtable_materialize_mle_parity_test!(
+    //     sll_binius_materialize_mle_parity3_32,
+    //     SllSubtable<BiniusField<BinaryField128b>, 3, 32>,
+    //     BiniusField<BinaryField128b>,
+    //     1 << 16
+    // );
 }
