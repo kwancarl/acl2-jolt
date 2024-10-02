@@ -167,6 +167,70 @@
             ("Subgoal *1/3" :use ((:instance equal-logapp-loghead-logtail-k
 					     (k wc)))))))
 
+;;
+;(include-book "arithmetic/top" :dir :system)
+(defthm foo 
+ (implies (and (natp x) (not (equal x 0)) (not (equal x 1)))
+	  (< (integer-length (logcdr x))
+	     (integer-length x)))
+ :hints (("Goal" :in-theory (enable integer-length logcdr))))
+;
+;(def-gl-thm bar
+; :hyp (and (bitp x) (bitp y))
+; :concl (equal (b-xor (b-and x y) (b-and (b-xor x 1) (b-xor y 1)))
+;	       (if (equal x y) 1 0))
+; :g-bindings (gl::auto-bindings (:nat x 1) (:nat y 1)))
+;
+;(def-gl-thm bar-2
+; :hyp (and (bitp x) (bitp y))
+; :concl (equal (equal (b-xor (b-and x y) (b-and (b-xor x 1) (b-xor y 1))) 1)
+;	       (equal x y))
+; :g-bindings (gl::auto-bindings (:nat x 1) (:nat y 1)))
+
+;; Equality of two bit, computes
+;; x * y + (1 - x) * (1 - y)
+(define b-eq-w ((x bitp) (y bitp))
+  (b-xor (b-and x y)
+	 (b-and (b-xor 1 x)
+		(b-xor 1 y)))
+  ///
+  ;; Theorem for the correctness of b-eq-w:
+  ;; x * y + (1 - x) * (1 - y) == if (x = y) then 1 else 0
+  (defthm b-eq-w-equal-equiv
+    (implies (and (bitp x) (bitp y))
+             (equal (b-eq-w x y)
+               	    (if (equal x y) 1 0)))
+    :hints (("Goal" :cases ((equal x 0))))))
+
+;; Equality of two bitvectors, computes
+;; Prod (xi * yi + (1 - xi) * (1 - yi)) for each bit of x, y
+(define eq-w ((x :type unsigned-byte) (y :type unsigned-byte))
+  (b* (;; Edge cases
+       ((unless (and (natp x) (natp y)))           0)
+       ((if (xor (bitp x) (bitp y)))               0)
+       ;; Base case
+       ((if (and (bitp x) (bitp y)))    (b-eq-w x y))
+       ;; Bindings for x and y
+       (x-0  	(logcar x))		;; LSB of x
+       (y-0  	(logcar y))		;; LSB of y
+       (x-rest  (logcdr x))		;; Rest of x
+       (y-rest  (logcdr y)))		;; Rest of y
+      ;; Recursive case
+      (b-and (b-eq-w x-0 y-0)
+	     (eq-w x-rest y-rest)))
+  ///
+ ;; eq-w correctness theorem for 32-bit integers
+ (defthm eq-w-equal-equiv-32
+  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
+	   (equal (eq-w x y) (if (equal x y) 1 0)))))
+
+ ;; eq-w correctness theorem for arbitrary bitwidths
+ (defthmd eq-w-equal-equiv
+  (implies (and (natp x) (natp y))
+ 	   (equal (eq-w x y) (if (equal x y) 1 0)))
+  :hints (("Goal" :in-theory (enable eq-w))))
+
+
 
 ;;
 ;;
@@ -222,5 +286,5 @@
                (subtable (materialize-eq-subtable indices)))
               (equal (tuple-lookup i j subtable)
                      (if (= i j) 1 0))))
- :hints (("Goal" :in-theory (enable lookup))))
+ :hints (("Goal" :in-theory (enable tuple-lookup))))
 
