@@ -59,7 +59,6 @@
       (+ u8-3 u8-2 u8-1 u8-0)))
 
 ;; This lemma must be proven with GL and not FGL
-;; It should be named something else though
 (local 
  (gl::def-gl-thm aux-lemma-32
   :hyp  (and (integerp x) (<= 0 x) (< x 4294967296))

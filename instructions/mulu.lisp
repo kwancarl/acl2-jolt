@@ -1,9 +1,9 @@
 (in-package "ACL2")
 (include-book "std/util/bstar" :dir :system)
 (include-book "std/util/define" :dir :system)
-(include-book "centaur/gl/gl" :dir :system)
+;; (include-book "centaur/gl/gl" :dir :system)
 (include-book "arithmetic/top" :dir :system)
-;; idk why the following two books are necessary
+
 (include-book "centaur/bitops/ihsext-basics" :dir :system)
 (include-book "centaur/bitops/fast-logext" :dir :system)
 
@@ -13,6 +13,9 @@
 (include-book "ihs/logops-lemmas" :dir :system)
 (include-book "centaur/bitops/part-select" :DIR :SYSTEM)
 (include-book "centaur/bitops/merge" :DIR :SYSTEM)
+
+(include-book "centaur/fgl/top" :dir :system)
+(value-triple (acl2::tshell-ensure))
 
 ;; 32-BIT VERSION
 
@@ -48,11 +51,10 @@
        (z8-0 (part-select z :low 48 :width 16))
        ;; MATERIALIZE MULU SUBTABLES 
        (id-subtable       (materialize-identity-subtable (expt 2 16)))
-       (truncate-idx      (truncate-indices (expt 2 16) 0))
-       (truncate-subtable (materialize-truncate-subtable truncate-idx))
+       (truncate-subtable (materialize-truncate-subtable (expt 2 16) 0))
        ;; LOOKUP SEMANTICS
-       (z8-0 (tuple-lookup z8-0 0 truncate-subtable))
-       (z8-1 (tuple-lookup z8-1 0 truncate-subtable))
+       (z8-0 (single-lookup z8-0 truncate-subtable))
+       (z8-1 (single-lookup z8-1 truncate-subtable))
        (z8-2 (single-lookup z8-2 id-subtable))
        (z8-3 (single-lookup z8-3 id-subtable)))
       ;; COMBINE
@@ -60,19 +62,19 @@
 
 (defthm mulu-32-mulu-semantics-32-equiv
  (equal (mulu-32 x y) (mulu-semantics-32 x y))
- :hints (("Goal" :in-theory (e/d (mulu-semantics-32) ((:e materialize-identity-subtable) (:e truncate-indices))))))
+ :hints (("Goal" :in-theory (e/d (mulu-semantics-32)
+                                 ((:e materialize-identity-subtable)
+                                  (:e materialize-truncate-subtable))))))
 
 
 ;; SEMANTIC CORRECTNESS OF MULU
-(gl::def-gl-thm mulu-semantics-32-correctness
+(fgl::def-fgl-thm mulu-semantics-32-correctness
  :hyp (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
- :concl (equal (mulu-semantics-32 x y)
-	       (logand (* x y) #xffffffff))
- :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
+ :concl (equal (mulu-semantics-32 x y) (logand (* x y) (1- (expt 2 32)))))
 
 (defthm mulu-32-correctness
  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
-          (equal (mulu-32 x y) (logand (* x y) #xffffffff)))) 
+          (equal (mulu-32 x y) (logand (* x y) (1- (expt 2 32)))))) 
 
 
 
@@ -122,13 +124,12 @@
        (z8-0 (part-select z :low 112 :width 16))
        ;; MATERIALIZE MULU SUBTABLES 
        (id-subtable       (materialize-identity-subtable (expt 2 16)))
-       (truncate-idx      (truncate-indices (expt 2 16) 0))
-       (truncate-subtable (materialize-truncate-subtable truncate-idx))
+       (truncate-subtable (materialize-truncate-subtable (expt 2 16) 0))
        ;; LOOKUP SEMANTICS
-       (z8-0 (tuple-lookup z8-0 0 truncate-subtable))
-       (z8-1 (tuple-lookup z8-1 0 truncate-subtable))
-       (z8-2 (tuple-lookup z8-2 0 truncate-subtable))
-       (z8-3 (tuple-lookup z8-3 0 truncate-subtable))
+       (z8-0 (single-lookup z8-0 truncate-subtable))
+       (z8-1 (single-lookup z8-1 truncate-subtable))
+       (z8-2 (single-lookup z8-2 truncate-subtable))
+       (z8-3 (single-lookup z8-3 truncate-subtable))
        (z8-4 (single-lookup z8-4 id-subtable))
        (z8-5 (single-lookup z8-5 id-subtable))
        (z8-6 (single-lookup z8-6 id-subtable))
@@ -138,16 +139,15 @@
 
 (defthm mulu-64-mulu-semantics-64-equiv
  (equal (mulu-64 x y) (mulu-semantics-64 x y))
- :hints (("Goal" :in-theory (e/d (mulu-semantics-64) ((:e materialize-identity-subtable) (:e truncate-indices))))))
-
+ :hints (("Goal" :in-theory (e/d (mulu-semantics-64)
+                                 ((:e materialize-identity-subtable)
+                                  (:e materialize-truncate-subtable))))))
 
 ;; SEMANTIC CORRECTNESS OF MULU
-(gl::def-gl-thm mulu-semantics-64-correctness
+(fgl::def-fgl-thm mulu-semantics-64-correctness
  :hyp (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
- :concl (equal (mulu-semantics-64 x y)
-	       (logand (* x y) #xffffffffffffffff))
- :g-bindings (gl::auto-bindings (:mix (:nat x 64) (:nat y 64))))
+ :concl (equal (mulu-semantics-64 x y) (logand (* x y) (1- (expt 2 64)))))
 
 (defthm mulu-64-correctness
  (implies (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
-          (equal (mulu-64 x y) (logand (* x y) #xffffffffffffffff)))) 
+          (equal (mulu-64 x y) (logand (* x y) (1- (expt 2 64))))))
