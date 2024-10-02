@@ -1,0 +1,7 @@
+*.cert
+*.out
+*.port
+*.fasl
+Makefile-tmp
+*.DS_Store
+*.txt

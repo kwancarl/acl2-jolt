@@ -9,7 +9,7 @@
 ### Step 1: Install ACL2
 
 1. Install Lisp:
-   - For macOS: `brew install sbcl`
+   - For macOS (make sure Homebrew is installed): `brew install sbcl`
    - For Ubuntu: `sudo apt-get install sbcl`
 
 2. Download ACL2:
@@ -45,7 +45,7 @@
    ```
 
 
-3. To certify FGL, we need to install an external SAT solver. The default choice is Glucose, which is included in this repository as a submodule.
+3. To certify FGL, we need to install an external SAT solver. The default choice is Glucose, which is included in this repository.
 
 Simply run this Glucose installation script:
    ```
@@ -53,7 +53,6 @@ Simply run this Glucose installation script:
    ```
 
 This script will compile Glucose, create a bash script to run it, and add it to your PATH.
-
 
 
 4. Certify FGL:
@@ -72,6 +71,7 @@ This script will compile Glucose, create a bash script to run it, and add it to 
      ```
    Replace `/path/to/acl2` with the actual path to your ACL2 installation.
 
+
 6. Verify installation:
    - Start ACL2: type `acl2` in your terminal
    - In the ACL2 prompt, try:
@@ -82,4 +82,16 @@ This script will compile Glucose, create a bash script to run it, and add it to 
    If these commands execute without errors, GL and FGL are properly installed.
 
 
-### Step 3: Build ACL2 files
+### Step 3: Certify Subtables and Instructions
+
+Check that our formalization is correct by certifying our `top` file:
+```
+/path/to/acl2/books/build/cert.pl top.lisp
+```
+
+### Step 4: Run Validation Script for Rust <> ACL2
+
+Simply run the following script:
+```
+./validate-subtables.sh
+```

@@ -253,9 +253,9 @@
            (b* ((indices  (create-tuple-indices x-hi y-hi))
                 (subtable (materialize-slli-subtable  indices k)))
                (equal (tuple-lookup i j subtable)
-                      (ash i (+ j k)))))
-  :hints (("Goal" :in-theory (e/d (tuple-lookup) nil)))); (materialize-slli-subtable)))))
-
+                      (ash (ash i k) j)))))
+  :hints (("Goal" :in-theory (enable tuple-lookup)))
+ 
  (local (in-theory (disable ash)))
  (local (include-book "ihs/logops-lemmas" :dir :system))
  (local (defthm lemma-1 (implies (integerp i) (equal (ash i 0) i)) :hints (("Goal" :use ((:instance ash* (count 0)))))))

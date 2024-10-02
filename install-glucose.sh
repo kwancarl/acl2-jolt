@@ -1,11 +1,5 @@
 #!/bin/sh
 
-# Add Glucose as a submodule if it doesn't exist
-if [ ! -d "glucose" ]; then
-    git submodule add https://github.com/audemard/glucose.git glucose
-    git submodule update --init --recursive
-fi
-
 # Compile Glucose
 cd ./glucose/simp
 make

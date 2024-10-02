@@ -62,7 +62,7 @@
                (subtable (materialize-ior-subtable indices)))
               (equal (tuple-lookup i j subtable)
                      (logior i j))))
- :hints (("Goal" :in-theory (enable lookup))))
+ :hints (("Goal" :in-theory (enable tuple-lookup))))
 
 ;;;;;;;;;;;;;;
 ;;	    ;;

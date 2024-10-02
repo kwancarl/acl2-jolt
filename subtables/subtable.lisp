@@ -65,7 +65,6 @@
 (verify-guards create-y-indices)
 (verify-guards create-tuple-indices)
 
-;; For any natural numbers `x`, `y-hi`, `i`, and `j`, if `i` is less than or equal to `x-hi` and `j` is less than or equal to `y-hi`, then `(cons i j)` is a member of the list returned by `create-tuple-indices` with `x-hi` and `y-hi`.
 (defthm create-tuple-indices-correctness
  (implies (and (natp x-hi) 
                (natp y-hi) 
