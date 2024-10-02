@@ -1,0 +1,6 @@
+[submodule "jolt"]
+	path = jolt
+	url = https://github.com/a16z/jolt
+[submodule "glucose"]
+	path = glucose
+	url = https://github.com/audemard/glucose
