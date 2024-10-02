@@ -253,8 +253,8 @@
            (b* ((indices  (create-tuple-indices x-hi y-hi))
                 (subtable (materialize-slli-subtable  indices k)))
                (equal (tuple-lookup i j subtable)
-                      (ash (ash i k) j)))))
-  :hints (("Goal" :in-theory (enable tuple-lookup)))
+                      (ash i (+ j k)))))
+   :hints (("Goal" :in-theory (enable tuple-lookup))))
  
  (local (in-theory (disable ash)))
  (local (include-book "ihs/logops-lemmas" :dir :system))
