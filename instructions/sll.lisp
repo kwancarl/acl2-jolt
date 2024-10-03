@@ -80,7 +80,6 @@
  :hints (("Goal" :use ((:instance sll-semantics-32-correctness) 
 		       (:instance sll-32-sll-semantics-32-equiv)))))
 
-:i-am-here
 
 ;; 64-BIT
 

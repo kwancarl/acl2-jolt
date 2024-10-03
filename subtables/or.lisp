@@ -10,9 +10,9 @@
 
 ;; Note: In ACL2, the OR operation is named `ior` for inclusive OR
 
-;; MATERIALIZE SUBTABLES FOR "OR"
-
 (include-book "subtable")
+
+;; MATERIALIZE SUBTABLES FOR "OR"
 
 (defun materialize-ior-subtable (idx-lst)
  (b* (((unless (alistp idx-lst))     nil)

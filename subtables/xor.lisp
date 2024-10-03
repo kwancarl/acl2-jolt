@@ -2,8 +2,9 @@
 (include-book "std/util/bstar" :dir :system)
 (include-book "std/util/define" :dir :system)
 
-;; MATERIALIZE SUBTABLES FOR XOR
 (include-book "subtable")
+
+;; MATERIALIZE SUBTABLES FOR XOR
 (encapsulate 
  nil
  (defun materialize-xor-subtable (idx-lst)
