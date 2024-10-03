@@ -32,11 +32,16 @@ subtables=(
     # "right_is_zero_subtable"
 )
 
+# Step 0: Create the validation directory if it doesn't exist
+validation_dir="validation"
+mkdir -p "$validation_dir"
+
 # Step 1: Call Rust print functions
 echo "Calling Rust print functions..."
-for subtable in "${subtables[@]}"; do
+# Have to be inside Rust project directory
+cd jolt
 cargo test --package jolt-core --lib -- "jolt::subtable::print::test" --exact --nocapture
-done
+cd ..
 
 # Step 2: Call ACL2 to print its version of the subtables
 echo "Calling ACL2 print functions..."
