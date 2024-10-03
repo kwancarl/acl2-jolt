@@ -8,10 +8,9 @@
 ;(local (include-book "arithmetic/top" :dir :system))
 (local (include-book "ihs/logops-lemmas" :dir :system))
 
+(include-book "subtable")
 
 ;; MATERIALIZE SUBTABLES FOR "IDENTITY"
-
-(include-book "subtable")
 
 (define materialize-identity-subtable (x-hi)
  :enabled t

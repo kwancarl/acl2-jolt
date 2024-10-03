@@ -8,7 +8,7 @@
 (local (include-book "ihs/basic-definitions" :dir :system))
 (local (include-book "centaur/bitops/ihsext-basics" :dir :system))
 (local (include-book "centaur/bitops/fast-logext" :dir :system))
-(local (include-book "centaur/bitops/part-select" :dir :system))
+(include-book "centaur/bitops/part-select" :dir :system)
 
 
 (include-book "eq")

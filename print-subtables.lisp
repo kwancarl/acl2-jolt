@@ -4,70 +4,143 @@
 
 (include-book "subtables/and")
 (include-book "subtables/eq")
-(include-book "subtables/eq_abs")
-(include-book "subtables/identity")
-(include-book "subtables/left_msb")
-(include-book "subtables/lt_abs")
+(include-book "subtables/eq-abs")
+(include-book "subtables/left-msb")
+(include-book "subtables/lt-abs")
 (include-book "subtables/ltu")
 (include-book "subtables/or")
-(include-book "subtables/right_msb")
-(include-book "subtables/sign_extend")
+(include-book "subtables/right-msb")
 (include-book "subtables/sll")
-(include-book "subtables/srl")
 (include-book "subtables/sra-sign")
-(include-book "subtables/truncate_overflow")
+(include-book "subtables/srl")
 (include-book "subtables/xor")
 
-;; not certified is ok
+(defconst *indices* (create-tuple-indices 255 255))
+
+(write-list (materialize-and-subtable *indices*)
+              "validation/and_subtable_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-eq-subtable *indices*)
+              "validation/eq_subtable_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-eq-abs-subtable-8 *indices*)
+              "validation/eq_abs_subtable_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-left-msb-subtable-8 *indices*)
+              "validation/left_msb_subtable_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-lt-abs-subtable-8 *indices*)
+              "validation/lt_abs_subtable_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-ltu-subtable *indices*)
+              "validation/ltu_subtable_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-ior-subtable *indices*)
+              "validation/or_subtable_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-right-msb-subtable-8 *indices*)
+              "validation/right_msb_subtable_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-xor-subtable *indices*)
+              "validation/xor_subtable_acl2.txt"
+              'top-level
+              state)
+
+(defconst *shift-indices-32* (create-tuple-indices 255 31))
+
+(write-list (materialize-slli-subtable *shift-indices-32* (* 8 0))
+              "validation/sll_subtable_0_32_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-slli-subtable *shift-indices-32* (* 8 1))
+              "validation/sll_subtable_1_32_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-slli-subtable *shift-indices-32* (* 8 2))
+              "validation/sll_subtable_2_32_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-slli-subtable *shift-indices-32* (* 8 3))
+              "validation/sll_subtable_3_32_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-sra-sign-subtable-8 *shift-indices-32*)
+              "validation/sra_sign_subtable_8_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-srli-subtable *shift-indices-32* (* 8 0))
+              "validation/srl_subtable_0_32_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-srli-subtable *shift-indices-32* (* 8 1))
+              "validation/srl_subtable_1_32_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-srli-subtable *shift-indices-32* (* 8 2))
+              "validation/srl_subtable_2_32_acl2.txt"
+              'top-level
+              state)
+
+(write-list (materialize-srli-subtable *shift-indices-32* (* 8 3))
+              "validation/srl_subtable_3_32_acl2.txt"
+              'top-level
+              state)
 
 
-(set-state-ok t)
+;; These subtables have the form `(x . val)` instead of `((x . y) . val)`
 
-;; (mv-let (chan state)
-;;         (open-output-channel "tmp.out" :character state)
-;;         (set-standard-co chan state))
+(include-book "subtables/identity")
+(include-book "subtables/sign-extend")
+(include-book "subtables/truncate-overflow")
 
-;; (set-standard-co (standard-co state) state)
+(defconst *range* (1- (expt 2 16)))
 
-;; (ld "tmp.lisp")
+(write-list (materialize-identity-subtable *range*)
+              "validation/identity_subtable_acl2.txt"
+              'top-level
+              state)
 
-;; (set-standard-co *standard-co* state)
-;; (close-output-channel (proofs-co state) state)
-;; (set-proofs-co *standard-co* state)
+(write-list (materialize-sign-extend-subtable *range* 8)
+              "validation/sign_extend_subtable_8_acl2.txt"
+              'top-level
+              state)
 
-;; (mv-let (chan state)
-;;         (open-output-channel "tmp.out" :character state)
-;;         (assign tmp-channel chan))
-;; (ld "tmp.lisp" 
-;;             ;;    :proofs-co (@ tmp-channel)
-;;                :standard-co (@ tmp-channel))
-;; (close-output-channel (@ tmp-channel) state)
+(write-list (materialize-sign-extend-subtable *range* 16)
+              "validation/sign_extend_subtable_16_acl2.txt"
+              'top-level
+              state)
 
-(mv-let (chan state)
-        (open-output-channel "output.txt" :character state)
-        (assign tmp-channel chan))
+;; 8 MOD 16 = 8
+(write-list (materialize-truncate-subtable *range* (1- (expt 2 8)))
+              "validation/truncate_overflow_subtable_8_acl2.txt"
+              'top-level
+              state)
 
-;; (mv-let
-;;     (state)
-;;     (let ((lst (materialize-and-subtable (create-tuple-indices 3 3))))
-;;       (fmt! "~*0" `("Whoa!" "~x*~%" "~x*~%" "~x*~%" ,lst)
-;;             :state state
-;;             :channel (@ tmp-channel)))
-;;     (close-output-channel (@ tmp-channel) state))
-
-;; (mv-let
-;;     (?discard state)
-;;     (let ((lst (materialize-and-subtable (create-tuple-indices 3 3))))
-;;       (fmx "~*0" `("Whoa!" "~x*~%" "~x*~%" "~x*~%" ,lst)))
-;;     (declare (ignore ?discard))
-;;     (close-output-channel (@ tmp-channel) state))
-
-;; (good-bye)
-
-;; (let ((lst (materialize-and-subtable (create-tuple-indices 3 3)))) ; a true-list whose elements we exhibit
-    ;; (fmx "~*0"
-    ;;     `("Whoa!"          ; what to print if there's nothing to print
-    ;;     "~x*~%"           ; how to print the last element
-    ;;     "~x*~%"       ; how to print the 2nd to last element
-    ;;     "~x*~%"          ; how to print all other elements
-    ;;     ,lst)))          ; the list of elements to print
+;; 32 MOD 16 = 0
+(write-list (materialize-truncate-subtable *range* 0)
+              "validation/truncate_overflow_subtable_32_acl2.txt"
+              'top-level
+              state)
