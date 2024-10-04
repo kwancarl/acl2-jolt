@@ -16,11 +16,32 @@ subtables=(
     "sll_subtable_1_32"
     "sll_subtable_2_32"
     "sll_subtable_3_32"
-    "sra_sign_subtable_8"
+
+    "sll_subtable_0_64"
+    "sll_subtable_1_64"
+    "sll_subtable_2_64"
+    "sll_subtable_3_64"
+    "sll_subtable_4_64"
+    "sll_subtable_5_64"
+    "sll_subtable_6_64"
+    "sll_subtable_7_64"
+
+    "sra_sign_subtable_32"
+    "sra_sign_subtable_64"
+
     "srl_subtable_0_32"
     "srl_subtable_1_32"
     "srl_subtable_2_32"
     "srl_subtable_3_32"
+
+    "srl_subtable_0_64"
+    "srl_subtable_1_64"
+    "srl_subtable_2_64"
+    "srl_subtable_3_64"
+    "srl_subtable_4_64"
+    "srl_subtable_5_64"
+    "srl_subtable_6_64"
+    "srl_subtable_7_64"
 
     "identity_subtable"
     "sign_extend_subtable_8"
@@ -32,23 +53,57 @@ subtables=(
     # "right_is_zero_subtable"
 )
 
-# Step 0: Create the validation directory for subtables if it doesn't exist
+# Add a new variable for the skip-generation flag
+skip_file_generation=false
+
+# Parse command-line arguments
+while getopts ":s-:" opt; do
+  case $opt in
+    s)
+      skip_file_generation=true
+      ;;
+    -)
+      case "${OPTARG}" in
+        skip)
+          skip_file_generation=true
+          ;;
+        *)
+          echo "Invalid option: --${OPTARG}" >&2
+          exit 1
+          ;;
+      esac
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
+
 validation_dir="validation/subtables"
-mkdir -p "$validation_dir"
 
-# Step 1: Call Rust print functions
-echo "Calling Rust print functions..."
-echo
-# Have to be inside Rust project directory
-cd jolt
-cargo test --package jolt-core --lib -- jolt::subtable::print::test --show-output
-cd ..
+if [ "$skip_file_generation" = false ]; then
 
-# Step 2: Call ACL2 to print its version of the subtables
-echo "Calling ACL2 print functions..."
-echo
+    # Step 0: Create the validation directory for subtables if it doesn't exist
+    mkdir -p "$validation_dir"
 
-acl2 < print-subtables.lisp
+    # Step 1: Call Rust print functions
+    echo "Calling Rust print functions..."
+    echo
+    # Have to be inside Rust project directory
+    cd jolt
+    cargo test --package jolt-core --lib -- jolt::subtable::print::test --show-output
+    cd ..
+
+    # Step 2: Call ACL2 to print its version of the subtables
+    echo "Calling ACL2 print functions..."
+    echo
+
+    acl2 < print-subtables.lisp
+else
+    echo "Skipping file generation steps..."
+    echo
+fi
 
 # Step 3: Compare the files
 echo "Comparing Rust and ACL2 outputs..."

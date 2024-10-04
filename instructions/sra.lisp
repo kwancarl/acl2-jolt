@@ -54,6 +54,32 @@
       ;; COMBINE
       (+ sign u8-3 u8-2 u8-1 u8-0)))
 
+(define sra-32-prime (x y)
+  :verify-guards nil
+  (b* (((unless (unsigned-byte-p 32 x)) 0)
+       ((unless (unsigned-byte-p 32 y)) 0)
+       ;; CHUNK
+       (x8-3 (part-select x :low  0 :width 8))
+       (x8-2 (part-select x :low  8 :width 8))
+       (x8-1 (part-select x :low 16 :width 8))
+       (x8-0 (part-select x :low 24 :width 8))
+       (y8-3 (part-select y :low 0 :width 8))
+       ;; MATERIALIZE SUBTABLES
+       (indices (create-tuple-indices (expt 2 8) (expt 2 8)))
+       (srli-subtable-0 (materialize-srli-subtable-prime indices 24 5))
+       (srli-subtable-1 (materialize-srli-subtable-prime indices 16 5))
+       (srli-subtable-2 (materialize-srli-subtable-prime indices 8 5))
+       (srli-subtable-3 (materialize-srli-subtable-prime indices 0 5))
+       (sra-sign-subtable (materialize-sra-sign-subtable-8 indices))
+       ;; LOOKUPS
+       (sign (tuple-lookup x8-0 y8-3 sra-sign-subtable))
+       (u8-0 (tuple-lookup x8-3 y8-3 srli-subtable-0))
+       (u8-1 (tuple-lookup x8-2 y8-3 srli-subtable-1))
+       (u8-2 (tuple-lookup x8-1 y8-3 srli-subtable-2))
+       (u8-3 (tuple-lookup x8-0 y8-3 srli-subtable-3)))
+      ;; COMBINE
+      (+ sign u8-3 u8-2 u8-1 u8-0)))
+
 (local (in-theory (disable srl-32-srl-semantics-32-equiv)))
 
 (defthm sra-32-=-sign-+-srl-32

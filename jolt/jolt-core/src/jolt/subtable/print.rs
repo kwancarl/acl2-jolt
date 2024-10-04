@@ -97,16 +97,34 @@ mod test {
     //     true
     // );
     print_subtable_test!(right_msb_subtable, RightMSBSubtable<Fr>, Fr, 8, true);
+    print_subtable_test!(xor_subtable, XorSubtable<Fr>, Fr, 8, true);
+
     print_subtable_test!(sll_subtable_0_32, SllSubtable<Fr, 0, 32>, Fr, 8, true);
     print_subtable_test!(sll_subtable_1_32, SllSubtable<Fr, 1, 32>, Fr, 8, true);
     print_subtable_test!(sll_subtable_2_32, SllSubtable<Fr, 2, 32>, Fr, 8, true);
     print_subtable_test!(sll_subtable_3_32, SllSubtable<Fr, 3, 32>, Fr, 8, true);
-    print_subtable_test!(sra_sign_subtable_8, SraSignSubtable<Fr, 8>, Fr, 8, true);
+    print_subtable_test!(sll_subtable_0_64, SllSubtable<Fr, 0, 64>, Fr, 8, true);
+    print_subtable_test!(sll_subtable_1_64, SllSubtable<Fr, 1, 64>, Fr, 8, true);
+    print_subtable_test!(sll_subtable_2_64, SllSubtable<Fr, 2, 64>, Fr, 8, true);
+    print_subtable_test!(sll_subtable_3_64, SllSubtable<Fr, 3, 64>, Fr, 8, true);
+    print_subtable_test!(sll_subtable_4_64, SllSubtable<Fr, 4, 64>, Fr, 8, true);
+    print_subtable_test!(sll_subtable_5_64, SllSubtable<Fr, 5, 64>, Fr, 8, true);
+    print_subtable_test!(sll_subtable_6_64, SllSubtable<Fr, 6, 64>, Fr, 8, true);
+    print_subtable_test!(sll_subtable_7_64, SllSubtable<Fr, 7, 64>, Fr, 8, true);
+    print_subtable_test!(sra_sign_subtable_32, SraSignSubtable<Fr, 32>, Fr, 8, true);
+    print_subtable_test!(sra_sign_subtable_64, SraSignSubtable<Fr, 64>, Fr, 8, true);
     print_subtable_test!(srl_subtable_0_32, SrlSubtable<Fr, 0, 32>, Fr, 8, true);
     print_subtable_test!(srl_subtable_1_32, SrlSubtable<Fr, 1, 32>, Fr, 8, true);
     print_subtable_test!(srl_subtable_2_32, SrlSubtable<Fr, 2, 32>, Fr, 8, true);
     print_subtable_test!(srl_subtable_3_32, SrlSubtable<Fr, 3, 32>, Fr, 8, true);
-    print_subtable_test!(xor_subtable, XorSubtable<Fr>, Fr, 8, true);
+    print_subtable_test!(srl_subtable_0_64, SrlSubtable<Fr, 0, 64>, Fr, 8, true);
+    print_subtable_test!(srl_subtable_1_64, SrlSubtable<Fr, 1, 64>, Fr, 8, true);
+    print_subtable_test!(srl_subtable_2_64, SrlSubtable<Fr, 2, 64>, Fr, 8, true);
+    print_subtable_test!(srl_subtable_3_64, SrlSubtable<Fr, 3, 64>, Fr, 8, true);
+    print_subtable_test!(srl_subtable_4_64, SrlSubtable<Fr, 4, 64>, Fr, 8, true);
+    print_subtable_test!(srl_subtable_5_64, SrlSubtable<Fr, 5, 64>, Fr, 8, true);
+    print_subtable_test!(srl_subtable_6_64, SrlSubtable<Fr, 6, 64>, Fr, 8, true);
+    print_subtable_test!(srl_subtable_7_64, SrlSubtable<Fr, 7, 64>, Fr, 8, true);
 
     print_subtable_test!(identity_subtable, IdentitySubtable<Fr>, Fr, 8, true);
     print_subtable_test!(sign_extend_subtable_8, SignExtendSubtable<Fr, 8>, Fr, 8, true);

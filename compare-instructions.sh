@@ -42,22 +42,55 @@ instructions=(
     "srl_instruction_64"
 )
 
-# Step 0: Create the validation directory if it doesn't exist
+# Add a new variable for the skip-generation flag
+skip_file_generation=false
+
+# Parse command-line arguments
+while getopts ":s-:" opt; do
+  case $opt in
+    s)
+      skip_file_generation=true
+      ;;
+    -)
+      case "${OPTARG}" in
+        skip)
+          skip_file_generation=true
+          ;;
+        *)
+          echo "Invalid option: --${OPTARG}" >&2
+          exit 1
+          ;;
+      esac
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
+
 validation_dir="validation/instructions"
-mkdir -p "$validation_dir"
 
-# Step 1: Call Rust print functions
-echo "Calling Rust print functions..."
-echo
-# Have to be inside Rust project directory
-cd jolt
-cargo test --package jolt-core --lib -- jolt::instruction::print::test --show-output
-cd ..
+if [ "$skip_file_generation" = false ]; then
+    # Step 0: Create the validation directory if it doesn't exist
+    mkdir -p "$validation_dir"
 
-# Step 2: Call ACL2 to print its version of the instructions
-echo "Calling ACL2 print functions..."
-echo
-acl2 < print-instructions.lisp
+    # Step 1: Call Rust print functions
+    echo "Calling Rust print functions..."
+    echo
+    # Have to be inside Rust project directory
+    cd jolt
+    cargo test --package jolt-core --lib -- jolt::instruction::print::test --show-output
+    cd ..
+
+    # Step 2: Call ACL2 to print its version of the instructions
+    echo "Calling ACL2 print functions..."
+    echo
+    acl2 < print-instructions.lisp
+else
+    echo "Skipping file generation steps..."
+    echo
+fi
 
 # Step 3: Compare the files
 echo "Comparing Rust and ACL2 outputs..."

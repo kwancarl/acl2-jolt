@@ -60,22 +60,22 @@
 
 ;; Do this for the instructions sll-32, srl-32, and sra-32.
 
-;; ;; Function to generate test results for sra-32
-;; (defun generate-sra-32-results (inputs)
-;;   (if (endp inputs)
-;;       nil
-;;     (let* ((input (car inputs))
-;;            (x (car input))
-;;            (y (cdr input))
-;;            (result (sra-32 x (part-select y :low 0 :width 5))))
-;;       (cons (cons input result)
-;;             (generate-sra-32-results (cdr inputs))))))
+;; Function to generate test results for sra-32
+(defun generate-sra-32-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (y (cdr input))
+           (result (sra-32-prime x y)))
+      (cons (cons input result)
+            (generate-sra-32-results (cdr inputs))))))
 
-;; ;; Generate and write results for sra-32
-;; (write-list (generate-sra-32-results *test-inputs*)
-;;             (concatenate 'string *output-dir* "/sra_instruction_32_acl2.txt")
-;;             'top-level
-;;             state)
+;; Generate and write results for sra-32
+(write-list (generate-sra-32-results *test-inputs*)
+            (concatenate 'string *output-dir* "/sra_instruction_32_acl2.txt")
+            'top-level
+            state)
 
 ;; Function to generate test results for srl-32
 (defun generate-srl-32-results (inputs)
@@ -100,7 +100,7 @@
     (let* ((input (car inputs))
            (x (car input))
            (y (cdr input))
-           (result (sll-32 x y)))
+           (result (sll-32-prime x y)))
       (cons (cons input result)
             (generate-sll-32-results (cdr inputs))))))
 

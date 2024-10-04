@@ -58,6 +58,31 @@
       ;; COMBINE
       (+ u8-3 u8-2 u8-1 u8-0)))
 
+;; New version of SLL-32 that should match with Rust's version
+(define sll-32-prime (x y)
+  :verify-guards nil
+  (b* (((unless (unsigned-byte-p 32 x)) 0)
+       ((unless (unsigned-byte-p 32 y)) 0)
+       ;; CHUNK
+       (u8-3 (part-select x :low  0 :width 8))
+       (u8-2 (part-select x :low  8 :width 8))
+       (u8-1 (part-select x :low 16 :width 8))
+       (u8-0 (part-select x :low 24 :width 8))
+       (y8-3 (part-select y :low 0 :width 8))
+       ;; MATERIALIZE SUBTABLES
+       (indices (create-tuple-indices (expt 2 8) (expt 2 8)))
+       (slli-subtable-0 (materialize-slli-subtable-prime indices 24 5))
+       (slli-subtable-1 (materialize-slli-subtable-prime indices 16 5))
+       (slli-subtable-2 (materialize-slli-subtable-prime indices 8 5))
+       (slli-subtable-3 (materialize-slli-subtable-prime indices 0 5))
+       ;; LOOKUPS
+       (u8-0 (tuple-lookup u8-0 y8-3 slli-subtable-0))
+       (u8-1 (tuple-lookup u8-1 y8-3 slli-subtable-1))
+       (u8-2 (tuple-lookup u8-2 y8-3 slli-subtable-2))
+       (u8-3 (tuple-lookup u8-3 y8-3 slli-subtable-3)))
+      ;; COMBINE
+      (+ (* (expt 2 24) u8-3) (* (expt 2 16) u8-2) (* (expt 2 8) u8-1) u8-0)))
+
 ;; This lemma must be proven with GL and not FGL
 (local 
  (gl::def-gl-thm aux-lemma-32

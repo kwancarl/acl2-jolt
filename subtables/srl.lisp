@@ -14,6 +14,16 @@
 ;;
 ;; (ash (ash u8-1  8)
 
+;; Would be nice to pass in `word-size` directly, but I don't know how to write logarithm
+(defun materialize-srli-subtable-prime (idx-lst i log-word-size)
+  (b* (((unless (alistp idx-lst))     nil)
+       ((if (atom idx-lst))           nil)
+       ((cons idx rst)            idx-lst)
+       ((unless (consp idx))          nil)
+       ((cons x y)                    idx))
+     (cons (cons idx (ash (ash x i) (- (loghead log-word-size y))))
+           (materialize-srli-subtable-prime rst i log-word-size))))
+
 (encapsulate 
  nil
 
