@@ -111,7 +111,7 @@
 (define sra-sign-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 5 y)))
   (* (logbit 31 x) (masked-ones y 32)))
 
-(define sra-sign-8 ((x (unsigned-byte-p 8 x)) (y (unsigned-byte-p 5 y)))
+(define sra-sign-8 ((x :type unsigned-byte) (y  :type unsigned-byte))
   (* (logbit 7 x) (masked-ones y 32)))
 
 (gl::def-gl-thm sra-sign-32-chunk-correctness
