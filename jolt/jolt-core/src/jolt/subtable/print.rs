@@ -10,13 +10,13 @@ macro_rules! print_subtable_test {
 
             let output: Box<dyn std::io::Write> = if $print_to_file {
                 let file_name = format!("{}_rust.txt", stringify!($test_name));
-                // Let the folder be `../../validation`
+                // Let the folder be `../../validation/subtables`
                 let path = std::env::current_dir()
                     .expect("Failed to get current directory")
                     .parent()
                     .and_then(|p| p.parent())
                     .expect("Failed to get parent directory")
-                    .join("validation")
+                    .join("validation/subtables/")
                     .join(file_name);
                 println!("Attempting to create file at: {:?}", path);
                 Box::new(std::fs::File::create(&path).expect("Failed to create file"))
@@ -31,9 +31,11 @@ macro_rules! print_subtable_test {
             let is_special_case = stringify!($test_name).contains("identity")
                 || stringify!($test_name).contains("sign_extend")
                 || stringify!($test_name).contains("truncate_overflow");
+            if is_special_case {
             println!(
-                "This is either identity, sign_extend, or truncate_overflow. Printing table of format \"(x . val)\"..."
-            );
+                    "This is either identity, sign_extend, or truncate_overflow. Printing table of format \"(x . val)\"..."
+                );
+            }
 
             for idx in (0..M).rev() {
                 let entry = &materialized[idx];
@@ -54,46 +56,17 @@ macro_rules! print_subtable_test {
 mod test {
     use crate::field::JoltField;
     use crate::jolt::subtable::{
-        and::AndSubtable, div_by_zero::DivByZeroSubtable, eq::EqSubtable, eq_abs::EqAbsSubtable,
-        identity::IdentitySubtable, left_is_zero::LeftIsZeroSubtable, left_msb::LeftMSBSubtable,
-        lt_abs::LtAbsSubtable, ltu::LtuSubtable, or::OrSubtable,
-        right_is_zero::RightIsZeroSubtable, right_msb::RightMSBSubtable,
-        sign_extend::SignExtendSubtable, sll::SllSubtable, sra_sign::SraSignSubtable,
-        srl::SrlSubtable, truncate_overflow::TruncateOverflowSubtable, xor::XorSubtable,
-        LassoSubtable,
+        and::AndSubtable, eq::EqSubtable, eq_abs::EqAbsSubtable, identity::IdentitySubtable,
+        left_msb::LeftMSBSubtable, lt_abs::LtAbsSubtable, ltu::LtuSubtable, or::OrSubtable,
+        right_msb::RightMSBSubtable, sign_extend::SignExtendSubtable, sll::SllSubtable,
+        sra_sign::SraSignSubtable, srl::SrlSubtable, truncate_overflow::TruncateOverflowSubtable,
+        xor::XorSubtable, LassoSubtable,
     };
+    // div_by_zero::DivByZeroSubtable,
+    // left_is_zero::LeftIsZeroSubtable,
+    // right_is_zero::RightIsZeroSubtable,
     use ark_bn254::Fr;
     use ark_serialize::Write;
-
-    // # subtable_enum!(
-    //     #   RV32ISubtables,
-    //     #   AND: AndSubtable<F>,
-    //     #   EQ_ABS: EqAbsSubtable<F>,
-    //     #   EQ: EqSubtable<F>,
-    //     #   LEFT_MSB: LeftMSBSubtable<F>,
-    //     #   RIGHT_MSB: RightMSBSubtable<F>,
-    //     #   IDENTITY: IdentitySubtable<F>,
-    //     #   LT_ABS: LtAbsSubtable<F>,
-    //     #   LTU: LtuSubtable<F>,
-    //     #   OR: OrSubtable<F>,
-    //     #   SIGN_EXTEND_8: SignExtendSubtable<F, 8>,
-    //     #   SIGN_EXTEND_16: SignExtendSubtable<F, 16>,
-    //     #   SLL0: SllSubtable<F, 0, WORD_SIZE>,
-    //     #   SLL1: SllSubtable<F, 1, WORD_SIZE>,
-    //     #   SLL2: SllSubtable<F, 2, WORD_SIZE>,
-    //     #   SLL3: SllSubtable<F, 3, WORD_SIZE>,
-    //     #   SRA_SIGN: SraSignSubtable<F, WORD_SIZE>,
-    //     #   SRL0: SrlSubtable<F, 0, WORD_SIZE>,
-    //     #   SRL1: SrlSubtable<F, 1, WORD_SIZE>,
-    //     #   SRL2: SrlSubtable<F, 2, WORD_SIZE>,
-    //     #   SRL3: SrlSubtable<F, 3, WORD_SIZE>,
-    //     #   TRUNCATE: TruncateOverflowSubtable<F, WORD_SIZE>,
-    //     #   TRUNCATE_BYTE: TruncateOverflowSubtable<F, 8>,
-    //     #   XOR: XorSubtable<F>,
-    //     #   LEFT_IS_ZERO: LeftIsZeroSubtable<F>,
-    //     #   RIGHT_IS_ZERO: RightIsZeroSubtable<F>,
-    //     #   DIV_BY_ZERO: DivByZeroSubtable<F>
-    //     # );
 
     print_subtable_test!(and_subtable, AndSubtable<Fr>, Fr, 8, true);
     // print_subtable_test!(

@@ -32,47 +32,58 @@ subtables=(
     # "right_is_zero_subtable"
 )
 
-# Step 0: Create the validation directory if it doesn't exist
-validation_dir="validation"
+# Step 0: Create the validation directory for subtables if it doesn't exist
+validation_dir="validation/subtables"
 mkdir -p "$validation_dir"
 
 # Step 1: Call Rust print functions
 echo "Calling Rust print functions..."
+echo
 # Have to be inside Rust project directory
 cd jolt
-cargo test --package jolt-core --lib -- "jolt::subtable::print::test" --exact --nocapture
+cargo test --package jolt-core --lib -- jolt::subtable::print::test --show-output
 cd ..
 
 # Step 2: Call ACL2 to print its version of the subtables
 echo "Calling ACL2 print functions..."
+echo
+
 acl2 < print-subtables.lisp
 
 # Step 3: Compare the files
 echo "Comparing Rust and ACL2 outputs..."
+echo
+
 all_passed=true
 for subtable in "${subtables[@]}"; do
     rust_file="${subtable}_rust.txt"
     acl2_file="${subtable}_acl2.txt"
     
-    if [ -f "validation/${rust_file}" ] && [ -f "validation/${acl2_file}" ]; then
-        if diff -q "validation/${rust_file}" "validation/${acl2_file}" >/dev/null 2>&1; then
+    if [ -f "${validation_dir}/${rust_file}" ] && [ -f "${validation_dir}/${acl2_file}" ]; then
+        if diff -q "${validation_dir}/${rust_file}" "${validation_dir}/${acl2_file}" >/dev/null 2>&1; then
             echo "${subtable}: Files are identical. Test passed."
+            echo
             # Delete the generated files
             # rm "$rust_file" "$acl2_file"
         else
             echo "${subtable}: Files are different. Test failed."
-            echo "Please check the differences between $rust_file and $acl2_file"
+            echo
+            echo "Please check the differences between ${validation_dir}/${rust_file} and ${validation_dir}/${acl2_file}"
+            echo
             all_passed=false
         fi
     else
         echo "${subtable}: One or both files missing. Test failed."
+        echo
         all_passed=false
     fi
 done
 
 if $all_passed; then
     echo "All tests passed successfully."
+    echo
 else
     echo "Some tests failed. Please check the output above for details."
+    echo
     exit 1
 fi

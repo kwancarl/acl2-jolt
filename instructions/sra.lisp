@@ -74,9 +74,9 @@
 	         :in-theory (disable (:e create-tuple-indices) (:e materialize-srli-subtable)))))
 
 (defthm sra-correctness-32
- (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 5 y))
+ (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
 	  (equal (sra-32 x y)
-		 (logextu 32 (- 32 y) (ash x (- y)))))
+		 (logextu 32 (- 32 (logtail 5 y)) (ash x (- (logtail 5 y))))))
  :hints (("Goal" :use ((:instance sra-sign-8-correctness)
 		       (:instance sra-correctness-32-lemma))
 	         :in-theory (e/d ()

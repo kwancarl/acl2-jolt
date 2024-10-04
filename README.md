@@ -91,7 +91,12 @@ Check that our formalization is correct by certifying our `top` file:
 
 ### Step 4: Run Validation Script for Rust <> ACL2
 
-Simply run the following script:
+Run the following script to validate the subtables. If this passes, then it means that the materialized subtables (for the size `2 ^ 16` as used in instruction lookups) are the same between Rust and ACL2.
 ```
 ./validate-subtables.sh
+```
+
+Run the following script to validate the instructions. This ensures that the expected instruction semantics are the same between Rust and ACL2, for certain specified inputs (see `print-instructions.lisp` for details).
+```
+./validate-instructions.sh
 ```

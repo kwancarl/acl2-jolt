@@ -17,95 +17,97 @@
 
 (defconst *indices* (create-tuple-indices 255 255))
 
+(defconst *output-dir* "validation/subtables")
+
 (write-list (materialize-and-subtable *indices*)
-              "validation/and_subtable_acl2.txt"
+              (concatenate 'string *output-dir* "/and_subtable_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-eq-subtable *indices*)
-              "validation/eq_subtable_acl2.txt"
+              (concatenate 'string *output-dir* "/eq_subtable_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-eq-abs-subtable-8 *indices*)
-              "validation/eq_abs_subtable_acl2.txt"
+              (concatenate 'string *output-dir* "/eq_abs_subtable_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-left-msb-subtable-8 *indices*)
-              "validation/left_msb_subtable_acl2.txt"
+              (concatenate 'string *output-dir* "/left_msb_subtable_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-lt-abs-subtable-8 *indices*)
-              "validation/lt_abs_subtable_acl2.txt"
+              (concatenate 'string *output-dir* "/lt_abs_subtable_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-ltu-subtable *indices*)
-              "validation/ltu_subtable_acl2.txt"
+              (concatenate 'string *output-dir* "/ltu_subtable_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-ior-subtable *indices*)
-              "validation/or_subtable_acl2.txt"
+              (concatenate 'string *output-dir* "/or_subtable_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-right-msb-subtable-8 *indices*)
-              "validation/right_msb_subtable_acl2.txt"
+              (concatenate 'string *output-dir* "/right_msb_subtable_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-xor-subtable *indices*)
-              "validation/xor_subtable_acl2.txt"
+              (concatenate 'string *output-dir* "/xor_subtable_acl2.txt")
               'top-level
               state)
 
 (defconst *shift-indices-32* (create-tuple-indices 255 31))
 
 (write-list (materialize-slli-subtable *shift-indices-32* (* 8 0))
-              "validation/sll_subtable_0_32_acl2.txt"
+              (concatenate 'string *output-dir* "/sll_subtable_0_32_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-slli-subtable *shift-indices-32* (* 8 1))
-              "validation/sll_subtable_1_32_acl2.txt"
+              (concatenate 'string *output-dir* "/sll_subtable_1_32_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-slli-subtable *shift-indices-32* (* 8 2))
-              "validation/sll_subtable_2_32_acl2.txt"
+              (concatenate 'string *output-dir* "/sll_subtable_2_32_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-slli-subtable *shift-indices-32* (* 8 3))
-              "validation/sll_subtable_3_32_acl2.txt"
+              (concatenate 'string *output-dir* "/sll_subtable_3_32_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-sra-sign-subtable-8 *shift-indices-32*)
-              "validation/sra_sign_subtable_8_acl2.txt"
+              (concatenate 'string *output-dir* "/sra_sign_subtable_8_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-srli-subtable *shift-indices-32* (* 8 0))
-              "validation/srl_subtable_0_32_acl2.txt"
+              (concatenate 'string *output-dir* "/srl_subtable_0_32_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-srli-subtable *shift-indices-32* (* 8 1))
-              "validation/srl_subtable_1_32_acl2.txt"
+              (concatenate 'string *output-dir* "/srl_subtable_1_32_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-srli-subtable *shift-indices-32* (* 8 2))
-              "validation/srl_subtable_2_32_acl2.txt"
+              (concatenate 'string *output-dir* "/srl_subtable_2_32_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-srli-subtable *shift-indices-32* (* 8 3))
-              "validation/srl_subtable_3_32_acl2.txt"
+              (concatenate 'string *output-dir* "/srl_subtable_3_32_acl2.txt")
               'top-level
               state)
 
@@ -119,28 +121,26 @@
 (defconst *range* (1- (expt 2 16)))
 
 (write-list (materialize-identity-subtable *range*)
-              "validation/identity_subtable_acl2.txt"
+              (concatenate 'string *output-dir* "/identity_subtable_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-sign-extend-subtable *range* 8)
-              "validation/sign_extend_subtable_8_acl2.txt"
+              (concatenate 'string *output-dir* "/sign_extend_subtable_8_acl2.txt")
               'top-level
               state)
 
 (write-list (materialize-sign-extend-subtable *range* 16)
-              "validation/sign_extend_subtable_16_acl2.txt"
+              (concatenate 'string *output-dir* "/sign_extend_subtable_16_acl2.txt")
               'top-level
               state)
 
-;; 8 MOD 16 = 8
 (write-list (materialize-truncate-subtable *range* (1- (expt 2 8)))
-              "validation/truncate_overflow_subtable_8_acl2.txt"
+              (concatenate 'string *output-dir* "/truncate_overflow_subtable_8_acl2.txt")
               'top-level
               state)
 
-;; 32 MOD 16 = 0
 (write-list (materialize-truncate-subtable *range* 0)
-              "validation/truncate_overflow_subtable_32_acl2.txt"
+              (concatenate 'string *output-dir* "/truncate_overflow_subtable_32_acl2.txt")
               'top-level
               state)
