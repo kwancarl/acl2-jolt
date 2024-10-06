@@ -58,30 +58,6 @@
       ;; COMBINE
       (+ u8-3 u8-2 u8-1 u8-0)))
 
-;; New version of SLL-32 that should match with Rust's version
-(define sll-32-prime (x y)
-  :verify-guards nil
-  (b* (((unless (unsigned-byte-p 32 x)) 0)
-       ((unless (unsigned-byte-p 32 y)) 0)
-       ;; CHUNK
-       (u8-3 (part-select x :low  0 :width 8))
-       (u8-2 (part-select x :low  8 :width 8))
-       (u8-1 (part-select x :low 16 :width 8))
-       (u8-0 (part-select x :low 24 :width 8))
-       (y8-3 (part-select y :low 0 :width 8))
-       ;; MATERIALIZE SUBTABLES
-       (indices (create-tuple-indices (expt 2 8) (expt 2 8)))
-       (slli-subtable-0 (materialize-slli-subtable-prime indices 24 5))
-       (slli-subtable-1 (materialize-slli-subtable-prime indices 16 5))
-       (slli-subtable-2 (materialize-slli-subtable-prime indices 8 5))
-       (slli-subtable-3 (materialize-slli-subtable-prime indices 0 5))
-       ;; LOOKUPS
-       (u8-0 (tuple-lookup u8-0 y8-3 slli-subtable-0))
-       (u8-1 (tuple-lookup u8-1 y8-3 slli-subtable-1))
-       (u8-2 (tuple-lookup u8-2 y8-3 slli-subtable-2))
-       (u8-3 (tuple-lookup u8-3 y8-3 slli-subtable-3)))
-      ;; COMBINE
-      (+ (* (expt 2 24) u8-3) (* (expt 2 16) u8-2) (* (expt 2 8) u8-1) u8-0)))
 
 ;; This lemma must be proven with GL and not FGL
 (local 
@@ -89,7 +65,6 @@
   :hyp  (and (integerp x) (<= 0 x) (< x 4294967296))
   :concl (not (< 256 (logtail 24 x)))
   :g-bindings (gl::auto-bindings (:nat x 32))))
-
 
 (defthm sll-32-sll-semantics-32-equiv
  (equal (sll-32 x y) (sll-semantics-32 x y))
@@ -104,6 +79,76 @@
           (equal (sll-32 x y) (ash x (part-select y :low 0 :width 5))))
  :hints (("Goal" :use ((:instance sll-semantics-32-correctness) 
 		       (:instance sll-32-sll-semantics-32-equiv)))))
+
+
+;; SLL-semantics-32-prime
+(define sll-semantics-32-prime (x y)
+  :verify-guards nil
+  (b* (((unless (unsigned-byte-p 32 x)) 0)
+       ((unless (unsigned-byte-p 32 y)) 0)
+       ;; CHUNK
+       (u8-0 (part-select x :low  0 :width 8))
+       (u8-1 (part-select x :low  8 :width 8))
+       (u8-2 (part-select x :low 16 :width 8))
+       (u8-3 (part-select x :low 24 :width 8))
+       (shift-amount (part-select y :low 0 :width 5))
+       ;; LOOKUP SEMANTICS
+       (u8-0 (slli-rust u8-0 shift-amount  0 32)) 
+       (u8-1 (slli-rust u8-1 shift-amount  8 32))
+       (u8-2 (slli-rust u8-2 shift-amount 16 32))
+       (u8-3 (slli-rust u8-3 shift-amount 24 32)))
+      ;; COMBINE
+      (+ (* u8-3 (expt 2 24))
+	 (* u8-2 (expt 2 16))
+	 (* u8-1 (expt 2  8))
+	    u8-0	     )))
+
+(gl::def-gl-thm sll-semantics-32-prime-correctness
+ :hyp (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
+ :concl (equal (sll-semantics-32-prime x y) 
+	       (mod (ash x (part-select y :low 0 :width 5))
+		    (expt 2 32)))
+ :g-bindings (gl::auto-bindings (:mix (:nat y 32) (:nat x 32))))
+
+;; New version of SLL-32 that should match with Rust's version
+(define sll-32-prime (x y)
+  :verify-guards nil
+  (b* (((unless (unsigned-byte-p 32 x)) 0)
+       ((unless (unsigned-byte-p 32 y)) 0)
+       ;; CHUNK
+       (u8-0 (part-select x :low  0 :width 8))
+       (u8-1 (part-select x :low  8 :width 8))
+       (u8-2 (part-select x :low 16 :width 8))
+       (u8-3 (part-select x :low 24 :width 8))
+       (shift-amount (part-select y :low 0  :width 5))
+       ;; MATERIALIZE SUBTABLES
+       (indices (create-tuple-indices (expt 2 8) (expt 2 8)))
+       (slli-subtable-0 (materialize-slli-subtable-prime indices  0 32))
+       (slli-subtable-1 (materialize-slli-subtable-prime indices  8 32))
+       (slli-subtable-2 (materialize-slli-subtable-prime indices 16 32))
+       (slli-subtable-3 (materialize-slli-subtable-prime indices 24 32))
+       ;; LOOKUPS
+       (u8-0 (tuple-lookup u8-0 shift-amount slli-subtable-0))
+       (u8-1 (tuple-lookup u8-1 shift-amount slli-subtable-1))
+       (u8-2 (tuple-lookup u8-2 shift-amount slli-subtable-2))
+       (u8-3 (tuple-lookup u8-3 shift-amount slli-subtable-3)))
+      ;; COMBINE
+      (+ (* u8-3 (expt 2 24)) 
+	 (* u8-2 (expt 2 16)) 
+	 (* u8-1 (expt 2  8)) 
+	    u8-0	    )))
+
+
+(defthm sll-32-prime-sll-semantics-32-prime-equiv
+ (equal (sll-32-prime x y) (sll-semantics-32-prime x y))
+ :hints (("Goal" :in-theory (e/d (sll-semantics-32-prime sll-32-prime) ((:e expt) (:e create-tuple-indices) slli-rust)))))
+
+
+(defthm sll-32-prime-correctness
+ (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
+          (equal (sll-32-prime x y) 
+	         (mod (ash x (part-select y :low 0 :width 5))
+		      (expt 2 32)))))
 
 
 ;; 64-BIT
@@ -191,3 +236,4 @@
           (equal (sll-64 x y) (ash x (part-select y :low 0 :width 6))))
  :hints (("Goal" :use ((:instance sll-semantics-64-correctness) 
 		       (:instance sll-64-sll-semantics-64-equiv)))))
+

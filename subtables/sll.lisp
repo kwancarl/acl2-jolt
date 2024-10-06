@@ -204,19 +204,6 @@
 ;;
 ;;
 
-;; semantics from the spec: (x << (y mod word-size)) mod (expt 2 (word-size - m * i))
-
-;; Would be nice to pass in `word-size` directly, but I don't know how to write logarithm
-(defun materialize-slli-subtable-prime (idx-lst i log-word-size)
-  (b* (((unless (alistp idx-lst))     nil)
-       ((if (atom idx-lst))           nil)
-       ((cons idx rst)            idx-lst)
-       ((unless (consp idx))          nil)
-       ((cons x y)                    idx))
-     (cons (cons idx (loghead (- (expt 2 log-word-size) i) 
-                               (ash x (loghead log-word-size y))))
-           (materialize-slli-subtable-prime rst i log-word-size))))
-
 (encapsulate
  nil
 
@@ -382,3 +369,171 @@
   :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable) (:e create-tuple-indices))
 	          :use ((:instance lookup-slli-subtable-correctness (x-hi (expt 2 8)) (y-hi (expt 2 6)))))))
 
+
+
+
+;; semantics from the spec: (x << (y mod word-size)) mod (expt 2 (word-size - m * i))
+(defun slli-rust (x y i word-size)
+  (mod (ash x (mod y word-size))
+       (expt 2 (- word-size i))))
+          
+(defun materialize-slli-subtable-prime (idx-lst i word-size)
+  (b* (((unless (alistp idx-lst))     nil)
+       ((if (atom idx-lst))           nil)
+       ((cons idx rst)            idx-lst)
+       ((unless (consp idx))          nil)
+       ((cons x y)                    idx))
+     (cons (cons idx (slli-rust x y i word-size))
+	   (materialize-slli-subtable-prime rst i word-size))))
+
+
+ (defthm alistp-of-materialize-slli-subtable-prime
+  (alistp (materialize-slli-subtable-prime idx-lst i log-word-size)))
+
+ (defthm member-idx-lst-assoc-materialize-slli-subtable-prime
+  (implies (and (alistp idx-lst) (member idx idx-lst))
+           (assoc idx (materialize-slli-subtable-prime idx-lst i word-size))))
+
+ (defthm assoc-member-slli-subtable-prime
+  (implies (assoc (cons i j) (materialize-slli-subtable-prime idx-lst k word-size))
+           (member (cons i j) idx-lst)))
+
+ (defthm assoc-slli-subtable-prime
+  (implies (assoc (cons i j) (materialize-slli-subtable-prime idx-lst k word-size))
+           (equal (assoc (cons i j) (materialize-slli-subtable-prime idx-lst k word-size))
+                  (cons (cons i j) (slli-rust i j k word-size)))))
+
+ (defthm slli-subtable-prime-correctness
+  (implies (and (natp x-hi)
+                (natp y-hi)
+                (natp i)
+                (natp j)
+                (<= i x-hi)
+                (<= j y-hi) )
+           (b* ((indices  (create-tuple-indices x-hi y-hi))
+                (subtable (materialize-slli-subtable-prime indices k word-size)))
+               (equal (assoc-equal (cons i j) subtable)
+                      (cons (cons i j) (slli-rust i j k word-size))))))
+
+ (defthm lookup-slli-subtable-prime-correctness
+  (implies (and (natp x-hi)
+                (natp y-hi)
+                (natp i)
+                (natp j)
+                (<= i x-hi)
+                (<= j y-hi))
+           (b* ((indices  (create-tuple-indices x-hi y-hi))
+                (subtable (materialize-slli-subtable-prime  indices k word-size)))
+               (equal (tuple-lookup i j subtable)
+                      (slli-rust i j k word-size))))
+   :hints (("Goal" :in-theory (enable tuple-lookup))))
+ 
+ (local (in-theory (disable ash)))
+ (local (include-book "ihs/logops-lemmas" :dir :system))
+ (local (defthm lemma-1 (implies (integerp i) (equal (ash i 0) i)) :hints (("Goal" :use ((:instance ash* (count 0)))))))
+
+ (defthm lookup-sll-0-32-subtable-prime-correctness
+  (implies (and (natp i)
+                (natp j)
+                (<= i (expt 2  8))
+                (<= j (expt 2  8)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
+                (subtable (materialize-slli-subtable-prime indices 0 32)))
+               (equal (tuple-lookup i j subtable)
+                      (slli-rust i j 0 32))))
+  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable-prime) (:e create-tuple-indices)))))
+
+ (defthm lookup-sll-8-32-subtable-prime-correctness
+  (implies (and (natp i)
+                (natp j)
+                (<= i (expt 2  8))
+                (<= j (expt 2  8)))
+           (b* ((indices  (create-tuple-indices (expt 2  8) (expt 2 8)))
+                (subtable (materialize-slli-subtable-prime indices 8 32)))
+               (equal (tuple-lookup i j subtable)
+		      (slli-rust i j 8 32))))
+  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable-prime) (:e create-tuple-indices)))))
+
+ (defthm lookup-sll-16-32-subtable-prime-correctness
+  (implies (and (natp i)
+                (natp j)
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
+                (subtable (materialize-slli-subtable-prime indices 16 32)))
+               (equal (tuple-lookup i j subtable)
+		      (slli-rust i j 16 32))))
+  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable-prime) (:e create-tuple-indices)))))
+
+ (defthm lookup-sll-24-32-subtable-prime-correctness
+  (implies (and (natp i)
+                (natp j)
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
+                (subtable (materialize-slli-subtable-prime indices 24 32)))
+               (equal (tuple-lookup i j subtable)
+                      (slli-rust i j 24 32))))
+  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable-prime) (:e create-tuple-indices)))))
+
+;:i-am-here
+; (defthm lookup-sll-0-64-subtable-correctness
+;  (implies (and (natp i)
+;                (natp j)
+;                (<= i (expt 2 8))
+;                (<= j (expt 2 6)))
+;           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 6)))
+;                (subtable (materialize-slli-subtable-prime indices 0)))
+;               (equal (tuple-lookup i j subtable)
+;                      (ash i j))))
+;  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable-prime) (:e create-tuple-indices))
+;	          :use ((:instance lookup-slli-subtable-correctness (x-hi (expt 2 8)) (y-hi (expt 2 6)))))))
+;
+; (defthm lookup-sll-8-64-subtable-correctness
+;  (implies (and (natp i)
+;                (natp j)
+;                (<= i (expt 2 8))
+;                (<= j (expt 2 6)))
+;           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 6)))
+;                (subtable (materialize-slli-subtable-prime indices 8)))
+;               (equal (tuple-lookup i j subtable)
+;                      (ash i (+ j 8)))))
+;  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable-prime) (:e create-tuple-indices))
+;	          :use ((:instance lookup-slli-subtable-correctness (x-hi (expt 2 8)) (y-hi (expt 2 6)))))))
+;
+; (defthm lookup-sll-16-64-subtable-correctness
+;  (implies (and (natp i)
+;                (natp j)
+;                (<= i (expt 2 8))
+;                (<= j (expt 2 6)))
+;           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 6)))
+;                (subtable (materialize-slli-subtable-prime indices 16)))
+;               (equal (tuple-lookup i j subtable)
+;                      (ash i (+ j 16)))))
+;  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable-prime) (:e create-tuple-indices))
+;	          :use ((:instance lookup-slli-subtable-correctness (x-hi (expt 2 8)) (y-hi (expt 2 6)))))))
+;
+; (defthm lookup-sll-24-64-subtable-correctness
+;  (implies (and (natp i)
+;                (natp j)
+;                (<= i (expt 2 8))
+;                (<= j (expt 2 6)))
+;           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 6)))
+;                (subtable (materialize-slli-subtable-prime indices 24)))
+;               (equal (tuple-lookup i j subtable)
+;                      (ash i (+ j 24)))))
+;  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable-prime) (:e create-tuple-indices))
+;	          :use ((:instance lookup-slli-subtable-correctness (x-hi (expt 2 8)) (y-hi (expt 2 6)))))))
+;
+; (defthm lookup-sll-32-64-subtable-correctness
+;  (implies (and (natp i)
+;                (natp j)
+;                (<= i (expt 2 8))
+;                (<= j (expt 2 6)))
+;           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 6)))
+;                (subtable (materialize-slli-subtable-prime indices 32)))
+;               (equal (tuple-lookup i j subtable)
+;                      (ash i (+ j 32)))))
+;  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable-prime) (:e create-tuple-indices))
+;	          :use ((:instance lookup-slli-subtable-correctness (x-hi (expt 2 8)) (y-hi (expt 2 6)))))))
+;
