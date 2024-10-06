@@ -130,14 +130,28 @@
 ;;
 ;;
 
+;; Given an association list of (x y) operands, materialize an
+;; association list where each element is a key-value pair
+;;   key:    (x y)
+;;   value:  (if (< x y) 1 0)
 (defun materialize-ltu-subtable (idx-lst)
- (b* (((unless (alistp idx-lst))     nil)
+ (b* (;; Edge case
+      ((unless (alistp idx-lst))     nil)
+      ;; Base case
       ((if (atom idx-lst))           nil)
-      ((cons idx rst)            idx-lst)
-      ((unless (consp idx))          nil)
-      ((cons x y)                    idx))
-     (cons (cons idx (if (< x y) 1 0))
-           (materialize-ltu-subtable rst))))
+      ;; Bind head & tail in the index list
+      ((cons hd tl)              idx-lst)
+      ;; Edge case
+      ((unless (consp hd))           nil)
+      ;; Bind x & y operands in the head
+      ((cons x y)                     hd))
+     ;; Construct a key-value pair
+     ;;   key:    (x y)
+     ;;   value:  (if (= x y) 1 0)
+     ;; and append it to the rest of the ltu subtable
+     (cons (cons hd (if (< x y) 1 0))
+           (materialize-ltu-subtable tl))))
+
 
 (defthm alistp-of-materialize-ltu-subtable
  (alistp (materialize-ltu-subtable idx-lst)))
@@ -167,6 +181,8 @@
               (equal (assoc-equal (cons i j) subtable)
                      (cons (cons i j) (if (< i j) 1 0))))))
 
+;; Lookup values within the bounds of the subtable are
+;; equivalent to "<"
 (defthm lookup-ltu-subtable-correctness
  (implies (and (natp x-hi)
                (natp y-hi)
@@ -181,9 +197,3 @@
  :hints (("Goal" :in-theory (enable tuple-lookup))))
 
 
-;(verify-guards materialize-ltu-subtable)
-;;
-;;
-;;
-;;
-;;

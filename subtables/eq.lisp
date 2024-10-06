@@ -239,14 +239,27 @@
 ;;
 ;;
 
+;; Given an association list of (x y) operands, materialize an
+;; association list where each element is a key-value pair
+;;   key:    (x y)
+;;   value:  (if (= x y) 1 0)
 (defun materialize-eq-subtable (idx-lst)
- (b* (((unless (alistp idx-lst))     nil)
+ (b* (;; Edge case
+      ((unless (alistp idx-lst))     nil)
+      ;; Base case
       ((if (atom idx-lst))           nil)
-      ((cons idx rst)            idx-lst)
-      ((unless (consp idx))          nil)
-      ((cons x y)                    idx))
-     (cons (cons idx (if (= x y) 1 0))
-           (materialize-eq-subtable rst))))
+      ;; Bind head & tail in the index list
+      ((cons hd tl)              idx-lst)
+      ;; Edge case
+      ((unless (consp hd))           nil)
+      ;; Bind x & y operands in the head
+      ((cons x y)                     hd))
+     ;; Construct a key-value pair
+     ;;   key:    (x y)
+     ;;   value:  (if (= x y) 1 0)
+     ;; and append it to the rest of the eq subtable
+     (cons (cons hd (if (= x y) 1 0))
+           (materialize-eq-subtable tl))))
 
 (defthm alistp-of-materialize-eq-subtable
  (alistp (materialize-eq-subtable idx-lst)))
@@ -276,13 +289,15 @@
               (equal (assoc-equal (cons i j) subtable)
                      (cons (cons i j) (if (= i j) 1 0))))))
 
+;; Lookup values within the bounds of the subtable are
+;; equivalent to "equal"
 (defthm lookup-eq-subtable-correctness
  (implies (and (natp x-hi)
                (natp y-hi)
                (natp i)
                (natp j)
                (<= i x-hi)
-               (<= j y-hi) )
+               (<= j y-hi))
           (b* ((indices  (create-tuple-indices x-hi y-hi))
                (subtable (materialize-eq-subtable indices)))
               (equal (tuple-lookup i j subtable)
