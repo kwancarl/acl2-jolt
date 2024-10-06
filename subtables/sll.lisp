@@ -204,6 +204,19 @@
 ;;
 ;;
 
+;; semantics from the spec: (x << (y mod word-size)) mod (expt 2 (word-size - m * i))
+
+;; Would be nice to pass in `word-size` directly, but I don't know how to write logarithm
+(defun materialize-slli-subtable-prime (idx-lst i log-word-size)
+  (b* (((unless (alistp idx-lst))     nil)
+       ((if (atom idx-lst))           nil)
+       ((cons idx rst)            idx-lst)
+       ((unless (consp idx))          nil)
+       ((cons x y)                    idx))
+     (cons (cons idx (loghead (- (expt 2 log-word-size) i) 
+                               (ash x (loghead log-word-size y))))
+           (materialize-slli-subtable-prime rst i log-word-size))))
+
 (encapsulate
  nil
 

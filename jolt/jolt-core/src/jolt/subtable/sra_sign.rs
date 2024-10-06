@@ -22,7 +22,7 @@ impl<F: JoltField, const WORD_SIZE: usize> SraSignSubtable<F, WORD_SIZE> {
 impl<F: JoltField, const WORD_SIZE: usize> LassoSubtable<F> for SraSignSubtable<F, WORD_SIZE> {
     fn materialize(&self, M: usize) -> Vec<F> {
         // table[x | y] = (x_sign == 0) ? 0 : 0b11..100..0,
-        // where x_sign = (x >> ((WORD_SIZE - 1) & (log2(M) / 2))) & 1,
+        // where x_sign = (x >> ((WORD_SIZE - 1) % (log2(M) / 2))) & 1,
         // `0b11..100..0` has `WORD_SIZE` bits and `y % WORD_SIZE` ones
         let mut entries: Vec<F> = Vec::with_capacity(M);
 

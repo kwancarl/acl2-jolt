@@ -185,3 +185,5 @@ pub mod xor;
 
 #[cfg(test)]
 pub mod test;
+
+pub mod print;

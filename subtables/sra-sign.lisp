@@ -23,6 +23,9 @@
 
 ;; SRA-sign intended function & MLE correctness
 
+;; why not do this?
+;; masked-ones k w = (ash (ash 1 (- w k)) k)
+
 ;; 1...1 0...0
 ;; w - k   k
 ;; w = 32
@@ -231,6 +234,22 @@
 ;;					;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; 11...100...0 = (ash (1- (expt 2 k)) (- w k)),
+;; where there are `k` ones and word size `w`
+
+;; This subtable assumes that we will instantiate it with `m = 8`, hence we take `logbit 7 x`
+;; i.e. `idx-lst` is `(create-tuple-indices (1- (expt 2 8)) (1- (expt 2 8)))`
+(defun materialize-sra-sign-subtable-prime (idx-lst word-size)
+ (b* (((unless (alistp idx-lst))     nil)
+      ((if (atom idx-lst))           nil)
+      ((cons idx rst)            idx-lst)
+      ((unless (consp idx))          nil)
+      ((cons x y)                    idx))
+     (cons (cons idx (* (logbit 7 x) 
+                        (ash (1- (expt 2 (logand (1- word-size) y))) 
+                             (- word-size (logand (1- word-size) y)))))
+           (materialize-sra-sign-subtable-prime rst word-size))))
+
 (defun materialize-sra-sign-subtable-8 (idx-lst)
  (b* (((unless (alistp idx-lst))     nil)
       ((if (atom idx-lst))           nil)
@@ -239,6 +258,11 @@
       ((cons x y)                    idx))
      (cons (cons idx (sra-sign-8 x y))
            (materialize-sra-sign-subtable-8 rst))))
+
+ ;; expected semantics from spec & Rust version
+ ;; materialize-sra-sign-subtable (idx-lst log-word-size)
+ ;; where `log-word-size` is 5 or 6
+ ;; (ash (ash x i) (- (logtail log-word-size y)))
 
 (defthm alistp-of-materialize-sra-sign-subtable-8
  (alistp (materialize-sra-sign-subtable-8 idx-lst)))
