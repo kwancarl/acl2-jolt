@@ -14,15 +14,6 @@
 ;;
 ;; (ash (ash u8-1  8)
 
-(defun materialize-srli-subtable-prime (idx-lst i word-size)
-  (b* (((unless (alistp idx-lst))     nil)
-       ((if (atom idx-lst))           nil)
-       ((cons idx rst)            idx-lst)
-       ((unless (consp idx))          nil)
-       ((cons x y)                    idx))
-     (cons (cons idx (ash (ash x i) (- (mod y word-size))))
-           (materialize-srli-subtable-prime rst i word-size))))
-
 (encapsulate 
  nil
 
@@ -234,3 +225,108 @@
   :hints (("Goal" :cases ((= k y) (< y k) (< k y))))))
 
 
+
+
+;;
+;;
+;;   MATERIALIZE SRLi subtables with trucation
+;;
+;;
+
+(defun srli-rust (x y i word-size)
+ (ash (ash x i) (- (mod y word-size))))
+
+
+(defun materialize-srli-subtable-prime (idx-lst i word-size)
+  (b* (((unless (alistp idx-lst))     nil)
+       ((if (atom idx-lst))           nil)
+       ((cons idx rst)            idx-lst)
+       ((unless (consp idx))          nil)
+       ((cons x y)                    idx))
+     (cons (cons idx (srli-rust x y i word-size))
+           (materialize-srli-subtable-prime rst i word-size))))
+
+ (defthm alistp-of-materialize-srli-subtable-prime
+  (alistp (materialize-srli-subtable-prime idx-lst i word-size)))
+ 
+ (defthm member-idx-lst-assoc-materialize-srli-subtable-prime-prime
+  (implies (and (alistp idx-lst) (member idx idx-lst))
+           (assoc idx (materialize-srli-subtable-prime idx-lst i word-size))))
+ 
+ (defthm assoc-member-srli-subtable-prime
+  (implies (assoc (cons i j) (materialize-srli-subtable-prime idx-lst k word-size))
+           (member (cons i j) idx-lst)))
+ 
+ (defthm assoc-srli-subtable-prime
+  (implies (assoc (cons i j) (materialize-srli-subtable-prime idx-lst k word-size))
+           (equal (assoc (cons i j) (materialize-srli-subtable-prime idx-lst k word-size))
+                  (cons (cons i j) (srli-rust i j k word-size)))))
+ 
+ (defthm srli-subtable-prime-correctness
+  (implies (and (natp x-hi)
+                (natp y-hi)
+                (natp i)
+                (natp j)
+                (<= i x-hi)
+                (<= j y-hi) )
+           (b* ((indices  (create-tuple-indices x-hi y-hi))
+                (subtable (materialize-srli-subtable-prime indices k word-size)))
+               (equal (assoc-equal (cons i j) subtable)
+                      (cons (cons i j) (srli-rust i j k word-size))))))
+
+ (defthm lookup-srli-subtable-prime-correctness
+  (implies (and (natp x-hi) 
+                (natp y-hi)
+                (natp i) 
+                (natp j) 
+                (<= i x-hi)
+                (<= j y-hi))
+           (b* ((indices  (create-tuple-indices x-hi y-hi))
+                (subtable (materialize-srli-subtable-prime indices k word-size)))
+               (equal (tuple-lookup i j subtable) (srli-rust i j k word-size))))
+  :hints (("Goal" :in-theory (enable tuple-lookup))))
+
+ (local (in-theory (disable ash)))
+ (local (include-book "ihs/logops-lemmas" :dir :system))
+ (local (defthm lemma-1 (implies (integerp i) (equal (ash i 0) i)) :hints (("Goal" :use ((:instance ash* (count 0)))))))
+
+ (defthm lookup-srl-0-32-subtable-prime-correctness
+  (implies (and (natp i) 
+                (natp j) 
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
+                (subtable (materialize-srli-subtable-prime indices 0 32)))
+               (equal (tuple-lookup i j subtable)
+                      (srli-rust i j 0 32))))
+  :hints (("Goal" :in-theory (disable (:e materialize-srli-subtable-prime) (:e create-tuple-indices)))))
+
+ (defthm lookup-srl-8-32-subtable-prime-correctness
+  (implies (and (natp i) 
+                (natp j) 
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
+           (b* ((indices  (create-tuple-indices (expt 2  8) (expt 2 8)))
+                (subtable (materialize-srli-subtable-prime indices 8 32)))
+               (equal (tuple-lookup i j subtable) (srli-rust i j 8 32))))
+  :hints (("Goal" :in-theory (disable (:e materialize-srli-subtable-prime) (:e create-tuple-indices)))))
+
+ (defthm lookup-srl-16-32-subtable-prime-correctness
+  (implies (and (natp i) 
+                (natp j) 
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
+                (subtable (materialize-srli-subtable-prime indices 16 32)))
+               (equal (tuple-lookup i j subtable) (srli-rust i j 16 32))))
+  :hints (("Goal" :in-theory (disable (:e materialize-srli-subtable-prime) (:e create-tuple-indices)))))
+
+ (defthm lookup-srl-24-32-subtable-prime-correctness
+  (implies (and (natp i) 
+                (natp j) 
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
+                (subtable (materialize-srli-subtable-prime indices 24 32)))
+               (equal (tuple-lookup i j subtable) (srli-rust i j 24 32))))
+  :hints (("Goal" :in-theory (disable (:e materialize-srli-subtable-prime) (:e create-tuple-indices)))))
