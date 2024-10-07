@@ -99,9 +99,9 @@
        (u8-3 (slli-rust u8-3 shift-amount 24 32)))
       ;; COMBINE
       (+ (* u8-3 (expt 2 24))
-	 (* u8-2 (expt 2 16))
-	 (* u8-1 (expt 2  8))
-	    u8-0	     )))
+         (* u8-2 (expt 2 16))
+         (* u8-1 (expt 2  8))
+         u8-0	     )))
 
 (gl::def-gl-thm sll-semantics-32-prime-correctness
  :hyp (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
@@ -134,22 +134,20 @@
        (u8-3 (tuple-lookup u8-3 shift-amount slli-subtable-3)))
       ;; COMBINE
       (+ (* u8-3 (expt 2 24)) 
-	 (* u8-2 (expt 2 16)) 
-	 (* u8-1 (expt 2  8)) 
-	    u8-0	    )))
+         (* u8-2 (expt 2 16)) 
+         (* u8-1 (expt 2  8)) 
+         u8-0	    )))
 
 
 (defthm sll-32-prime-sll-semantics-32-prime-equiv
  (equal (sll-32-prime x y) (sll-semantics-32-prime x y))
  :hints (("Goal" :in-theory (e/d (sll-semantics-32-prime sll-32-prime) ((:e expt) (:e create-tuple-indices) slli-rust)))))
 
-
 (defthm sll-32-prime-correctness
  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
           (equal (sll-32-prime x y) 
 	         (mod (ash x (part-select y :low 0 :width 5))
 		      (expt 2 32)))))
-
 
 ;; 64-BIT
 
