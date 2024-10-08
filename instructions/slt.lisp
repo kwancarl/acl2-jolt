@@ -23,7 +23,7 @@
 (define slt-semantics-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
   (b* (((unless (unsigned-byte-p 32 x)) 0)
        ((unless (unsigned-byte-p 32 y)) 0)
-       ;; CHUNK
+       ;; Chunk
        (x8-3 (part-select x :low  0 :width 8))
        (x8-2 (part-select x :low  8 :width 8))
        (x8-1 (part-select x :low 16 :width 8))
@@ -32,7 +32,7 @@
        (y8-2 (part-select y :low  8 :width 8))
        (y8-1 (part-select y :low 16 :width 8))
        (y8-0 (part-select y :low 24 :width 8))
-       ;; LOOKUP SEMANTICS
+       ;; Lookup semantics
        (L    (logbit 7 x8-0))
        (R    (logbit 7 y8-0))
        (Z0   (if (< (loghead 7 x8-0) (loghead 7 y8-0)) 1 0))
@@ -43,7 +43,7 @@
        (w1   (if (= x8-1 y8-1) 1 0))
        (w2   (if (= x8-2 y8-2) 1 0))
        (?w3  (if (= x8-3 y8-3) 1 0))) ;; ignore w3
-      ;; COMBINE
+      ;; Combine
       (b-xor (b-and L (b-xor R 1))
 	     (b-and (b-xor (b-and (b-xor L 1) (b-xor R 1)) (b-and L R))
                     (+    z0
@@ -64,7 +64,7 @@
        (y8-2 (part-select y :low  8 :width 8))
        (y8-1 (part-select y :low 16 :width 8))
        (y8-0 (part-select y :low 24 :width 8))
-       ;; MATERIALIZE SUBTABLES 
+       ;; Materialize subtables 
        (indices            (create-tuple-indices (expt 2 8) (expt 2 8)))
        (eq-subtable        (materialize-eq-subtable          indices))
        (ltu-subtable       (materialize-ltu-subtable         indices))
@@ -72,7 +72,7 @@
        (lt-abs-subtable    (materialize-lt-abs-subtable-8    indices))
        (left-msb-subtable  (materialize-left-msb-subtable-8  indices))
        (right-msb-subtable (materialize-right-msb-subtable-8 indices))
-       ;; LOOKUPS
+       ;; Perform lookups
        (L    (tuple-lookup x8-0 y8-0 left-msb-subtable))
        (R    (tuple-lookup x8-0 y8-0 right-msb-subtable))
 
@@ -100,7 +100,7 @@
 	(slt-semantics-32 x y))
  :hints (("Goal" :in-theory (e/d (slt-32 slt-semantics-32) ((:e expt) (:e create-tuple-indices))))))
 
-;; SEMANTIC CORRECTNESS OF SLT
+;; Semantic correctness of slt
 (gl::def-gl-thm slt-semantics-32-correctness
  :hyp (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
  :concl (equal (slt-semantics-32 x y)
@@ -119,7 +119,7 @@
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ((unless (unsigned-byte-p 64 y)) 0)
-       ;; CHUNK
+       ;; Chunk
        (x8-7 (part-select x :low  0 :width 8))
        (x8-6 (part-select x :low  8 :width 8))
        (x8-5 (part-select x :low 16 :width 8))
@@ -136,7 +136,7 @@
        (y8-2 (part-select y :low 40 :width 8))
        (y8-1 (part-select y :low 48 :width 8))
        (y8-0 (part-select y :low 56 :width 8))
-       ;; LOOKUP SEMANTICS
+       ;; Lookup semantics
        (L    (logbit 7 x8-0))
        (R    (logbit 7 y8-0))
 
@@ -157,7 +157,7 @@
        (w5   (if (= x8-5 y8-5) 1 0))
        (w6   (if (= x8-6 y8-6) 1 0))
        (?w7  (if (= x8-7 y8-7) 1 0))) ;; ignore w7
-      ;; COMBINE
+      ;; Combine
       ;; L * (1 - R) + ((1 - L) * (1 - R) + L * R) * rest
       (b-xor (b-and L (b-xor R 1))
 	     (b-and (b-xor (b-and (b-xor L 1) (b-xor R 1)) (b-and L R))
@@ -174,7 +174,7 @@
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ((unless (unsigned-byte-p 64 y)) 0)
-       ;; CHUNK
+       ;; Chunk
        (x8-7 (part-select x :low  0 :width 8))
        (x8-6 (part-select x :low  8 :width 8))
        (x8-5 (part-select x :low 16 :width 8))
@@ -191,7 +191,7 @@
        (y8-2 (part-select y :low 40 :width 8))
        (y8-1 (part-select y :low 48 :width 8))
        (y8-0 (part-select y :low 56 :width 8))
-       ;; MATERIALIZE SUBTABLES 
+       ;; Materialize subtables 
        (indices            (create-tuple-indices (expt 2 8) (expt 2 8)))
        (eq-subtable        (materialize-eq-subtable          indices))
        (ltu-subtable       (materialize-ltu-subtable         indices))
@@ -199,7 +199,7 @@
        (lt-abs-subtable    (materialize-lt-abs-subtable-8    indices))
        (left-msb-subtable  (materialize-left-msb-subtable-8  indices))
        (right-msb-subtable (materialize-right-msb-subtable-8 indices))
-       ;; LOOKUPS
+       ;; Lookups
        (L    (tuple-lookup x8-0 y8-0 left-msb-subtable))
        (R    (tuple-lookup x8-0 y8-0 right-msb-subtable))
 
@@ -222,7 +222,7 @@
        (w5   (tuple-lookup x8-5 y8-5 eq-subtable))
        (w6   (tuple-lookup x8-6 y8-6 eq-subtable))
        (?w7  (tuple-lookup x8-7 y8-7 eq-subtable))) ;; ignore w7
-      ;; COMBINE
+      ;; Combine
       ;; L * (1 - R) + ((1 - L) * (1 - R) + L * R) * rest
       (b-xor (b-and L (b-xor R 1))
 	     (b-and (b-xor (b-and (b-xor L 1) (b-xor R 1)) (b-and L R))
@@ -240,7 +240,7 @@
 	(slt-semantics-64 x y))
  :hints (("Goal" :in-theory (e/d (slt-64 slt-semantics-64) ((:e expt) (:e create-tuple-indices))))))
 
-;; SEMANTIC CORRECTNESS OF SLT
+;; Semantic correctness of slt
 (gl::def-gl-thm slt-semantics-64-correctness
  :hyp (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
  :concl (equal (slt-semantics-64 x y)

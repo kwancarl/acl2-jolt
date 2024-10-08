@@ -18,7 +18,7 @@
 (define bne-semantics-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
   (b* (((unless (unsigned-byte-p 32 x)) 0)
        ((unless (unsigned-byte-p 32 y)) 0)
-       ;; CHUNK
+       ;; Chunk
        (x8-3 (part-select x :low  0 :width 8))
        (x8-2 (part-select x :low  8 :width 8))
        (x8-1 (part-select x :low 16 :width 8))
@@ -27,19 +27,19 @@
        (y8-2 (part-select y :low  8 :width 8))
        (y8-1 (part-select y :low 16 :width 8))
        (y8-0 (part-select y :low 24 :width 8))
-       ;; LOOKUP SEMANTICS
+       ;; Lookup semantics
        (w0   (if (= x8-0 y8-0) 1 0))
        (w1   (if (= x8-1 y8-1) 1 0))
        (w2   (if (= x8-2 y8-2) 1 0))
        (w3   (if (= x8-3 y8-3) 1 0)))
-      ;; COMBINE
+      ;; Combine
       (- 1 (* w0 w1 w2 w3))))
 
 (define bne-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 32 x)) 0)
        ((unless (unsigned-byte-p 32 y)) 0)
-       ;; CHUNK
+       ;; Chunk
        (x8-3 (part-select x :low  0 :width 8))
        (x8-2 (part-select x :low  8 :width 8))
        (x8-1 (part-select x :low 16 :width 8))
@@ -51,19 +51,19 @@
        ;; MATERIALIZE SUBTABLES 
        (indices      (create-tuple-indices (expt 2 8) (expt 2 8)))
        (eq-subtable  (materialize-eq-subtable  indices))
-       ;; LOOKUPS
+       ;; Perform lookups
        (w0   (tuple-lookup x8-0 y8-0 eq-subtable))
        (w1   (tuple-lookup x8-1 y8-1 eq-subtable))
        (w2   (tuple-lookup x8-2 y8-2 eq-subtable))
        (w3   (tuple-lookup x8-3 y8-3 eq-subtable)))
-      ;; COMBINE
+      ;; Combine
       (- 1 (* w0 w1 w2 w3))))
 
 (defthm bne-32-bne-semantics-32-equiv
  (equal (bne-32 x y) (bne-semantics-32 x y))
  :hints (("Goal" :in-theory (e/d (bne-32 bne-semantics-32) ((:e expt))))))
 
-;; SEMANTIC CORRECTNESS OF BNE
+;; Semantic correctness of bne
 (gl::def-gl-thm bne-semantics-32-correctness
  :hyp (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
  :concl (equal (bne-semantics-32 x y) (if (= x y) 0 1))
@@ -79,7 +79,7 @@
 (define bne-semantics-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ((unless (unsigned-byte-p 64 y)) 0)
-       ;; CHUNK
+       ;; Chunk
        (x8-7 (part-select x :low  0 :width 8))
        (x8-6 (part-select x :low  8 :width 8))
        (x8-5 (part-select x :low 16 :width 8))
@@ -96,7 +96,7 @@
        (y8-2 (part-select y :low 40 :width 8))
        (y8-1 (part-select y :low 48 :width 8))
        (y8-0 (part-select y :low 56 :width 8))
-       ;; LOOKUP SEMANTICS
+       ;; Lookup semantics
        (w0   (if (= x8-0 y8-0) 1 0))
        (w1   (if (= x8-1 y8-1) 1 0))
        (w2   (if (= x8-2 y8-2) 1 0))
@@ -105,14 +105,14 @@
        (w5   (if (= x8-5 y8-5) 1 0))
        (w6   (if (= x8-6 y8-6) 1 0))
        (w7   (if (= x8-7 y8-7) 1 0)))
-      ;; COMBINE
+      ;; Combine
       (- 1 (* w0 w1 w2 w3 w4 w5 w6 w7))))
 
 (define bne-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ((unless (unsigned-byte-p 64 y)) 0)
-       ;; CHUNK
+       ;; Chunk
        (x8-7 (part-select x :low  0 :width 8))
        (x8-6 (part-select x :low  8 :width 8))
        (x8-5 (part-select x :low 16 :width 8))
@@ -129,10 +129,10 @@
        (y8-2 (part-select y :low 40 :width 8))
        (y8-1 (part-select y :low 48 :width 8))
        (y8-0 (part-select y :low 56 :width 8))
-       ;; MATERIALIZE SUBTABLES 
+       ;; Materialize subtables 
        (indices      (create-tuple-indices (expt 2 8) (expt 2 8)))
        (eq-subtable  (materialize-eq-subtable  indices))
-       ;; LOOKUPS
+       ;; Perform lookups
        (w0   (tuple-lookup x8-0 y8-0 eq-subtable))
        (w1   (tuple-lookup x8-1 y8-1 eq-subtable))
        (w2   (tuple-lookup x8-2 y8-2 eq-subtable))
@@ -141,14 +141,14 @@
        (w5   (tuple-lookup x8-5 y8-5 eq-subtable))
        (w6   (tuple-lookup x8-6 y8-6 eq-subtable))
        (w7   (tuple-lookup x8-7 y8-7 eq-subtable)))
-      ;; COMBINE
+      ;; Combine
       (- 1 (* w0 w1 w2 w3 w4 w5 w6 w7))))
 
 (defthm bne-64-bne-semantics-64-equiv
  (equal (bne-64 x y) (bne-semantics-64 x y))
  :hints (("Goal" :in-theory (e/d (bne-64 bne-semantics-64) ((:e expt))))))
 
-;; SEMANTIC CORRECTNESS OF BNE
+;; Semantic correctness of bne
 (gl::def-gl-thm bne-semantics-64-correctness
  :hyp (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
  :concl (equal (bne-semantics-64 x y) (if (= x y) 0 1))

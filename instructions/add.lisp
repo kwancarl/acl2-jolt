@@ -1,10 +1,7 @@
 (in-package "ACL2")
-(include-book "std/util/bstar" :dir :system)
-(include-book "std/util/define" :dir :system)
-(include-book "centaur/gl/gl" :dir :system)
-(include-book "centaur/bitops/ihsext-basics" :dir :system)
 (include-book "centaur/bitops/part-select" :DIR :SYSTEM)
 (include-book "centaur/bitops/merge" :DIR :SYSTEM)
+(include-book "centaur/gl/gl" :DIR :SYSTEM)
 
 (include-book "../subtables/truncate-overflow")
 (include-book "../subtables/identity")
