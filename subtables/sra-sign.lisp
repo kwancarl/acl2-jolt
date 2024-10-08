@@ -10,16 +10,8 @@
 (local (include-book "centaur/bitops/fast-logext" :dir :system))
 (include-book "centaur/bitops/part-select" :dir :system)
 
-
 (include-book "eq")
 (include-book "subtable")
-
-
-;(local (include-book "arithmetic/top" :dir :system))
-;(local (include-book "ihs/logops-lemmas" :dir :system))
-
-
-
 
 ;; SRA-sign intended function & MLE correctness
 
@@ -74,13 +66,6 @@
 
 (local (in-theory (enable logcons)))
 
-;(en
-;(defthm masked-ones-slow-and-fast
-; (implies (and (natp w) (natp k) (< k w))
-;	  (equal (masked-ones-slow k w) (masked-ones k w)))
-; :hints (("Subgoal *1/4" :expand (masked-ones k w))))
-;:i-am-here
-
 (define sra-sign-helper ((sign bitp) (y natp) (k natp) (w natp))
  (if (zp k)
      (* (eqw k y) sign (masked-ones k w))
@@ -118,8 +103,7 @@
   (* (logbit 7 x) (masked-ones y 32)))
 
 (gl::def-gl-thm sra-sign-32-chunk-correctness
-  :hyp (and ;(unsigned-byte-p  5 y) 
-            (unsigned-byte-p 32 x)) 
+  :hyp (and (unsigned-byte-p 32 x)) 
   :concl (equal (logbit 7 (part-select x :low 24 :width 8)) 
 		(logbit 31 x))
   :g-bindings (gl::auto-bindings (:nat x 32)))
@@ -129,9 +113,6 @@
 	  (equal (sra-sign-8 (part-select x :low 24 :width 8) y) 
 		 (sra-sign-32 x y)))
  :hints (("Goal" :in-theory (enable sra-sign-8 sra-sign-32))))
-
-;(include-book "centaur/fgl/top" :dir :system)
-;(value-triple (acl2::tshell-ensure))
 
 (gl::def-gl-thm masked-one-easy-gl
  :hyp (unsigned-byte-p 5 y)
@@ -144,48 +125,6 @@
  :concl (equal (masked-ones-slow y 32)
 	       (masked-ones-fast y 32))
  :g-bindings (gl::auto-bindings (:nat y 5)))
-
-
-;:i-am-here
-;
-;(gl::def-gl-param-thm masked-one-fast-and-slow
-; :hyp (unsigned-byte-p 5 y)
-; :concl (equal (masked-ones y 32)
-;	       (masked-ones-fast y 32))
-; :param-bindings
-; `((((low  0) (high  8)) ,(gl::auto-bindings (:nat y 5)))
-;   (((low  8) (high 12)) ,(gl::auto-bindings (:nat y 5)))
-;   (((low 12) (high 32)) ,(gl::auto-bindings (:nat y 5)))
-;   )
-; :param-hyp (and (<= low y) (< y high))
-; :cov-bindings (gl::auto-bindings (:nat y 5)))
-;:i-am-here
-
-
-;(fgl::def-fgl-thm logbitp-<-equiv-1
-; :hyp (and (unsigned-byte-p 24 x)
-;	   (logbitp 23 x))
-; :concl (and (<= (expt 2 23) x)
-;	     (<  x (expt 2 24))))
-
-
-;(fgl::def-fgl-thm logbitp-<-equiv-2
-; :hyp (and (unsigned-byte-p 25 x)
-;	   (<= (expt 2 24) x)   
-;	   (<  x (expt 2 25)))
-; :concl (logbitp 24 x))
-
-;(gl::def-gl-param-thm masked-ones-correctness
-;  :hyp (and (unsigned-byte-p 5 y) 
-;	    (unsigned-byte-p 32 x))
-;  :concl (equal (logextu 32 (- 32 y) (ash x (- y)))
-;		(+ (* (logbit 31 x) (masked-ones y 32))
-;		   (ash x (- y))))
-; :param-bindings
-; `((((low  0) (high 32)) ,(gl::auto-bindings (:nat y 5) (:nat x 32))))
-;   ;(((low 16) (high 32)) ,(gl::auto-bindings (:nat y 5) (:nat x 32))))
-; :param-hyp (and (<= low y) (< y high))
-; :cov-bindings (gl::auto-bindings (:nat y 5) (:nat x 32)))
 
 (gl::def-gl-thm masked-ones-correctness
   :hyp (and (unsigned-byte-p 5 y) 
@@ -203,14 +142,6 @@
 		   (ash x (- y))))
   :g-bindings (gl::auto-bindings (:nat y 5) (:nat x 32)))
 
-;; (gl::def-gl-thm sra-sign-64-correctness
-;;   :hyp (and (unsigned-byte-p 6 y) 
-;; 	    (unsigned-byte-p 64 x))
-;;   :concl (equal (logextu 64 (- 64 y) (ash x (- y)))
-;; 		(+ (sra-sign-8 x y)
-;; 		   (ash x (- y))))
-;;   :g-bindings (gl::auto-bindings (:nat y 6) (:nat x 64)))
-
 (gl::def-gl-thm sra-sign-8-correctness
   :hyp (and (unsigned-byte-p 5 y) 
 	    (unsigned-byte-p 32 x))
@@ -224,9 +155,6 @@
  	   (equal (logextu 32 (- 32 y) (ash x (- y)))
 		  (+ (sra-sign-8 (part-select x :low 24 :width 8) y)
 		     (ash x (- y))))))
-
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;					;;
@@ -305,13 +233,3 @@
               (equal (tuple-lookup i j subtable)
                      (sra-sign-8 i j))))
  :hints (("Goal" :in-theory (e/d (tuple-lookup) ()))))
-
-
-
-
-
-
-
-
-
-

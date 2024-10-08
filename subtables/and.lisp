@@ -2,10 +2,7 @@
 (include-book "std/util/bstar" :dir :system)
 (include-book "std/util/define" :dir :system)
 (include-book "centaur/gl/gl" :dir :system)
-;(local (include-book "ihs/basic-definitions" :dir :system))
 (local (include-book "centaur/bitops/ihsext-basics" :dir :system))
-;(local (include-book "centaur/bitops/fast-logext" :dir :system))
-;(local (include-book "arithmetic/top" :dir :system))
 (local (include-book "ihs/logops-lemmas" :dir :system))
 
 (include-book "subtable")
@@ -136,5 +133,3 @@
            (unsigned-byte-p 64 y))
  :concl (equal (and-wc x y 8) (andw x y))
  :g-bindings (gl::auto-bindings (:mix (:nat x 64) (:nat y 64))))
-
-

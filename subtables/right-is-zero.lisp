@@ -9,12 +9,12 @@
 
 (include-book "eq")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;;	               ;;
+;;    right is zero    ;;
+;;	               ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;
-;;	    ;;
-;;    right is zero
-;;	    ;;
-;;;;;;;;;;;;;;
 (define right-is-zero-w (x (y :type unsigned-byte))
   :irrelevant-formals-ok t
   :returns (zero bitp)

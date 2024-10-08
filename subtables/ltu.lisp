@@ -10,23 +10,11 @@
 (include-book "eq")
 (include-book "subtable")
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;		         	;;
-;;    Set Less Than Unsigned    ;;
-;;			        ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;(define ltu-i ((x :type unsigned-byte)
-;	       (y :type unsigned-byte)
-;               (i natp))
-;  :returns (lti bitp)
-;  (b-and (b-ltu (logbit i x) (logbit i y))
-;	 (eqw (logtail i x) (logtail i y))))
-;
-;(define ltu-0 ((x :type unsigned-byte) (y :type unsigned-byte))
-;  :enabled t
-;  (b-and (b-ltu (logbit 1 x) (logbit 1 y))
-;	 (eqw (logtail 1 x) (logtail 1 y))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;		            ;;
+;;    Less Than Unsigned    ;;
+;;			    ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (local
   (defthm loghead-logcar-equiv
@@ -49,17 +37,6 @@
     (implies (and (bitp x) (bitp y))
 	     (equal (b-ltu-w x y)
 		    (if (< x y) 1 0)))))
-
-
-
-
-
-;(local
-;  (defthm integer-length-lemma
-;   (implies (equal x 0)
-;	    (equal (integer-length x) 0))
-;   :hints (("Goal" :in-theory (enable bitp integer-length)))))
-
 
 ;; Compute the MLE for LTU
 (define ltu-w ((x :type unsigned-byte) (y :type unsigned-byte))
@@ -86,8 +63,6 @@
               (unsigned-byte-p 32 y))
   :concl (equal (ltu-w x y) (if (< x y) 1 0))
   :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
-
-
 
 (define ltuwc ((x :type unsigned-byte) (y :type unsigned-byte) (wc posp))
   :returns (ltu? bitp) ; :hyp :guard)
@@ -124,11 +99,11 @@
 
 
 
-;;;;;
-;;
-;;   MATERIALIZE LTU SUBTABLES    ;;
-;;
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                 ;;
+;;    MATERIALIZE LTU SUBTABLES    ;;
+;;                                 ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Given an association list of (x y) operands, materialize an
 ;; association list where each element is a key-value pair
@@ -195,5 +170,3 @@
               (equal (tuple-lookup i j subtable)
                      (if (< i j) 1 0))))
  :hints (("Goal" :in-theory (enable tuple-lookup))))
-
-

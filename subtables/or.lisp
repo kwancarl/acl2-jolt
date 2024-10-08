@@ -12,7 +12,7 @@
 
 (include-book "subtable")
 
-;; MATERIALIZE SUBTABLES FOR "OR"
+;; Materialize subtables for "or"
 
 (defun materialize-ior-subtable (idx-lst)
  (b* (((unless (alistp idx-lst))     nil)
@@ -143,22 +143,3 @@
            (unsigned-byte-p 64 y))
  :concl (equal (or-wc x y 8) (orw x y))
  :g-bindings (gl::auto-bindings (:mix (:nat x 64) (:nat y 64))))
-
-
-;(defthm orw-or--wc-equiv
-; (implies (and (natp x) (natp y))
-;          (equal (or-wc x y 8) (orw x y)))
-; :hints (("Goal" :in-theory (enable or-wc orw))))
-
-
-
-
-
-;; ------------ x
-;; ------------ y
-;; to indices
-;; ---- ---- ---- ---- x
-;; ---- ---- ---- ---- y
-;;
-;; x
-

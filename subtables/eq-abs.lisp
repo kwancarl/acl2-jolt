@@ -10,11 +10,11 @@
 (include-book "eq")
 (include-book "subtable")
 
-;;;;;;;;;;;;;;
-;;	    ;;
-;;    EQ-ABS    ;;
-;;	    ;;
-;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;	        ;;
+;;    Eq-abs    ;;
+;;	        ;;
+;;;;;;;;;;;;;;;;;;
 (define eq-abs-w ((x :type unsigned-byte) (y :type unsigned-byte) (w posp))
   :returns (eq? bitp)
   (b* (((unless (and (natp x) (natp y) (posp w))) 0)
@@ -27,7 +27,6 @@
   :concl (equal (logbitp 31 x)
               (<= (expt 2 31) x))
   :g-bindings (gl::auto-bindings (:nat x 32)))
-
 
 (define eq-abs-8 ((x (unsigned-byte-p 8 x)) (y (unsigned-byte-p 8 y)))
   :enabled t
@@ -46,7 +45,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                      ;;
-;;    MATERIALIZE eq-abs SUBTABLE   ;;
+;;    Materialize eq-abs subtable       ;;
 ;;                                      ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -100,4 +99,3 @@
               (equal (tuple-lookup i j subtable)
                      (eq-abs-8 i j))))
  :hints (("Goal" :in-theory (e/d (tuple-lookup) ()))))
-

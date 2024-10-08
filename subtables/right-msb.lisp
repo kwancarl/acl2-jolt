@@ -10,11 +10,12 @@
 (include-book "subtable")
 
 
-;;;;;;;;;;;;;;
-;;	    ;;
-;;    right msb
-;;	    ;;
-;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;
+;;	           ;;
+;;    right msb    ;;
+;;	           ;;
+;;;;;;;;;;;;;;;;;;;;;
+
 (define right-msb-8 (x (y :type unsigned-byte))
   :irrelevant-formals-ok t
   :ignore-ok t
@@ -27,19 +28,6 @@
  :concl (equal (right-msb-8 x y)
                (if (<= (expt 2 7) y) 1 0))
  :g-bindings (gl::auto-bindings (:nat y 8)))
-
-;(define right-msb-32 (x (y :type unsigned-byte))
-;  :irrelevant-formals-ok t
-;  :ignore-ok t
-;  :returns (msb bitp)
-; (logbit 31 y))
-;
-;(gl::def-gl-thm right-msb-32-correctness
-; :hyp (unsigned-byte-p 32 y)
-; :concl (equal (right-msb x y)
-;               (if (<= (expt 2 31) y) 1 0))
-; :g-bindings (gl::auto-bindings (:nat y 8)))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                      ;;

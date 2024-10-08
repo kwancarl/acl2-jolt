@@ -168,26 +168,6 @@
             ("Subgoal *1/3" :use ((:instance equal-logapp-loghead-logtail-k
 					     (k wc)))))))
 
-;;
-;(include-book "arithmetic/top" :dir :system)
-(defthm foo 
- (implies (and (natp x) (not (equal x 0)) (not (equal x 1)))
-	  (< (integer-length (logcdr x))
-	     (integer-length x)))
- :hints (("Goal" :in-theory (enable integer-length logcdr))))
-;
-;(def-gl-thm bar
-; :hyp (and (bitp x) (bitp y))
-; :concl (equal (b-xor (b-and x y) (b-and (b-xor x 1) (b-xor y 1)))
-;	       (if (equal x y) 1 0))
-; :g-bindings (gl::auto-bindings (:nat x 1) (:nat y 1)))
-;
-;(def-gl-thm bar-2
-; :hyp (and (bitp x) (bitp y))
-; :concl (equal (equal (b-xor (b-and x y) (b-and (b-xor x 1) (b-xor y 1))) 1)
-;	       (equal x y))
-; :g-bindings (gl::auto-bindings (:nat x 1) (:nat y 1)))
-
 ;; Equality of two bit, computes
 ;; x * y + (1 - x) * (1 - y)
 (define b-eq-w ((x bitp) (y bitp))
@@ -303,4 +283,3 @@
               (equal (tuple-lookup i j subtable)
                      (if (= i j) 1 0))))
  :hints (("Goal" :in-theory (enable tuple-lookup))))
-

@@ -229,7 +229,7 @@
 
 ;;
 ;;
-;;   MATERIALIZE SRLi subtables with trucation
+;;   Materialize SRLi subtables with trucation
 ;;
 ;;
 

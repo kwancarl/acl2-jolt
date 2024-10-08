@@ -10,11 +10,12 @@
 (include-book "eq")
 (include-book "subtable")
 
-;;;;;;;;;;;;;;
-;;	    ;;
+;;;;;;;;;;;;;;;;;;
+;;	        ;;
 ;;    LT-ABS    ;;
-;;	    ;;
-;;;;;;;;;;;;;;
+;;	        ;;
+;;;;;;;;;;;;;;;;;;
+
 (define lt-abs-8 ((x (unsigned-byte-p 8 x)) (y (unsigned-byte-p 8 y)))
   :enabled t
   :returns (lt? bitp)
@@ -30,11 +31,11 @@
          (if (< x-abs y-abs) 1 0))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                      ;;
-;;    MATERIALIZE LT-ABS SUBTABLE   ;;
-;;                                      ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                   ;;
+;;    MATERIALIZE LT-ABS SUBTABLE    ;;
+;;                                   ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun materialize-lt-abs-subtable-8 (idx-lst)
  (b* (((unless (alistp idx-lst))     nil)
@@ -86,4 +87,3 @@
               (equal (tuple-lookup i j subtable)
                      (lt-abs-8 i j))))
  :hints (("Goal" :in-theory (e/d (tuple-lookup) ()))))
-

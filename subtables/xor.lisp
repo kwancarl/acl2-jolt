@@ -4,7 +4,7 @@
 
 (include-book "subtable")
 
-;; MATERIALIZE SUBTABLES FOR XOR
+;; Materialize subtables for xor
 (encapsulate 
  nil
  (defun materialize-xor-subtable (idx-lst)
@@ -53,7 +53,8 @@
                 (<= j y-hi) )
            (b* ((indices  (create-tuple-indices x-hi y-hi))
                 (subtable (materialize-xor-subtable indices)))
-               (equal (tuple-lookup i j subtable) (logxor i j))))))
+               (equal (tuple-lookup i j subtable) (logxor i j))))
+  :hints (("Goal" :in-theory (enable tuple-lookup)))))
 ;; end encapsulate
 
 (include-book "centaur/gl/gl" :dir :system)
@@ -70,7 +71,7 @@
 ;;	     ;;
 ;;;;;;;;;;;;;;;
 
-;; EVALUATE MLE & CORRECTNESS
+;; Evaluate mle & correctness
 
 (define xorw ((x :type unsigned-byte) (y :type unsigned-byte))
   :measure (+ (integer-length x) (integer-length y))
@@ -94,7 +95,6 @@
   :hyp   (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
   :concl (equal (xorw x y) (logxor x y))
   :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
-
 
 (local
   (defthm natp-lemma-1
@@ -146,5 +146,3 @@
            (unsigned-byte-p 64 y))
  :concl (equal (xor-wc x y 8) (xorw x y))
  :g-bindings (gl::auto-bindings (:mix (:nat x 64) (:nat y 64))))
-
-

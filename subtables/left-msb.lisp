@@ -10,11 +10,11 @@
 (include-book "subtable")
 
 
-;;;;;;;;;;;;;;
-;;	    ;;
-;;    left msb
-;;	    ;;
-;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;
+;;	          ;;
+;;    left msb    ;;
+;;	          ;;
+;;;;;;;;;;;;;;;;;;;;
 
 (define left-msb-8 ((x :type unsigned-byte) y)
   :irrelevant-formals-ok t
@@ -32,7 +32,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                      ;;
-;;    MATERIALIZE LEFT-MSB SUBTABLE   ;;
+;;    MATERIALIZE LEFT-MSB SUBTABLE     ;;
 ;;                                      ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -88,14 +88,3 @@
  :hints (("Goal" :in-theory (e/d (tuple-lookup left-msb-8) ()))))
 
 (in-theory (disable left-msb-8))
-
-
-
-
-
-
-
-
-
-
-

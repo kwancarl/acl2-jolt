@@ -9,12 +9,12 @@
 
 (include-book "eq")
 
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;	              ;;
+;;    left is zero    ;;
+;;	              ;;
+;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;
-;;	    ;;
-;;    left is zero
-;;	    ;;
-;;;;;;;;;;;;;;
 (define left-is-zero-w ((x :type unsigned-byte) y)
   :irrelevant-formals-ok t
   :returns (eq? bitp)

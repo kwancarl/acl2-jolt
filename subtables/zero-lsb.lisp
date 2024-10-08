@@ -6,14 +6,13 @@
 (local (include-book "centaur/bitops/ihsext-basics" :dir :system))
 (local (include-book "centaur/bitops/fast-logext" :dir :system))
 (local (include-book "arithmetic/top" :dir :system))
-;(include-book "eq")
 
+;;;;;;;;;;;;;;;;;;;;
+;;	          ;;
+;;    zero lsb    ;;
+;;	          ;;
+;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;
-;;	    ;;
-;;    zero lsb
-;;	    ;;
-;;;;;;;;;;;;;;
 (define zero-lsb ((x :type unsigned-byte))
  (logcons 0 (logcdr x)))
 
@@ -46,5 +45,3 @@
  :hyp (and (unsigned-byte-p 64 x) (evenp x))
  :concl (equal (zero-lsb x) x)
  :g-bindings (gl::auto-bindings (:nat x 64)))
-
-

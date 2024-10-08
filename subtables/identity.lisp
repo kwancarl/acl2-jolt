@@ -2,15 +2,11 @@
 (include-book "std/util/bstar" :dir :system)
 (include-book "std/util/define" :dir :system)
 (include-book "centaur/gl/gl" :dir :system)
-;(local (include-book "ihs/basic-definitions" :dir :system))
-(local (include-book "centaur/bitops/ihsext-basics" :dir :system))
-;(local (include-book "centaur/bitops/fast-logext" :dir :system))
-;(local (include-book "arithmetic/top" :dir :system))
-(local (include-book "ihs/logops-lemmas" :dir :system))
+(include-book "centaur/bitops/ihsext-basics" :dir :system)
 
 (include-book "subtable")
 
-;; MATERIALIZE SUBTABLES FOR "IDENTITY"
+;; Materialize subtables for "identity"
 
 (define materialize-identity-subtable (x-hi)
  :enabled t
