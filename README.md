@@ -1,14 +1,29 @@
 # Verification of Lookup Semantics for the Jolt zkVM
 
 
+## Project Structure
 
+- `subtable` directory contains formalization of Lasso-style lookups, Jolt subtables, and multilinear extensions
+- `instructions` directory contains formalization of Jolt instructions
 
 
 ## Build Instructions
 
+1. Follow the [official ACL2 instalation instructions](https://www.cs.utexas.edu/~moore/acl2/v8-5/HTML/installation/installation.html), which includes steps to:
+   1. Install a Common Lisp implementation
+   2. Install ACL2
+   3. Certify some basic books 
+3. Cerify [GL](https://www.cs.utexas.edu/~moore/acl2/manuals/latest/?topic=ACL2____GL) if necessary
+4. Install a SAT solver by following the [FGL](https://www.cs.utexas.edu/~moore/acl2/manuals/latest/?topic=FGL____FGL) and [satlink instructions](https://www.cs.utexas.edu/~moore/acl2/manuals/latest/index.html?topic=SATLINK____SAT-SOLVER-OPTIONS)
+5. Certify FGL if necessary
+
+Note: MacOS laptops and Arm-based Apple silicon (e.g. M1) Macs are known to have issues with verifying Quicklisp books -- in both cases, the solution is to follow the [official ACL2 Quicklisp documentation](https://www.cs.utexas.edu/~moore/acl2/manuals/latest/?topic=ACL2____QUICKLISP).
+
+The following instructions also worked for one author, but in case of any discrepancies between the official ACL2 instructions and the below, or in case of any installation issues, one should fall back to the official ACL2 instructions.
+
 ### Step 1: Install ACL2
 
-1. Install Lisp:
+1. Install Common Lisp:
    - For macOS (make sure Homebrew is installed): `brew install sbcl`
    - For Ubuntu: `sudo apt-get install sbcl`
 
