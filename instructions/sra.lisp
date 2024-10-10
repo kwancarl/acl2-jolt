@@ -37,7 +37,8 @@
        (u8-3 (part-select x :low 24 :width 8))
        (shift-amount (part-select y :low 0 :width 5))
        ;; Lookup semantics
-       (sign (sra-sign-8 u8-3 shift-amount))
+      ;;  (sign (sra-sign-8 u8-3 shift-amount))
+       (sign (sra-sign-prime u8-3 shift-amount 32))
        (u8-0 (srli-rust u8-0 shift-amount  0 32))
        (u8-1 (srli-rust u8-1 shift-amount  8 32))
        (u8-2 (srli-rust u8-2 shift-amount 16 32))

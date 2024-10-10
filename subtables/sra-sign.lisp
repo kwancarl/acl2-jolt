@@ -165,6 +165,10 @@
 ;; 11...100...0 = (ash (1- (expt 2 k)) (- w k)),
 ;; where there are `k` ones and word size `w`
 
+(defun sra-sign-prime (x y word-size)
+  (* (logbit 7 x) (ash (1- (expt 2 (logand (1- word-size) y))) 
+                             (- word-size (logand (1- word-size) y)))))
+
 ;; This subtable assumes that we will instantiate it with `m = 8`, hence we take `logbit 7 x`
 ;; i.e. `idx-lst` is `(create-tuple-indices (1- (expt 2 8)) (1- (expt 2 8)))`
 (defun materialize-sra-sign-subtable-prime (idx-lst word-size)
@@ -173,9 +177,7 @@
       ((cons idx rst)            idx-lst)
       ((unless (consp idx))          nil)
       ((cons x y)                    idx))
-     (cons (cons idx (* (logbit 7 x) 
-                        (ash (1- (expt 2 (logand (1- word-size) y))) 
-                             (- word-size (logand (1- word-size) y)))))
+     (cons (cons idx (sra-sign-prime x y word-size))
            (materialize-sra-sign-subtable-prime rst word-size))))
 
 (defun materialize-sra-sign-subtable-8 (idx-lst)
