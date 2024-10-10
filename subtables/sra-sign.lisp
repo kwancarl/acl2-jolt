@@ -165,52 +165,53 @@
 ;; 11...100...0 = (ash (1- (expt 2 k)) (- w k)),
 ;; where there are `k` ones and word size `w`
 
-(defun sra-sign-prime (x y word-size)
+(defund sra-sign (x y word-size)
   (* (logbit 7 x) (ash (1- (expt 2 (logand (1- word-size) y))) 
                              (- word-size (logand (1- word-size) y)))))
 
+(gl::def-gl-thm sra-sign-sra-sign-8-equiv
+ :hyp (and (unsigned-byte-p 5 y) (unsigned-byte-p 32 x))
+ :concl (equal (sra-sign x y 32)
+	       (sra-sign-8 x y))
+ :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
+
+
+(defthm sra-sign-correctness
+  (implies (and (unsigned-byte-p 5 y) (unsigned-byte-p 32 x))
+           (equal (logextu 32 (- 32 y) (ash x (- y)))
+	  	  (+ (sra-sign (part-select x :low 24 :width 8) y 32)
+		     (ash x (- y)))))
+  :hints (("Goal" :use ((:instance sra-sign-8-correctness)))))
+
 ;; This subtable assumes that we will instantiate it with `m = 8`, hence we take `logbit 7 x`
 ;; i.e. `idx-lst` is `(create-tuple-indices (1- (expt 2 8)) (1- (expt 2 8)))`
-(defun materialize-sra-sign-subtable-prime (idx-lst word-size)
+(defun materialize-sra-sign-subtable (idx-lst word-size)
  (b* (((unless (alistp idx-lst))     nil)
       ((if (atom idx-lst))           nil)
       ((cons idx rst)            idx-lst)
       ((unless (consp idx))          nil)
       ((cons x y)                    idx))
-     (cons (cons idx (sra-sign-prime x y word-size))
-           (materialize-sra-sign-subtable-prime rst word-size))))
+     (cons (cons idx (sra-sign x y word-size))
+           (materialize-sra-sign-subtable rst word-size))))
 
-(defun materialize-sra-sign-subtable-8 (idx-lst)
- (b* (((unless (alistp idx-lst))     nil)
-      ((if (atom idx-lst))           nil)
-      ((cons idx rst)            idx-lst)
-      ((unless (consp idx))          nil)
-      ((cons x y)                    idx))
-     (cons (cons idx (sra-sign-8 x y))
-           (materialize-sra-sign-subtable-8 rst))))
 
- ;; expected semantics from spec & Rust version
- ;; materialize-sra-sign-subtable (idx-lst log-word-size)
- ;; where `log-word-size` is 5 or 6
- ;; (ash (ash x i) (- (logtail log-word-size y)))
+(defthm alistp-of-materialize-sra-sign-subtabl
+ (alistp (materialize-sra-sign-subtable idx-lst word-size)))
 
-(defthm alistp-of-materialize-sra-sign-subtable-8
- (alistp (materialize-sra-sign-subtable-8 idx-lst)))
-
-(defthm member-idx-lst-assoc-materialize-sra-sign-subtable-8
+(defthm member-idx-lst-assoc-materialize-sra-sign-subtable
  (implies (and (alistp idx-lst) (member idx idx-lst))
-          (assoc idx (materialize-sra-sign-subtable-8 idx-lst))))
+          (assoc idx (materialize-sra-sign-subtable idx-lst word-size))))
 
-(defthm assoc-member-materialize-sra-sign-subtable-8
- (implies (assoc (cons x y) (materialize-sra-sign-subtable-8 idx-lst))
+(defthm assoc-member-materialize-sra-sign-subtable
+ (implies (assoc (cons x y) (materialize-sra-sign-subtable idx-lst word-size))
           (member (cons x y) idx-lst)))
 
-(defthm assoc-materialize-sra-sign-subtable-8
- (implies (assoc (cons i j) (materialize-sra-sign-subtable-8 idx-lst))
-          (equal (assoc (cons i j) (materialize-sra-sign-subtable-8 idx-lst))
-                 (cons (cons i j) (sra-sign-8 i j)))))
+(defthm assoc-materialize-sra-sign-subtable
+ (implies (assoc (cons i j) (materialize-sra-sign-subtable idx-lst word-size))
+          (equal (assoc (cons i j) (materialize-sra-sign-subtable idx-lst word-size))
+                 (cons (cons i j) (sra-sign i j word-size)))))
 
-(defthm materialize-sra-sign-subtable-8-correctness
+(defthm materialize-sra-sign-subtable-correctness
  (implies (and (natp x-hi) 
    	       (natp y-hi) 
                (natp i) 
@@ -218,12 +219,12 @@
                (<= i x-hi)
                (<= j y-hi))
           (b* ((indices  (create-tuple-indices x-hi y-hi))
-               (subtable (materialize-sra-sign-subtable-8 indices)))
+               (subtable (materialize-sra-sign-subtable indices word-size)))
               (equal (assoc-equal (cons i j) subtable)
                      (cons (cons i j)
-                           (sra-sign-8 i j))))))
+                           (sra-sign i j word-size))))))
 
-(defthm lookup-materialize-sra-sign-subtable-8-correctness
+(defthm lookup-materialize-sra-sign-subtable-correctness
  (implies (and (natp x-hi) 
    	       (natp y-hi) 
                (natp i) 
@@ -231,7 +232,63 @@
                (<= i x-hi)
                (<= j y-hi))
           (b* ((indices  (create-tuple-indices x-hi y-hi))
-               (subtable (materialize-sra-sign-subtable-8 indices)))
+               (subtable (materialize-sra-sign-subtable indices word-size)))
               (equal (tuple-lookup i j subtable)
-                     (sra-sign-8 i j))))
+                     (sra-sign i j word-size))))
  :hints (("Goal" :in-theory (e/d (tuple-lookup) ()))))
+
+;(defun materialize-sra-sign-subtable-8 (idx-lst)
+; (b* (((unless (alistp idx-lst))     nil)
+;      ((if (atom idx-lst))           nil)
+;      ((cons idx rst)            idx-lst)
+;      ((unless (consp idx))          nil)
+;      ((cons x y)                    idx))
+;     (cons (cons idx (sra-sign-8 x y))
+;           (materialize-sra-sign-subtable-8 rst))))
+;
+; ;; expected semantics from spec & Rust version
+; ;; materialize-sra-sign-subtable (idx-lst log-word-size)
+; ;; where `log-word-size` is 5 or 6
+; ;; (ash (ash x i) (- (logtail log-word-size y)))
+;
+;(defthm alistp-of-materialize-sra-sign-subtable-8
+; (alistp (materialize-sra-sign-subtable-8 idx-lst)))
+;
+;(defthm member-idx-lst-assoc-materialize-sra-sign-subtable-8
+; (implies (and (alistp idx-lst) (member idx idx-lst))
+;          (assoc idx (materialize-sra-sign-subtable-8 idx-lst))))
+;
+;(defthm assoc-member-materialize-sra-sign-subtable-8
+; (implies (assoc (cons x y) (materialize-sra-sign-subtable-8 idx-lst))
+;          (member (cons x y) idx-lst)))
+;
+;(defthm assoc-materialize-sra-sign-subtable-8
+; (implies (assoc (cons i j) (materialize-sra-sign-subtable-8 idx-lst))
+;          (equal (assoc (cons i j) (materialize-sra-sign-subtable-8 idx-lst))
+;                 (cons (cons i j) (sra-sign-8 i j)))))
+;
+;(defthm materialize-sra-sign-subtable-8-correctness
+; (implies (and (natp x-hi) 
+;   	       (natp y-hi) 
+;               (natp i) 
+;               (natp j) 
+;               (<= i x-hi)
+;               (<= j y-hi))
+;          (b* ((indices  (create-tuple-indices x-hi y-hi))
+;               (subtable (materialize-sra-sign-subtable-8 indices)))
+;              (equal (assoc-equal (cons i j) subtable)
+;                     (cons (cons i j)
+;                           (sra-sign-8 i j))))))
+;
+;(defthm lookup-materialize-sra-sign-subtable-8-correctness
+; (implies (and (natp x-hi) 
+;   	       (natp y-hi) 
+;               (natp i) 
+;               (natp j) 
+;               (<= i x-hi)
+;               (<= j y-hi))
+;          (b* ((indices  (create-tuple-indices x-hi y-hi))
+;               (subtable (materialize-sra-sign-subtable-8 indices)))
+;              (equal (tuple-lookup i j subtable)
+;                     (sra-sign-8 i j))))
+; :hints (("Goal" :in-theory (e/d (tuple-lookup) ()))))

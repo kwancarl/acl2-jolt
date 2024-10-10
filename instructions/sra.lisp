@@ -38,7 +38,7 @@
        (shift-amount (part-select y :low 0 :width 5))
        ;; Lookup semantics
       ;;  (sign (sra-sign-8 u8-3 shift-amount))
-       (sign (sra-sign-prime u8-3 shift-amount 32))
+       (sign (sra-sign u8-3 shift-amount 32))
        (u8-0 (srli-rust u8-0 shift-amount  0 32))
        (u8-1 (srli-rust u8-1 shift-amount  8 32))
        (u8-2 (srli-rust u8-2 shift-amount 16 32))
@@ -63,7 +63,7 @@
        (srli-subtable-2 (materialize-srli-subtable indices 16 32))
        (srli-subtable-1 (materialize-srli-subtable indices  8 32))
        (srli-subtable-0 (materialize-srli-subtable indices  0 32))
-       (sra-sign-subtable (materialize-sra-sign-subtable-8 indices))
+       (sra-sign-subtable (materialize-sra-sign-subtable indices 32))
        ;; Perform lookups
        (sign (tuple-lookup x8-3 shift-amount sra-sign-subtable))
        (u8-0 (tuple-lookup x8-0 shift-amount srli-subtable-0))
@@ -78,9 +78,10 @@
 (defthm sra-32-=-sign-+-srl-32
  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
 	  (equal (sra-32 x y)
-	         (+ (sra-sign-8 (part-select x :low 24 :width 8) (part-select y :low 0 :width 5))
+	         (+ (sra-sign (part-select x :low 24 :width 8) (part-select y :low 0 :width 5) 32)
 	            (srl-32 x y))))
- :hints (("Goal" :use ((:instance lookup-materialize-sra-sign-subtable-8-correctness 
+ :hints (("Goal" :use ((:instance lookup-materialize-sra-sign-subtable-correctness 
+				  (word-size 32)
 				  (x-hi (expt 2 8))
 				  (y-hi (expt 2 8))
 				  (i (logtail 24 x))
@@ -94,7 +95,7 @@
 (defthm sra-32-correctness-lemma
  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
 	  (equal (sra-32 x y)
-	         (+ (sra-sign-8 (part-select x :low 24 :width 8) (part-select y :low 0 :width 5))
+	         (+ (sra-sign (part-select x :low 24 :width 8) (part-select y :low 0 :width 5) 32)
 	            (ash x (- (part-select y :low 0 :width 5))))))
  :hints (("Goal" :use ((:instance srl-32-correctness)
 		       (:instance sra-32-=-sign-+-srl-32))
@@ -102,7 +103,7 @@
 
 (gl::def-gl-thm sign-lemma
  :hyp (and (unsigned-byte-p 32 y) (unsigned-byte-p 32 x))
- :concl (equal (+ (sra-sign-8 (part-select x :low 24 :width 8) (part-select y :low 0 :width 5))
+ :concl (equal (+ (sra-sign (part-select x :low 24 :width 8) (part-select y :low 0 :width 5) 32)
 	          (ash x (- (part-select y :low 0 :width 5))))
 	       (logextu 32 (- 32 (part-select y :low 0 :width 5)) (ash x (- (part-select y :low 0 :width 5)))))
  :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
