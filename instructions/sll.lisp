@@ -11,7 +11,7 @@
 
 ;;; 32-BIT
 
-;; SLL-semantics-32 (including truncation)
+;; SLL-semantics-32
 (define sll-semantics-32 (x y)
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 32 x)) 0)
@@ -40,7 +40,7 @@
 		    (expt 2 32)))
  :g-bindings (gl::auto-bindings (:mix (:nat y 32) (:nat x 32))))
 
-;; New version of SLL-32 with truncation
+;; SLL-32
 (define sll-32 (x y)
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 32 x)) 0)

@@ -129,15 +129,20 @@
               'top-level
               state)
 
-(write-list (materialize-sra-sign-subtable-prime *indices* 32)
-              (concatenate 'string *output-dir* "/sra_sign_subtable_32_acl2.txt")
+;; (write-list (materialize-sra-sign-subtable-prime *indices* 32)
+;;               (concatenate 'string *output-dir* "/sra_sign_subtable_32_acl2.txt")
+;;               'top-level
+;;               state)
+
+(write-list (materialize-sra-sign-subtable-8 *indices*)
+              (concatenate 'string *output-dir* "/sra_sign_subtable_prime_32_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-sra-sign-subtable-prime *indices* 64)
-              (concatenate 'string *output-dir* "/sra_sign_subtable_64_acl2.txt")
-              'top-level
-              state)
+;; (write-list (materialize-sra-sign-subtable-prime *indices* 64)
+;;               (concatenate 'string *output-dir* "/sra_sign_subtable_64_acl2.txt")
+;;               'top-level
+;;               state)
 
 (write-list (materialize-srli-subtable-prime *indices* (* 8 0) 5)
               (concatenate 'string *output-dir* "/srl_subtable_0_32_acl2.txt")

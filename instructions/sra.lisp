@@ -26,6 +26,24 @@
   :concl (< (logtail 24 x) 256)
   :g-bindings (gl::auto-bindings (:nat x 32))))
 
+(define sra-semantics-32 (x y)
+  :verify-guards nil
+  (b* (((unless (unsigned-byte-p 32 x)) 0)
+       ((unless (unsigned-byte-p 32 y)) 0)
+       ;; Chunk
+       (u8-0 (part-select x :low  0 :width 8))
+       (u8-1 (part-select x :low  8 :width 8))
+       (u8-2 (part-select x :low 16 :width 8))
+       (u8-3 (part-select x :low 24 :width 8))
+       (shift-amount (part-select y :low 0 :width 5))
+       ;; Lookup semantics
+       (sign (sra-sign-8 u8-3 shift-amount))
+       (u8-0 (srli-rust u8-0 shift-amount  0 32))
+       (u8-1 (srli-rust u8-1 shift-amount  8 32))
+       (u8-2 (srli-rust u8-2 shift-amount 16 32))
+       (u8-3 (srli-rust u8-3 shift-amount 24 32)))
+      ;; Combine
+      (+ sign u8-3 u8-2 u8-1 u8-0)))
 
 ;; SRA with truncation
 (define sra-32 (x y)

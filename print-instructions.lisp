@@ -6,8 +6,8 @@
 
 (include-book "centaur/gl/gl" :dir :system)
 
-(include-book "centaur/fgl/top" :dir :system)
-(value-triple (acl2::tshell-ensure))
+;; (include-book "centaur/fgl/top" :dir :system)
+;; (value-triple (acl2::tshell-ensure))
 
 ;; (include-book "instructions/add")
 ;; (include-book "instructions/and")
@@ -67,7 +67,7 @@
     (let* ((input (car inputs))
            (x (car input))
            (y (cdr input))
-           (result (sra-32-prime x y)))
+           (result (sra-semantics-32 x y)))
       (cons (cons input result)
             (generate-sra-32-results (cdr inputs))))))
 
@@ -84,7 +84,7 @@
     (let* ((input (car inputs))
            (x (car input))
            (y (cdr input))
-           (result (srl-32 x y)))
+           (result (srl-semantics-32 x y)))
       (cons (cons input result)
             (generate-srl-32-results (cdr inputs))))))
 
@@ -100,7 +100,7 @@
     (let* ((input (car inputs))
            (x (car input))
            (y (cdr input))
-           (result (sll-32-prime x y)))
+           (result (sll-semantics-32 x y)))
       (cons (cons input result)
             (generate-sll-32-results (cdr inputs))))))
 
