@@ -14,12 +14,19 @@
    2. Install ACL2
    3. Certify some basic books 
 3. Cerify [GL](https://www.cs.utexas.edu/~moore/acl2/manuals/latest/?topic=ACL2____GL) if necessary
-4. Install a SAT solver by following the [FGL](https://www.cs.utexas.edu/~moore/acl2/manuals/latest/?topic=FGL____FGL) and [satlink instructions](https://www.cs.utexas.edu/~moore/acl2/manuals/latest/index.html?topic=SATLINK____SAT-SOLVER-OPTIONS)
-5. Certify FGL if necessary
 
-Note: MacOS laptops and Arm-based Apple silicon (e.g. M1) Macs are known to have issues with verifying Quicklisp books -- in both cases, the solution is to follow the [official ACL2 Quicklisp documentation](https://www.cs.utexas.edu/~moore/acl2/manuals/latest/?topic=ACL2____QUICKLISP).
+Note: MacOS laptops and Arm-based Apple silicon (e.g. M1) Macs are known to have issues with verifying Quicklisp books -- in both cases, the solution is to follow the [official ACL2 Quicklisp documentation](https://www.cs.utexas.edu/~moore/acl2/manuals/latest/?topic=ACL2____QUICKLISP):
 
-The following instructions also worked for one author, but in case of any discrepancies between the official ACL2 instructions and the below, or in case of any installation issues, one should fall back to the official ACL2 instructions.
+1. Install OpenSSL via Homebrew
+   ```
+   brew install openssl
+   ```
+3. (If on Arm64 machine) Create symlinks to Homebrew’s OpenSSL library files in `/usr/local/lib`:
+   ```
+   ln -s /opt/homebrew/opt/openssl/lib/*.dylib /usr/local/lib
+   ```
+
+For convience, we include the following instructions which worked for one author, but in case of any discrepancies between the official ACL2 instructions and the below, or in case of any installation issues, one should fall back to the official ACL2 instructions.
 
 ### Step 1: Install ACL2
 
@@ -59,30 +66,11 @@ The following instructions also worked for one author, but in case of any discre
    ../../build/cert.pl top.lisp
    ```
 
-
-3. To certify FGL, we need to install an external SAT solver. The default choice is Glucose, which is included in this repository.
-
-Simply run this Glucose installation script:
-   ```
-   ./install-glucose.sh
-   ```
-
-This script will compile Glucose, create a bash script to run it, and add it to your PATH.
-
-
-4. Certify FGL:
-   ```
-   cd /path/to/acl2/books/centaur/fgl
-   ../../build/cert.pl top.lisp
-   ```
-
-
-5. Add GL and FGL to your ACL2 initialization file:
+5. Add GL to your ACL2 initialization file:
    - Create or edit `~/.acl2rc`
    - Add the following lines:
      ```lisp
      (ld "/path/to/acl2/books/centaur/gl/gl-init.lisp")
-     (ld "/path/to/acl2/books/centaur/fgl/fgl-init.lisp")
      ```
    Replace `/path/to/acl2` with the actual path to your ACL2 installation.
 
@@ -92,7 +80,6 @@ This script will compile Glucose, create a bash script to run it, and add it to 
    - In the ACL2 prompt, try:
      ```lisp
      (gl::gl-satlink-config)
-     (fgl::fgl-satlink-config)
      ```
    If these commands execute without errors, GL and FGL are properly installed.
 
