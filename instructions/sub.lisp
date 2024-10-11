@@ -63,17 +63,16 @@
                                  ((:e materialize-identity-subtable) 
                                   (:e materialize-truncate-subtable))))))
 
-
 ;; SEMANTIC CORRECTNESS OF SUB
 (gl::def-gl-thm sub-semantics-32-correctness
  :hyp (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
  :concl (equal (sub-semantics-32 x y)
-	       (logand (- x y) (1- (expt 2 32))))
+	       (loghead 32 (- x y)))
  :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
 
 (defthm sub-32-correctness
  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
-          (equal (sub-32 x y) (logand (- x y) (1- (expt 2 32)))))) 
+          (equal (sub-32 x y) (loghead 32 (- x y))))) 
 
 
 ;; 64-BIT VERSION
@@ -146,9 +145,9 @@
 (gl::def-gl-thm sub-semantics-64-correctness
  :hyp (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
  :concl (equal (sub-semantics-64 x y)
-	       (logand (- x y) (1- (expt 2 64))))
+	       (loghead 64 (- x y)))
  :g-bindings (gl::auto-bindings (:mix (:nat x 64) (:nat y 64))))
 
 (defthm sub-64-correctness
  (implies (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
-          (equal (sub-64 x y) (logand (- x y) (1- (expt 2 64)))))) 
+          (equal (sub-64 x y) (loghead 64 (- x y))))) 

@@ -57,12 +57,12 @@
 (gl::def-gl-thm add-semantics-32-correctness
  :hyp (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
  :concl (equal (add-semantics-32 x y)
-	       (logand (+ x y) (1- (expt 2 32))))
+	       (loghead 32 (+ x y)))
  :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
 
 (defthm add-32-correctness
  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
-          (equal (add-32 x y) (logand (+ x y) (1- (expt 2 32)))))) 
+          (equal (add-32 x y) (loghead 32 (+ x y))))) 
 
 
 ;; 64-BIT VERSION
@@ -134,9 +134,9 @@
 (gl::def-gl-thm add-semantics-64-correctness
  :hyp (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
  :concl (equal (add-semantics-64 x y)
-	       (logand (+ x y) (1- (expt 2 64))))
+	       (loghead 64 (+ x y)))
  :g-bindings (gl::auto-bindings (:mix (:nat x 64) (:nat y 64))))
 
 (defthm add-64-correctness
  (implies (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
-          (equal (add-64 x y) (logand (+ x y) (1- (expt 2 64)))))) 
+          (equal (add-64 x y) (loghead 64 (+ x y))))) 
