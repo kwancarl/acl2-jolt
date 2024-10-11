@@ -15,9 +15,6 @@
 
 ;; SRA-sign intended function & MLE correctness
 
-;; why not do this?
-;; masked-ones k w = (ash (ash 1 (- w k)) k)
-
 ;; 1...1 0...0
 ;; w - k   k
 ;; w = 32
