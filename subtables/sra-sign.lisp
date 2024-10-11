@@ -172,13 +172,11 @@
 	       (sra-sign-8 x y))
  :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
 
-
-(defthm sra-sign-correctness
-  (implies (and (unsigned-byte-p 5 y) (unsigned-byte-p 32 x))
-           (equal (logextu 32 (- 32 y) (ash x (- y)))
-	  	  (+ (sra-sign (part-select x :low 24 :width 8) y 32)
-		     (ash x (- y)))))
-  :hints (("Goal" :use ((:instance sra-sign-8-correctness)))))
+(gl::def-gl-thm sra-sign-correctness
+  :hyp (and (unsigned-byte-p 8 y) (unsigned-byte-p 8 x))
+  :concl (equal (ashu 32 x (- (mod y 32)))
+	  	  (+ (sra-sign x y 32) (ash x (- (mod y 32)))))
+  :g-bindings (gl::auto-bindings (:nat x 8) (:nat y 8)))
 
 ;; This subtable assumes that we will instantiate it with `m = 8`, hence we take `logbit 7 x`
 ;; i.e. `idx-lst` is `(create-tuple-indices (1- (expt 2 8)) (1- (expt 2 8)))`

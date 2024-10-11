@@ -28,7 +28,7 @@
   :concl (< (logtail 24 x) 256)
   :g-bindings (gl::auto-bindings (:nat x 32))))
 
-;; SRA with lookup semantics & truncation
+;; SRA-32 with lookup semantics
 (define sra-semantics-32 (x y)
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 32 x)) 0)
@@ -40,38 +40,11 @@
        (x8-0 (part-select x :low 24 :width 8))
        (y8-3 (part-select y :low 0 :width 8))
        ;; Lookup semantics
-       (sign (sra-sign x8-3 y8-3 32))
+       (sign (sra-sign x8-0 y8-3 32))
        (u8-3 (srli-rust x8-3 y8-3  0 32))
        (u8-2 (srli-rust x8-2 y8-3  8 32))
        (u8-1 (srli-rust x8-1 y8-3 16 32))
        (u8-0 (srli-rust x8-0 y8-3 24 32)))
-      ;; Combine
-      (+ sign u8-3 u8-2 u8-1 u8-0)))
-
-;; SRA with truncation
-(define sra-32 (x y)
-  :verify-guards nil
-  (b* (((unless (unsigned-byte-p 32 x)) 0)
-       ((unless (unsigned-byte-p 32 y)) 0)
-       ;; Chunk
-       (x8-3 (part-select x :low 0 :width 8))
-       (x8-2 (part-select x :low 8 :width 8))
-       (x8-1 (part-select x :low 16 :width 8))
-       (x8-0 (part-select x :low 24 :width 8))
-       (shift-amount (part-select y :low 0 :width 5))
-       ;; Materialize subtables
-       (indices (create-tuple-indices (expt 2 8) (expt 2 8)))
-       (srli-subtable-3 (materialize-srli-subtable indices 0 32))
-       (srli-subtable-2 (materialize-srli-subtable indices 8 32))
-       (srli-subtable-1 (materialize-srli-subtable indices 16 32))
-       (srli-subtable-0 (materialize-srli-subtable indices 24 32))
-       (sra-sign-subtable (materialize-sra-sign-subtable indices 32))
-       ;; Perform lookups
-       (sign (tuple-lookup x8-3 shift-amount sra-sign-subtable))
-       (u8-3 (tuple-lookup x8-3 shift-amount srli-subtable-3))
-       (u8-2 (tuple-lookup x8-2 shift-amount srli-subtable-2))
-       (u8-1 (tuple-lookup x8-1 shift-amount srli-subtable-1))
-       (u8-0 (tuple-lookup x8-0 shift-amount srli-subtable-0)))
       ;; Combine
       (+ sign u8-3 u8-2 u8-1 u8-0)))
 
@@ -81,6 +54,50 @@
  :concl (equal (sra-semantics-32 x y)
               (ashu 32 x (- (mod y 32))))
  :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
+
+;; SRA-32
+(define sra-32 (x y)
+  :verify-guards nil
+  (b* (((unless (unsigned-byte-p 32 x)) 0)
+       ((unless (unsigned-byte-p 32 y)) 0)
+       ;; Chunk
+       (x8-3 (part-select x :low 0 :width 8))
+       (x8-2 (part-select x :low 8 :width 8))
+       (x8-1 (part-select x :low 16 :width 8))
+       (x8-0 (part-select x :low 24 :width 8))
+       (y8-3 (part-select y :low 0 :width 8))
+       ;; Materialize subtables
+       (indices (create-tuple-indices (expt 2 8) (expt 2 8)))
+       (srli-subtable-3 (materialize-srli-subtable indices 0 32))
+       (srli-subtable-2 (materialize-srli-subtable indices 8 32))
+       (srli-subtable-1 (materialize-srli-subtable indices 16 32))
+       (srli-subtable-0 (materialize-srli-subtable indices 24 32))
+       (sra-sign-subtable (materialize-sra-sign-subtable indices 32))
+       ;; Perform lookups
+       (sign (tuple-lookup x8-0 y8-3 sra-sign-subtable))
+       (u8-3 (tuple-lookup x8-3 y8-3 srli-subtable-3))
+       (u8-2 (tuple-lookup x8-2 y8-3 srli-subtable-2))
+       (u8-1 (tuple-lookup x8-1 y8-3 srli-subtable-1))
+       (u8-0 (tuple-lookup x8-0 y8-3 srli-subtable-0)))
+      ;; Combine
+      (+ sign u8-3 u8-2 u8-1 u8-0)))
+
+(defthm sra-32-sra-semantics-32-equiv
+ (equal (sra-32 x y) (sra-semantics-32 x y))
+ :hints (("Goal" :in-theory (e/d (sra-semantics-32 sra-32)
+                                 (srli-rust sra-sign (:e create-tuple-indices) (:e expt))))))
+          ;; :use ((:instance lookup-materialize-sra-sign-subtable-correctness
+          ;;       (word-size 32)
+          ;;       (x-hi (expt 2 8))
+          ;;       (y-hi (expt 2 8))
+          ;;       (i (logtail 24 x))
+          ;;       (j (loghead 5 y)))))))
+
+(defthm sra-32-correctness
+ (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
+          (equal (sra-32 x y) (ashu 32 x (- (mod y 32))))))
+
+:i-am-here
 
 (local (in-theory (disable srl-32-srl-semantics-32-equiv)))
 
@@ -137,25 +154,25 @@
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ((unless (unsigned-byte-p 64 y)) 0)
        ;; Chunk
-       (x8-0 (part-select x :low  0 :width 8))
-       (x8-1 (part-select x :low  8 :width 8))
-       (x8-2 (part-select x :low 16 :width 8))
-       (x8-3 (part-select x :low 24 :width 8))
-       (x8-4 (part-select x :low 32 :width 8))
-       (x8-5 (part-select x :low 40 :width 8))
-       (x8-6 (part-select x :low 48 :width 8))
-       (x8-7 (part-select x :low 56 :width 8))
-       (shift-amount (part-select y :low 0 :width 6))
+       (x8-7 (part-select x :low  0 :width 8))
+       (x8-6 (part-select x :low  8 :width 8))
+       (x8-5 (part-select x :low 16 :width 8))
+       (x8-4 (part-select x :low 24 :width 8))
+       (x8-3 (part-select x :low 32 :width 8))
+       (x8-2 (part-select x :low 40 :width 8))
+       (x8-1 (part-select x :low 48 :width 8))
+       (x8-0 (part-select x :low 56 :width 8))
+       (y8-7 (part-select y :low 0 :width 8))
        ;; Lookup semantics
-       (sign (sra-sign x8-7 shift-amount 64))
-       (u8-0 (srli-rust x8-0 shift-amount  0 64))
-       (u8-1 (srli-rust x8-1 shift-amount  8 64))
-       (u8-2 (srli-rust x8-2 shift-amount 16 64))
-       (u8-3 (srli-rust x8-3 shift-amount 24 64))
-       (u8-4 (srli-rust x8-4 shift-amount 32 64))
-       (u8-5 (srli-rust x8-5 shift-amount 40 64))
-       (u8-6 (srli-rust x8-6 shift-amount 48 64))
-       (u8-7 (srli-rust x8-7 shift-amount 56 64)))
+       (sign (sra-sign x8-0 y8-7 64))
+       (u8-7 (srli-rust x8-7 y8-7  0 64))
+       (u8-6 (srli-rust x8-6 y8-7  8 64))
+       (u8-5 (srli-rust x8-5 y8-7 16 64))
+       (u8-4 (srli-rust x8-4 y8-7 24 64))
+       (u8-3 (srli-rust x8-3 y8-7 32 64))
+       (u8-2 (srli-rust x8-2 y8-7 40 64))
+       (u8-1 (srli-rust x8-1 y8-7 48 64))
+       (u8-0 (srli-rust x8-0 y8-7 56 64)))
       ;; Combine
       (+ sign u8-7 u8-6 u8-5 u8-4 u8-3 u8-2 u8-1 u8-0)))
 
