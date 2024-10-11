@@ -5,6 +5,7 @@
 
 - `subtable` directory contains formalization of Lasso-style lookups, Jolt subtables, and multilinear extensions
 - `instructions` directory contains formalization of Jolt instructions
+- `jolt` directory contains a snapshot of the Jolt zkVM source code, with extra printing macros added in `jolt/jolt-core/src/jolt/subtable/print.rs` and `jolt/jolt-core/src/jolt/instruction/print.rs` for validation purposes
 
 
 ## Build Instructions
@@ -13,7 +14,7 @@
    1. Install a Common Lisp implementation
    2. Install ACL2
    3. Certify some basic books 
-3. Cerify [GL](https://www.cs.utexas.edu/~moore/acl2/manuals/latest/?topic=ACL2____GL) if necessary
+2. Certify [GL](https://www.cs.utexas.edu/~moore/acl2/manuals/latest/?topic=ACL2____GL)
 
 Note: MacOS laptops and Arm-based Apple silicon (e.g. M1) Macs are known to have issues with verifying Quicklisp books -- in both cases, the solution is to follow the [official ACL2 Quicklisp documentation](https://www.cs.utexas.edu/~moore/acl2/manuals/latest/?topic=ACL2____QUICKLISP):
 
@@ -21,12 +22,12 @@ Note: MacOS laptops and Arm-based Apple silicon (e.g. M1) Macs are known to have
    ```
    brew install openssl
    ```
-3. (If on Arm64 machine) Create symlinks to Homebrew’s OpenSSL library files in `/usr/local/lib`:
+2. (If on Arm64 machine) Create symlinks to Homebrew’s OpenSSL library files in `/usr/local/lib`:
    ```
    ln -s /opt/homebrew/opt/openssl/lib/*.dylib /usr/local/lib
    ```
 
-For convience, we include the following instructions which worked for one author, but in case of any discrepancies between the official ACL2 instructions and the below, or in case of any installation issues, one should fall back to the official ACL2 instructions.
+For convenience, we include the following instructions which worked for one author, but in case of any discrepancies between the official ACL2 instructions and the below, or in case of any installation issues, one should fall back to the official ACL2 instructions.
 
 ### Step 1: Install ACL2
 
@@ -53,7 +54,7 @@ For convience, we include the following instructions which worked for one author
 5. Reload your shell configuration:
    `source ~/.bashrc` or `source ~/.zshrc`
 
-### Step 2: Certify GL and FGL
+### Step 2: Certify GL
 
 1. Navigate to the ACL2 books directory:
    ```
@@ -86,7 +87,7 @@ For convience, we include the following instructions which worked for one author
 
 ### Step 3: Certify Subtables and Instructions
 
-Check that our formalization is correct by certifying our `top` file:
+Check that our formalization is correct by certifying our `top` file in the main directory:
 ```
 /path/to/acl2/books/build/cert.pl top.lisp
 ```
@@ -98,7 +99,7 @@ Run the following script to validate the subtables. If this passes, then it mean
 ./compare-subtables.sh
 ```
 
-Run the following script to validate the instructions. This ensures that the expected instruction semantics are the same between Rust and ACL2, for certain specified inputs (see `print-instructions.lisp` for details).
+Run the following script to validate the instructions. This ensures that the instruction implementations in Rust and ACL2 produce the same results for a number of fuzzing inputs (see `print-instructions.lisp` for details).
 ```
 ./compare-instructions.sh
 ```
