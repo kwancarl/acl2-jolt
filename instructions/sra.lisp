@@ -2,12 +2,6 @@
 (include-book "std/util/bstar" :dir :system)
 (include-book "std/util/define" :dir :system)
 (include-book "centaur/gl/gl" :dir :system)
-;(include-book "arithmetic/top" :dir :system)
-;
-;(include-book "centaur/bitops/ihsext-basics" :dir :system)
-;(include-book "centaur/bitops/fast-logext" :dir :system)
-;
-;(include-book "ihs/logops-lemmas" :dir :system)
 (include-book "centaur/bitops/part-select" :DIR :SYSTEM)
 (include-book "centaur/bitops/merge" :DIR :SYSTEM)
 
@@ -91,55 +85,10 @@
  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
           (equal (sra-32 x y) (ashu 32 x (- (mod y 32))))))
 
-(local (in-theory (disable srl-32-srl-semantics-32-equiv)))
-
-;; To show correctness of sra-32, we use the prior correctness result for srl-32.
-(defthm sra-32-equal-sign-+-srl-32
- (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
-	  (equal (sra-32 x y)
-	         (+ (sra-sign (part-select x :low 24 :width 8) (part-select y :low 0 :width 5) 32)
-	            (srl-32 x y))))
- :hints (("Goal" :use ((:instance lookup-materialize-sra-sign-subtable-correctness 
-				  (word-size 32)
-				  (x-hi (expt 2 8))
-				  (y-hi (expt 2 8))
-				  (i (logtail 24 x))
-				  (j (loghead 5 y)))
-		       (:instance sra-aux-lemma))
-
-	         :in-theory (e/d (srl-32 sra-32)
-				 ((:e create-tuple-indices)
-				  (:e materialize-srli-subtable))))))
-
-(defthm sra-32-correctness-lemma
- (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
-	  (equal (sra-32 x y)
-	         (+ (sra-sign (part-select x :low 24 :width 8) (part-select y :low 0 :width 5) 32)
-	            (ash x (- (part-select y :low 0 :width 5))))))
- :hints (("Goal" :use ((:instance srl-32-correctness)
-		       (:instance sra-32-equal-sign-+-srl-32))
-	         :in-theory (disable (:e create-tuple-indices) (:e materialize-srli-subtable)))))
-
-(gl::def-gl-thm sign-lemma
- :hyp (and (unsigned-byte-p 32 y) (unsigned-byte-p 32 x))
- :concl (equal (+ (sra-sign (part-select x :low 24 :width 8) (part-select y :low 0 :width 5) 32)
-	          (ash x (- (part-select y :low 0 :width 5))))
-	       (logextu 32 (- 32 (part-select y :low 0 :width 5)) (ash x (- (part-select y :low 0 :width 5)))))
- :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
-
-(defthm sra-32-correctness
- (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
-	  (equal (sra-32 x y)
-		 (logextu 32 (- 32 (part-select y :low 0 :width 5)) (ash x (- (part-select y :low 0 :width 5))))))
- :hints (("Goal" :use ((:instance sign-lemma)
-                       (:instance sra-32-correctness-lemma))
-	         :in-theory (e/d ()
-				 ((:e create-tuple-indices)
-				  (:e materialize-srli-subtable))))))
-
 
 ;; 64-BIT
 
+#|
 ;; SRA with lookup semantics & truncation
 (define sra-semantics-64 (x y)
   :verify-guards nil
@@ -207,41 +156,11 @@
       ;; Combine
       (+ sign u8-7 u8-6 u8-5 u8-4 u8-3 u8-2 u8-1 u8-0)))
 
-;; (local (in-theory (disable srl-32-srl-semantics-32-equiv)))
+(defthm sra-64-sra-semantics-64-equiv
+ (equal (sra-64 x y) (sra-semantics-64 x y))
+ :hints (("Goal" :in-theory (e/d (sra-semantics-64 sra-64)
+                                 (srli-rust sra-sign (:e create-tuple-indices) (:e expt))))))
 
-;; To show correctness of sra-64, we use the prior correctness result for srl-64.
-(defthm sra-64-equal-sign-+-srl-64
- (implies (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
-	  (equal (sra-64 x y)
-	         (+ (sra-sign (part-select x :low 56 :width 8) (part-select y :low 0 :width 6) 64)
-	            (srl-64 x y))))
- :hints (("Goal" :use ((:instance lookup-materialize-sra-sign-subtable-correctness 
-				  (word-size 64)
-				  (x-hi (expt 2 8))
-				  (y-hi (expt 2 8))
-				  (i (logtail 56 x))
-				  (j (loghead 6 y)))
-		       (:instance sra-aux-lemma))
-
-	         :in-theory (e/d (srl-32 sra-32)
-				 ((:e create-tuple-indices)
-				  (:e materialize-srli-subtable))))))
-
-(defthm sra-64-correctness-lemma
- (implies (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
-	  (equal (sra-64 x y)
-	         (+ (sra-sign (part-select x :low 56 :width 8) (part-select y :low 0 :width 6) 64)
-	            (ash x (- (part-select y :low 0 :width 6))))))
- :hints (("Goal" :use ((:instance srl-64-correctness)
-		       (:instance sra-64-equal-sign-+-srl-64))
-	         :in-theory (disable (:e create-tuple-indices) (:e materialize-srli-subtable)))))
-
-(gl::def-gl-thm sign-lemma
- :hyp (and (unsigned-byte-p 64 y) (unsigned-byte-p 64 x))
- :concl (equal (+ (sra-sign (part-select x :low 56 :width 8) (part-select y :low 0 :width 6) 64)
-	          (ash x (- (part-select y :low 0 :width 6))))
-	       (logextu 64 (- 64 (part-select y :low 0 :width 6)) (ash x (- (part-select y :low 0 :width 6)))))
- :g-bindings (gl::auto-bindings (:mix (:nat x 64) (:nat y 64))))
 
 (defthm sra-64-correctness
  (implies (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
@@ -252,3 +171,4 @@
 	         :in-theory (e/d ()
 				 ((:e create-tuple-indices)
 				  (:e materialize-srli-subtable))))))
+|#

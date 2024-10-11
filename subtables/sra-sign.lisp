@@ -138,20 +138,22 @@
 		(+ (sra-sign-32 x y)
 		   (ash x (- y))))
   :g-bindings (gl::auto-bindings (:nat y 5) (:nat x 32)))
+(in-theory (disable sra-sign-32-correctness))
 
-(gl::def-gl-thm sra-sign-8-correctness
-  :hyp (and (unsigned-byte-p 5 y) 
+(gl::def-gl-thm sra-sign-8-correctness-gl
+  :hyp (and (unsigned-byte-p 8 y) 
 	    (unsigned-byte-p 32 x))
-  :concl (equal (logextu 32 (- 32 y) (ash x (- y)))
-		(+ (sra-sign-8 (part-select x :low 24 :width 8) y)
-		   (ash x (- y))))
-  :g-bindings (gl::auto-bindings (:nat y 5) (:nat x 32)))
+  :concl (equal (ashu 32 x (- (mod y 32)))
+		(+ (sra-sign-8 (part-select x :low 24 :width 8) (mod y 32))
+		   (ash x (- (mod y 32)))))
+  :g-bindings (gl::auto-bindings (:nat y 8) (:nat x 32)))
 
-(defthm sra-sign-8-correctness
-  (implies (and (unsigned-byte-p 5 y) (unsigned-byte-p 32 x))
- 	   (equal (logextu 32 (- 32 y) (ash x (- y)))
-		  (+ (sra-sign-8 (part-select x :low 24 :width 8) y)
-		     (ash x (- y))))))
+(defthmd sra-sign-8-correctness
+  (implies (and (unsigned-byte-p 8 y) (unsigned-byte-p 32 x))
+           (equal (ashu 32 x (- (mod y 32)))
+		(+ (sra-sign-8 (part-select x :low 24 :width 8) (mod y 32))
+		   (ash x (- (mod y 32))))))
+  :hints (("Goal" :use ((:instance sra-sign-8-correctness-gl)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;					;;
@@ -167,16 +169,17 @@
                              (- word-size (logand (1- word-size) y)))))
 
 (gl::def-gl-thm sra-sign-sra-sign-8-equiv
- :hyp (and (unsigned-byte-p 5 y) (unsigned-byte-p 32 x))
- :concl (equal (sra-sign x y 32)
-	       (sra-sign-8 x y))
+ :hyp (and (unsigned-byte-p 8 y) (unsigned-byte-p 32 x))
+ :concl (equal (sra-sign x (mod y 32) 32)
+	       (sra-sign-8 x (mod y 32)))
  :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
 
-(gl::def-gl-thm sra-sign-correctness
-  :hyp (and (unsigned-byte-p 8 y) (unsigned-byte-p 8 x))
-  :concl (equal (ashu 32 x (- (mod y 32)))
-	  	  (+ (sra-sign x y 32) (ash x (- (mod y 32)))))
-  :g-bindings (gl::auto-bindings (:nat x 8) (:nat y 8)))
+(defthm sra-sign-correctness
+  (implies (and (unsigned-byte-p 8 y) (unsigned-byte-p 32 x))
+  	   (equal (ashu 32 x (- (mod y 32)))
+	  	  (+ (sra-sign (part-select x :low 24 :width 8) (mod y 32) 32) (ash x (- (mod y 32))))))
+  :hints (("Goal" :use ((:instance sra-sign-sra-sign-8-equiv)
+			(:instance sra-sign-8-correctness)))))
 
 ;; This subtable assumes that we will instantiate it with `m = 8`, hence we take `logbit 7 x`
 ;; i.e. `idx-lst` is `(create-tuple-indices (1- (expt 2 8)) (1- (expt 2 8)))`
@@ -232,58 +235,18 @@
                      (sra-sign i j word-size))))
  :hints (("Goal" :in-theory (e/d (tuple-lookup) ()))))
 
-;(defun materialize-sra-sign-subtable-8 (idx-lst)
-; (b* (((unless (alistp idx-lst))     nil)
-;      ((if (atom idx-lst))           nil)
-;      ((cons idx rst)            idx-lst)
-;      ((unless (consp idx))          nil)
-;      ((cons x y)                    idx))
-;     (cons (cons idx (sra-sign-8 x y))
-;           (materialize-sra-sign-subtable-8 rst))))
-;
-; ;; expected semantics from spec & Rust version
-; ;; materialize-sra-sign-subtable (idx-lst log-word-size)
-; ;; where `log-word-size` is 5 or 6
-; ;; (ash (ash x i) (- (logtail log-word-size y)))
-;
-;(defthm alistp-of-materialize-sra-sign-subtable-8
-; (alistp (materialize-sra-sign-subtable-8 idx-lst)))
-;
-;(defthm member-idx-lst-assoc-materialize-sra-sign-subtable-8
-; (implies (and (alistp idx-lst) (member idx idx-lst))
-;          (assoc idx (materialize-sra-sign-subtable-8 idx-lst))))
-;
-;(defthm assoc-member-materialize-sra-sign-subtable-8
-; (implies (assoc (cons x y) (materialize-sra-sign-subtable-8 idx-lst))
-;          (member (cons x y) idx-lst)))
-;
-;(defthm assoc-materialize-sra-sign-subtable-8
-; (implies (assoc (cons i j) (materialize-sra-sign-subtable-8 idx-lst))
-;          (equal (assoc (cons i j) (materialize-sra-sign-subtable-8 idx-lst))
-;                 (cons (cons i j) (sra-sign-8 i j)))))
-;
-;(defthm materialize-sra-sign-subtable-8-correctness
-; (implies (and (natp x-hi) 
-;   	       (natp y-hi) 
-;               (natp i) 
-;               (natp j) 
-;               (<= i x-hi)
-;               (<= j y-hi))
-;          (b* ((indices  (create-tuple-indices x-hi y-hi))
-;               (subtable (materialize-sra-sign-subtable-8 indices)))
-;              (equal (assoc-equal (cons i j) subtable)
-;                     (cons (cons i j)
-;                           (sra-sign-8 i j))))))
-;
-;(defthm lookup-materialize-sra-sign-subtable-8-correctness
-; (implies (and (natp x-hi) 
-;   	       (natp y-hi) 
-;               (natp i) 
-;               (natp j) 
-;               (<= i x-hi)
-;               (<= j y-hi))
-;          (b* ((indices  (create-tuple-indices x-hi y-hi))
-;               (subtable (materialize-sra-sign-subtable-8 indices)))
-;              (equal (tuple-lookup i j subtable)
-;                     (sra-sign-8 i j))))
-; :hints (("Goal" :in-theory (e/d (tuple-lookup) ()))))
+(encapsulate
+ nil
+ (local (include-book "arithmetic/top" :dir :system))
+ (defthm natp-of-expt-2-n
+  (implies (natp n) (natp (expt 2 n)))))
+
+(defthm lookup-sra-sign-logtail-24-x-lemma
+ (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 8 y))
+          (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
+               (subtable (materialize-sra-sign-subtable indices 32)))
+              (equal (tuple-lookup (logtail 24 x) (loghead 8 y) subtable)
+                     (sra-sign (logtail 24 x) (loghead 8 y) 32))))
+ :hints (("Goal" :in-theory (disable loghead-identity materialize-sra-sign-subtable (:e create-tuple-indices) (:e expt)))))
+
+
