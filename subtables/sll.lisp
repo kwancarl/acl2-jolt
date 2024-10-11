@@ -130,10 +130,9 @@
 
 ;; SLL subtable with trunctation
 
-;; Semantics from the spec: (x << (y mod word-size)) mod (expt 2 (word-size - m * i))
+;; Semantics from the spec: (x << (y mod word-size)), truncate to (- word-size i) bits
 (defun slli-rust (x y i word-size)
-  (mod (ash x (mod y word-size))
-       (expt 2 (- word-size i))))
+  (loghead (- word-size i) (ash x (mod y word-size))))
           
 (defun materialize-slli-subtable (idx-lst i word-size)
   (b* (((unless (alistp idx-lst))     nil)
@@ -192,8 +191,8 @@
  (defthm lookup-sll-0-32-subtable-correctness
   (implies (and (natp i)
                 (natp j)
-                (<= i (expt 2  8))
-                (<= j (expt 2  8)))
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
            (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
                 (subtable (materialize-slli-subtable indices 0 32)))
                (equal (tuple-lookup i j subtable)
@@ -203,9 +202,9 @@
  (defthm lookup-sll-8-32-subtable-correctness
   (implies (and (natp i)
                 (natp j)
-                (<= i (expt 2  8))
-                (<= j (expt 2  8)))
-           (b* ((indices  (create-tuple-indices (expt 2  8) (expt 2 8)))
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
                 (subtable (materialize-slli-subtable indices 8 32)))
                (equal (tuple-lookup i j subtable)
 		      (slli-rust i j 8 32))))
@@ -231,4 +230,92 @@
                 (subtable (materialize-slli-subtable indices 24 32)))
                (equal (tuple-lookup i j subtable)
                       (slli-rust i j 24 32))))
+  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable) (:e create-tuple-indices)))))
+
+ (defthm lookup-sll-0-64-subtable-correctness
+  (implies (and (natp i)
+                (natp j)
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
+                (subtable (materialize-slli-subtable indices 0 64)))
+               (equal (tuple-lookup i j subtable)
+                      (slli-rust i j 0 64))))
+  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable) (:e create-tuple-indices)))))
+
+ (defthm lookup-sll-8-64-subtable-correctness
+  (implies (and (natp i)
+                (natp j)
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
+                (subtable (materialize-slli-subtable indices 8 64)))
+               (equal (tuple-lookup i j subtable)
+                      (slli-rust i j 8 64))))
+  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable) (:e create-tuple-indices)))))
+
+ (defthm lookup-sll-16-64-subtable-correctness
+  (implies (and (natp i)
+                (natp j)
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
+                (subtable (materialize-slli-subtable indices 16 64)))
+               (equal (tuple-lookup i j subtable)
+                      (slli-rust i j 16 64))))
+  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable) (:e create-tuple-indices)))))
+
+ (defthm lookup-sll-24-64-subtable-correctness
+  (implies (and (natp i)
+                (natp j)
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
+                (subtable (materialize-slli-subtable indices 24 64)))
+               (equal (tuple-lookup i j subtable)
+                      (slli-rust i j 24 64))))
+  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable) (:e create-tuple-indices)))))
+
+ (defthm lookup-sll-32-64-subtable-correctness
+  (implies (and (natp i)
+                (natp j)
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
+                (subtable (materialize-slli-subtable indices 32 64)))
+               (equal (tuple-lookup i j subtable)
+                      (slli-rust i j 32 64))))
+  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable) (:e create-tuple-indices)))))
+
+ (defthm lookup-sll-40-64-subtable-correctness
+  (implies (and (natp i)
+                (natp j)
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
+                (subtable (materialize-slli-subtable indices 40 64)))
+               (equal (tuple-lookup i j subtable)
+                      (slli-rust i j 40 64))))
+  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable) (:e create-tuple-indices)))))
+
+ (defthm lookup-sll-48-64-subtable-correctness
+  (implies (and (natp i)
+                (natp j)
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
+                (subtable (materialize-slli-subtable indices 48 64)))
+               (equal (tuple-lookup i j subtable)
+                      (slli-rust i j 48 64))))
+  :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable) (:e create-tuple-indices)))))
+
+ (defthm lookup-sll-56-64-subtable-correctness
+  (implies (and (natp i)
+                (natp j)
+                (<= i (expt 2 8))
+                (<= j (expt 2 8)))
+           (b* ((indices  (create-tuple-indices (expt 2 8) (expt 2 8)))
+                (subtable (materialize-slli-subtable indices 56 64)))
+               (equal (tuple-lookup i j subtable)
+                      (slli-rust i j 56 64))))
   :hints (("Goal" :in-theory (disable (:e materialize-slli-subtable) (:e create-tuple-indices)))))
