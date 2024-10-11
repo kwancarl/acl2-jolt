@@ -157,7 +157,7 @@
        (u8-0 (tuple-lookup x8-0 y8-7 slli-subtable-0)))
       ;; Combine
       (+ (* u8-0 (expt 2 56)) 
-         (* u8-1 (expt 2 16)) 
+         (* u8-1 (expt 2 48)) 
          (* u8-2 (expt 2 40)) 
          (* u8-3 (expt 2 32)) 
          (* u8-4 (expt 2 24)) 
