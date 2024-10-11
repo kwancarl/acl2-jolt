@@ -14,32 +14,32 @@
 
 ;; Materialize subtables for "or"
 
-(defun materialize-ior-subtable (idx-lst)
+(defun materialize-or-subtable (idx-lst)
  (b* (((unless (alistp idx-lst))     nil)
       ((if (atom idx-lst))           nil)
       ((cons idx rst)            idx-lst)
       ((unless (consp idx))          nil)
       ((cons x y)                    idx))
      (cons (cons idx (logior x y))
-           (materialize-ior-subtable rst))))
+           (materialize-or-subtable rst))))
 
-(defthm alistp-of-materialize-ior-subtable
- (alistp (materialize-ior-subtable idx-lst)))
+(defthm alistp-of-materialize-or-subtable
+ (alistp (materialize-or-subtable idx-lst)))
 
-(defthm member-idx-lst-assoc-materialize-ior-subtable
+(defthm member-idx-lst-assoc-materialize-or-subtable
  (implies (and (alistp idx-lst) (member idx idx-lst))
-          (assoc idx (materialize-ior-subtable idx-lst))))
+          (assoc idx (materialize-or-subtable idx-lst))))
 
-(defthm assoc-member-ior-subtable
- (implies (assoc (cons i j) (materialize-ior-subtable idx-lst))
+(defthm assoc-member-or-subtable
+ (implies (assoc (cons i j) (materialize-or-subtable idx-lst))
           (member (cons i j) idx-lst)))
 
-(defthm assoc-ior-subtable
- (implies (assoc (cons i j) (materialize-ior-subtable idx-lst))
-          (equal (assoc (cons i j) (materialize-ior-subtable idx-lst))
+(defthm assoc-or-subtable
+ (implies (assoc (cons i j) (materialize-or-subtable idx-lst))
+          (equal (assoc (cons i j) (materialize-or-subtable idx-lst))
                  (cons (cons i j) (logior i j)))))
 
-(defthm ior-subtable-correctness
+(defthm or-subtable-correctness
  (implies (and (natp x-hi) 
                (natp y-hi) 
                (natp i) 
@@ -47,11 +47,11 @@
                (<= i x-hi) 
                (<= j y-hi) )
           (b* ((indices  (create-tuple-indices x-hi y-hi))
-               (subtable (materialize-ior-subtable indices)))
+               (subtable (materialize-or-subtable indices)))
               (equal (assoc-equal (cons i j) subtable)
                      (cons (cons i j) (logior i j))))))
                  
-(defthm lookup-ior-subtable-correctness
+(defthm lookup-or-subtable-correctness
  (implies (and (natp x-hi)
                (natp y-hi)
                (natp i)
@@ -59,7 +59,7 @@
                (<= i x-hi)
                (<= j y-hi) )
           (b* ((indices  (create-tuple-indices x-hi y-hi))
-               (subtable (materialize-ior-subtable indices)))
+               (subtable (materialize-or-subtable indices)))
               (equal (tuple-lookup i j subtable)
                      (logior i j))))
  :hints (("Goal" :in-theory (enable tuple-lookup))))
@@ -70,7 +70,7 @@
 ;;	    ;;
 ;;;;;;;;;;;;;;
 
-(define orw ((x :type unsigned-byte) (y :type unsigned-byte))
+(define or-w ((x :type unsigned-byte) (y :type unsigned-byte))
   :measure (+ (integer-length x) (integer-length y))
   :hints (("Goal" :in-theory (enable logcdr integer-length)))
   (b* (((unless (and (natp x) (natp y) 0)))
@@ -78,21 +78,21 @@
        (x0 (logcar x))
        (y0 (logcar y)))
       (+ (b-xor (b-xor x0 y0) (b-and x0 y0))
-         (* 2 (orw (logcdr x) (logcdr y))))))
+         (* 2 (or-w (logcdr x) (logcdr y))))))
 
-(defthmd b-owr-b-ior-equiv
+(defthmd b-or-w-b-ior-equiv
   (implies (and (bitp x) (bitp y))
 	   (equal (b-xor (b-xor x y) (b-and x y)) (b-ior x y)))
   :hints (("Goal" :cases ((equal x 0)))))
 
-(defthm orw-logior-equiv
+(defthm or-w-logior-equiv
   (implies (and (natp x) (natp y))
-	   (equal (orw x y) (logior x y)))
-  :hints (("Goal" :in-theory (enable orw))))
+	   (equal (or-w x y) (logior x y)))
+  :hints (("Goal" :in-theory (enable or-w))))
 
-(gl::def-gl-thm orw-logior-equiv-gl
+(gl::def-gl-thm or-w-logior-equiv-gl
   :hyp   (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
-  :concl (equal (orw x y) (logior x y))
+  :concl (equal (or-w x y) (logior x y))
   :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32 ))))
 
 (local
@@ -125,21 +125,21 @@
        ((if (and (zerop (integer-length x)) (zerop (integer-length y)))) 0)
        (car-chunk-x   (loghead wc x))
        (car-chunk-y   (loghead wc y))
-       (car-chunk-or  (orw car-chunk-x car-chunk-y))
+       (car-chunk-or  (or-w car-chunk-x car-chunk-y))
        (cdr-chunk-x   (logtail wc x))
        (cdr-chunk-y   (logtail wc y)))
       (logapp wc
               car-chunk-or
               (or-wc cdr-chunk-x cdr-chunk-y wc))))
 
-(gl::def-gl-thm orw-or-wc-equiv-32-gl
+(gl::def-gl-thm or-w-or-wc-equiv-32-gl
  :hyp (and (unsigned-byte-p 32 x)
            (unsigned-byte-p 32 y))
- :concl (equal (or-wc x y 8) (orw x y))
+ :concl (equal (or-wc x y 8) (or-w x y))
  :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
 
-(gl::def-gl-thm orw-or-wc-equiv-64-gl
+(gl::def-gl-thm or-w-or-wc-equiv-64-gl
  :hyp (and (unsigned-byte-p 64 x)
            (unsigned-byte-p 64 y))
- :concl (equal (or-wc x y 8) (orw x y))
+ :concl (equal (or-wc x y 8) (or-w x y))
  :g-bindings (gl::auto-bindings (:mix (:nat x 64) (:nat y 64))))

@@ -52,7 +52,7 @@
               'top-level
               state)
 
-(write-list (materialize-ior-subtable *indices*)
+(write-list (materialize-or-subtable *indices*)
               (concatenate 'string *output-dir* "/or_subtable_acl2.txt")
               'top-level
               state)

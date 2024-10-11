@@ -78,17 +78,42 @@ macro_rules! print_instruction_test {
     };
 }
 
+// We implement line-wrapping to match ACL2's print functionality
+#[macro_export]
+macro_rules! write_wrapped {
+    ($writer:expr, $s:expr, $width:expr) => {{
+        let mut line = String::new();
+        for word in $s.split_whitespace() {
+            if line.len() + word.len() + 1 > $width {
+                writeln!($writer, "{}", line.trim_end()).expect("Failed to write");
+                line.clear();
+            }
+            line.push_str(word);
+            line.push(' ');
+        }
+        if !line.is_empty() {
+            writeln!($writer, "{}", line.trim_end()).expect("Failed to write");
+        }
+    }};
+}
+
 #[macro_export]
 macro_rules! create_and_write_instruction {
+    // If instruction takes one operand
     ($instruction:expr, true, $x:expr, $y:expr, $writer:expr) => {
         let instruction = $instruction(*$x);
         let result = instruction.lookup_entry();
-        writeln!($writer, "(({} . {}) . {})\n", $x, $y, result).expect("Failed to write");
+        write_wrapped!($writer, &format!("({} . {})\n\n", $x, result), 40);
     };
+    // If instruction takes two operands
     ($instruction:expr, false, $x:expr, $y:expr, $writer:expr) => {
         let instruction = $instruction(*$x, *$y);
         let result = instruction.lookup_entry();
-        writeln!($writer, "(({} . {}) . {})\n", $x, $y, result).expect("Failed to write");
+        write_wrapped!(
+            $writer,
+            &format!("(({} . {}) . {})\n\n", $x, $y, result),
+            40
+        );
     };
 }
 

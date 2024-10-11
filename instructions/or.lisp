@@ -9,15 +9,13 @@
 
 (include-book "../subtables/or")
 
-;; Note: In ACL2, the OR operation is named `ior` for inclusive OR
-
 (include-book "ihs/logops-lemmas" :dir :system)
 (include-book "centaur/bitops/part-select" :DIR :SYSTEM)
 (include-book "centaur/bitops/merge" :DIR :SYSTEM)
 
 ;; 32-BIT VERSION
 
-(define ior-semantics-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
+(define or-semantics-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
   (b* (((unless (unsigned-byte-p 32 x)) 0)
        ((unless (unsigned-byte-p 32 y)) 0)
        ;; Chunk
@@ -37,7 +35,7 @@
       ;; Combine
       (merge-4-u8s w0 w1 w2 w3)))
 
-(define ior-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
+(define or-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 32 x)) 0)
        ((unless (unsigned-byte-p 32 y)) 0)
@@ -52,33 +50,33 @@
        (y8-0 (part-select y :low 24 :width 8))
        ;; Materialize subtables 
        (indices      (create-tuple-indices (expt 2 8) (expt 2 8)))
-       (ior-subtable  (materialize-ior-subtable  indices))
+       (or-subtable  (materialize-or-subtable  indices))
        ;; Perform lookups
-       (w0   (tuple-lookup x8-0 y8-0 ior-subtable))
-       (w1   (tuple-lookup x8-1 y8-1 ior-subtable))
-       (w2   (tuple-lookup x8-2 y8-2 ior-subtable))
-       (w3   (tuple-lookup x8-3 y8-3 ior-subtable)))
+       (w0   (tuple-lookup x8-0 y8-0 or-subtable))
+       (w1   (tuple-lookup x8-1 y8-1 or-subtable))
+       (w2   (tuple-lookup x8-2 y8-2 or-subtable))
+       (w3   (tuple-lookup x8-3 y8-3 or-subtable)))
       ;; Combine
       (merge-4-u8s w0 w1 w2 w3)))
 
-(defthm ior-32-ior-semantics-32-equiv
- (equal (ior-32 x y) (ior-semantics-32 x y))
- :hints (("Goal" :in-theory (e/d (ior-32 ior-semantics-32) ((:e expt))))))
+(defthm or-32-or-semantics-32-equiv
+ (equal (or-32 x y) (or-semantics-32 x y))
+ :hints (("Goal" :in-theory (e/d (or-32 or-semantics-32) ((:e expt))))))
 
 ;; Semantic correctness of or
-(gl::def-gl-thm ior-semantics-32-correctness
+(gl::def-gl-thm or-semantics-32-correctness
  :hyp (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
- :concl (equal (ior-semantics-32 x y) (logior x y))
+ :concl (equal (or-semantics-32 x y) (logior x y))
  :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
 
-(defthm ior-32-correctness
+(defthm or-32-correctness
  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
-          (equal (ior-32 x y) (logior x y))))
+          (equal (or-32 x y) (logior x y))))
 
 
 ;; 64-BIT VERSION
 
-(define ior-semantics-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
+(define or-semantics-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ((unless (unsigned-byte-p 64 y)) 0)
@@ -111,7 +109,7 @@
       ;; COMBINE
       (merge-8-u8s w0 w1 w2 w3 w4 w5 w6 w7)))
 
-(define ior-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
+(define or-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ((unless (unsigned-byte-p 64 y)) 0)
@@ -134,30 +132,30 @@
        (y8-0 (part-select y :low 56 :width 8))
        ;; Materialize subtables 
        (indices            (create-tuple-indices (expt 2 8) (expt 2 8)))
-       (ior-subtable        (materialize-ior-subtable  indices))
+       (or-subtable        (materialize-or-subtable  indices))
        ;; Perform lookups
-       (w0   (tuple-lookup x8-0 y8-0 ior-subtable))
-       (w1   (tuple-lookup x8-1 y8-1 ior-subtable))
-       (w2   (tuple-lookup x8-2 y8-2 ior-subtable))
-       (w3   (tuple-lookup x8-3 y8-3 ior-subtable))
-       (w4   (tuple-lookup x8-4 y8-4 ior-subtable))
-       (w5   (tuple-lookup x8-5 y8-5 ior-subtable))
-       (w6   (tuple-lookup x8-6 y8-6 ior-subtable))
-       (w7   (tuple-lookup x8-7 y8-7 ior-subtable)))
+       (w0   (tuple-lookup x8-0 y8-0 or-subtable))
+       (w1   (tuple-lookup x8-1 y8-1 or-subtable))
+       (w2   (tuple-lookup x8-2 y8-2 or-subtable))
+       (w3   (tuple-lookup x8-3 y8-3 or-subtable))
+       (w4   (tuple-lookup x8-4 y8-4 or-subtable))
+       (w5   (tuple-lookup x8-5 y8-5 or-subtable))
+       (w6   (tuple-lookup x8-6 y8-6 or-subtable))
+       (w7   (tuple-lookup x8-7 y8-7 or-subtable)))
       ;; Combine
       (merge-8-u8s w0 w1 w2 w3 w4 w5 w6 w7)))
 
-(defthm ior-64-ior-semantics-64-equiv
- (equal (ior-64 x y)
-	(ior-semantics-64 x y))
- :hints (("Goal" :in-theory (e/d (ior-64 ior-semantics-64) ((:e expt))))))
+(defthm or-64-or-semantics-64-equiv
+ (equal (or-64 x y)
+	(or-semantics-64 x y))
+ :hints (("Goal" :in-theory (e/d (or-64 or-semantics-64) ((:e expt))))))
 
 ;; Semantic correctness of or
-(gl::def-gl-thm ior-semantics-64-correctness
+(gl::def-gl-thm or-semantics-64-correctness
  :hyp (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
- :concl (equal (ior-semantics-64 x y) (logior x y))
+ :concl (equal (or-semantics-64 x y) (logior x y))
  :g-bindings (gl::auto-bindings (:mix (:nat x 64) (:nat y 64))))
 
-(defthm ior-64-correctness
+(defthm or-64-correctness
  (implies (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
-          (equal (ior-64 x y) (logior x y))))
+          (equal (or-64 x y) (logior x y))))

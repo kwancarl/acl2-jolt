@@ -86,18 +86,10 @@
  (equal (sra-32 x y) (sra-semantics-32 x y))
  :hints (("Goal" :in-theory (e/d (sra-semantics-32 sra-32)
                                  (srli-rust sra-sign (:e create-tuple-indices) (:e expt))))))
-          ;; :use ((:instance lookup-materialize-sra-sign-subtable-correctness
-          ;;       (word-size 32)
-          ;;       (x-hi (expt 2 8))
-          ;;       (y-hi (expt 2 8))
-          ;;       (i (logtail 24 x))
-          ;;       (j (loghead 5 y)))))))
 
 (defthm sra-32-correctness
  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
           (equal (sra-32 x y) (ashu 32 x (- (mod y 32))))))
-
-:i-am-here
 
 (local (in-theory (disable srl-32-srl-semantics-32-equiv)))
 
