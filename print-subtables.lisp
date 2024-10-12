@@ -69,137 +69,132 @@
 
 ;; Shift subtables
 
-(write-list (materialize-slli-subtable-prime *indices* (* 8 0) 32)
+(write-list (materialize-slli-subtable *indices* (* 8 0) 32)
               (concatenate 'string *output-dir* "/sll_subtable_0_32_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-slli-subtable-prime *indices* (* 8 1) 32)
+(write-list (materialize-slli-subtable *indices* (* 8 1) 32)
               (concatenate 'string *output-dir* "/sll_subtable_1_32_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-slli-subtable-prime *indices* (* 8 2) 32)
+(write-list (materialize-slli-subtable *indices* (* 8 2) 32)
               (concatenate 'string *output-dir* "/sll_subtable_2_32_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-slli-subtable-prime *indices* (* 8 3) 32)
+(write-list (materialize-slli-subtable *indices* (* 8 3) 32)
               (concatenate 'string *output-dir* "/sll_subtable_3_32_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-slli-subtable-prime *indices* (* 8 0) 64)
+(write-list (materialize-slli-subtable *indices* (* 8 0) 64)
               (concatenate 'string *output-dir* "/sll_subtable_0_64_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-slli-subtable-prime *indices* (* 8 1) 64)
+(write-list (materialize-slli-subtable *indices* (* 8 1) 64)
               (concatenate 'string *output-dir* "/sll_subtable_1_64_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-slli-subtable-prime *indices* (* 8 2) 64)
+(write-list (materialize-slli-subtable *indices* (* 8 2) 64)
               (concatenate 'string *output-dir* "/sll_subtable_2_64_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-slli-subtable-prime *indices* (* 8 3) 64)
+(write-list (materialize-slli-subtable *indices* (* 8 3) 64)
               (concatenate 'string *output-dir* "/sll_subtable_3_64_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-slli-subtable-prime *indices* (* 8 4) 64)
+(write-list (materialize-slli-subtable *indices* (* 8 4) 64)
               (concatenate 'string *output-dir* "/sll_subtable_4_64_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-slli-subtable-prime *indices* (* 8 5) 64)
+(write-list (materialize-slli-subtable *indices* (* 8 5) 64)
               (concatenate 'string *output-dir* "/sll_subtable_5_64_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-slli-subtable-prime *indices* (* 8 6) 64)
+(write-list (materialize-slli-subtable *indices* (* 8 6) 64)
               (concatenate 'string *output-dir* "/sll_subtable_6_64_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-slli-subtable-prime *indices* (* 8 7) 64)
+(write-list (materialize-slli-subtable *indices* (* 8 7) 64)
               (concatenate 'string *output-dir* "/sll_subtable_7_64_acl2.txt")
               'top-level
               state)
 
-;; (write-list (materialize-sra-sign-subtable-prime *indices* 32)
-;;               (concatenate 'string *output-dir* "/sra_sign_subtable_32_acl2.txt")
-;;               'top-level
-;;               state)
-
-(write-list (materialize-sra-sign-subtable-8 *indices*)
-              (concatenate 'string *output-dir* "/sra_sign_subtable_prime_32_acl2.txt")
+(write-list (materialize-sra-sign-subtable *indices* 32)
+              (concatenate 'string *output-dir* "/sra_sign_subtable_32_acl2.txt")
               'top-level
               state)
 
-;; (write-list (materialize-sra-sign-subtable-prime *indices* 64)
-;;               (concatenate 'string *output-dir* "/sra_sign_subtable_64_acl2.txt")
-;;               'top-level
-;;               state)
+(write-list (materialize-sra-sign-subtable *indices* 64)
+              (concatenate 'string *output-dir* "/sra_sign_subtable_64_acl2.txt")
+              'top-level
+              state)
 
-(write-list (materialize-srli-subtable-prime *indices* (* 8 0) 5)
+(write-list (materialize-srli-subtable *indices* (* 8 0) 32)
               (concatenate 'string *output-dir* "/srl_subtable_0_32_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-srli-subtable-prime *indices* (* 8 1) 5)
+(write-list (materialize-srli-subtable *indices* (* 8 1) 32)
               (concatenate 'string *output-dir* "/srl_subtable_1_32_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-srli-subtable-prime *indices* (* 8 2) 5)
+(write-list (materialize-srli-subtable *indices* (* 8 2) 32)
               (concatenate 'string *output-dir* "/srl_subtable_2_32_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-srli-subtable-prime *indices* (* 8 3) 5)
+(write-list (materialize-srli-subtable *indices* (* 8 3) 32)
               (concatenate 'string *output-dir* "/srl_subtable_3_32_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-srli-subtable-prime *indices* (* 8 0) 6)
+(write-list (materialize-srli-subtable *indices* (* 8 0) 64)
               (concatenate 'string *output-dir* "/srl_subtable_0_64_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-srli-subtable-prime *indices* (* 8 1) 6)
+(write-list (materialize-srli-subtable *indices* (* 8 1) 64)
               (concatenate 'string *output-dir* "/srl_subtable_1_64_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-srli-subtable-prime *indices* (* 8 2) 6)
+(write-list (materialize-srli-subtable *indices* (* 8 2) 64)
               (concatenate 'string *output-dir* "/srl_subtable_2_64_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-srli-subtable-prime *indices* (* 8 3) 6)
+(write-list (materialize-srli-subtable *indices* (* 8 3) 64)
               (concatenate 'string *output-dir* "/srl_subtable_3_64_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-srli-subtable-prime *indices* (* 8 4) 6)
+(write-list (materialize-srli-subtable *indices* (* 8 4) 64)
               (concatenate 'string *output-dir* "/srl_subtable_4_64_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-srli-subtable-prime *indices* (* 8 5) 6)
+(write-list (materialize-srli-subtable *indices* (* 8 5) 64)
               (concatenate 'string *output-dir* "/srl_subtable_5_64_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-srli-subtable-prime *indices* (* 8 6) 6)
+(write-list (materialize-srli-subtable *indices* (* 8 6) 64)
               (concatenate 'string *output-dir* "/srl_subtable_6_64_acl2.txt")
               'top-level
               state)
 
-(write-list (materialize-srli-subtable-prime *indices* (* 8 7) 6)
+(write-list (materialize-srli-subtable *indices* (* 8 7) 64)
               (concatenate 'string *output-dir* "/srl_subtable_7_64_acl2.txt")
               'top-level
               state)

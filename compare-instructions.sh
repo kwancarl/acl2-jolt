@@ -71,6 +71,24 @@ done
 
 validation_dir="validation/instructions"
 
+# Post-processing function for the ACL2 files to remove line breaks
+post_process_acl2_output() {
+    local input_file="$1"
+    local output_file="${input_file}.tmp"
+    
+    # Remove single line breaks within cons pairs
+    awk '
+    BEGIN { RS = ""; ORS = "\n\n" }
+    {
+        gsub(/\n /, " ");
+        print
+    }
+    ' "$input_file" > "$output_file"
+    
+    # Replace the original file with the processed one
+    mv "$output_file" "$input_file"
+}
+
 if [ "$skip_file_generation" = false ]; then
     # Step 0: Create the validation directory if it doesn't exist
     mkdir -p "$validation_dir"
@@ -87,6 +105,17 @@ if [ "$skip_file_generation" = false ]; then
     echo "Calling ACL2 print functions..."
     echo
     acl2 < print-instructions.lisp
+
+    # Post-process all the ACL2 files to remove line breaks
+    echo "Post-processing ACL2 output files to remove line breaks..."
+    for instruction in "${instructions[@]}"; do
+        acl2_file="${validation_dir}/${instruction}_acl2.txt"
+        if [ -f "$acl2_file" ]; then
+            post_process_acl2_output "$acl2_file"
+        fi
+    done
+    echo "Post-processing complete."
+    echo
 else
     echo "Skipping file generation steps..."
     echo

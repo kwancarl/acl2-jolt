@@ -20,6 +20,19 @@
          (cons (cons x-hi (logand x-hi mask))
                (materialize-truncate-subtable (1- x-hi) mask)))))
 
+;; (defthm member-idx-lst-assoc-materialize-truncate-subtable
+;;  (implies (and (natp x-hi) (natp i) (<= i x-hi))
+;;           (assoc i (materialize-truncate-subtable x-hi mask))))
+
+;; (defthm assoc-member-truncate-subtable
+;;  (implies (assoc i (materialize-truncate-subtable x-hi mask))
+;;           (<= i x-hi)))
+
+;; (defthm assoc-truncate-subtable
+;;  (implies (assoc i (materialize-truncate-subtable x-hi mask))
+;;           (equal (assoc i (materialize-truncate-subtable x-hi mask))
+;;                  (cons i (logand i mask)))))
+
 (defthm truncate-subtable-correctness
  (implies (and (natp x-hi) 
                (natp i) 
@@ -39,7 +52,6 @@
                      (logand i mask))))
  :hints (("Goal" :in-theory (e/d (single-lookup) (materialize-truncate-subtable))
 	         :use ((:instance truncate-subtable-correctness)))))
-
 
 ;; Evaluate mle and correctness of lookup
 

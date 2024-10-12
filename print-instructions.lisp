@@ -20,7 +20,7 @@
 (include-book "instructions/sll")
 (include-book "instructions/slt")
 (include-book "instructions/sltu")
-;; (include-book "instructions/sra")
+(include-book "instructions/sra")
 (include-book "instructions/srl")
 (include-book "instructions/sub")
 (include-book "instructions/sw")
