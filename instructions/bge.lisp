@@ -24,7 +24,7 @@
        ;; Lookup semantics
        (L    (logbit 7 x8-0))
        (R    (logbit 7 y8-0))
-       (Z0   (if (< (loghead 7 x8-0) (loghead 7 y8-0)) 1 0))
+       (z0   (if (< (loghead 7 x8-0) (loghead 7 y8-0)) 1 0))
        (z1   (if (< x8-1 y8-1) 1 0))
        (z2   (if (< x8-2 y8-2) 1 0))
        (z3   (if (< x8-3 y8-3) 1 0))
@@ -34,12 +34,9 @@
        (?w3  (if (= x8-3 y8-3) 1 0))) ;; ignore w3
       ;; Combine
       ;; (- 1 (slt-32-semantics x y))
-      (- 1 (b-xor (b-and L (b-xor R 1))
-	     (b-and (b-xor (b-and (b-xor L 1) (b-xor R 1)) (b-and L R))
-                    (+    z0
-                       (* z1 w0)
-                       (* z2 w0 w1)
-	               (* z3 w0 w1 w2)))))))
+      (- 1 (+ (* L (- 1 R))
+              (* (+ (* (- 1 L) (- 1 R)) (* L R))
+                 (+ z0 (* z1 w0) (* z2 w0 w1) (* z3 w0 w1 w2)))))))
 
 (define bge-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
   :verify-guards nil
@@ -66,25 +63,22 @@
        (L    (tuple-lookup x8-0 y8-0 left-msb-subtable))
        (R    (tuple-lookup x8-0 y8-0 right-msb-subtable))
 
-       (Z0   (tuple-lookup x8-0 y8-0 lt-abs-subtable))
+       (z0   (tuple-lookup x8-0 y8-0 lt-abs-subtable))
 
        (z1   (tuple-lookup x8-1 y8-1 ltu-subtable))
        (z2   (tuple-lookup x8-2 y8-2 ltu-subtable))
        (z3   (tuple-lookup x8-3 y8-3 ltu-subtable))
 
-       (W0   (tuple-lookup x8-0 y8-0 eq-abs-subtable))
+       (w0   (tuple-lookup x8-0 y8-0 eq-abs-subtable))
 
        (w1   (tuple-lookup x8-1 y8-1 eq-subtable))
        (w2   (tuple-lookup x8-2 y8-2 eq-subtable))
        (?w3  (tuple-lookup x8-3 y8-3 eq-subtable))) ;; ignore w3
       ;; Combine
       ;; (- 1 (slt-32 x y))))
-      (- 1 (b-xor (b-and L (b-xor R 1))
-	     (b-and (b-xor (b-and (b-xor L 1) (b-xor R 1)) (b-and L R))
-                    (+    z0
-                       (* z1 w0)
-                       (* z2 w0 w1)
-	               (* z3 w0 w1 w2)))))))
+      (- 1 (+ (* L (- 1 R))
+              (* (+ (* (- 1 L) (- 1 R)) (* L R))
+                 (+ z0 (* z1 w0) (* z2 w0 w1) (* z3 w0 w1 w2)))))))
 
 (defthm bge-32-bge-semantics-32-equiv
  (equal (bge-32 x y)
@@ -150,16 +144,11 @@
        (?w7  (if (= x8-7 y8-7) 1 0))) ;; ignore w7
       ;; Combine
       ;; (- 1 (slt-64-semantics x y))
-      (- 1 (b-xor (b-and L (b-xor R 1))
-	     (b-and (b-xor (b-and (b-xor L 1) (b-xor R 1)) (b-and L R))
-        (+   z0
-          (* z1 w0)
-          (* z2 w0 w1)
-          (* z3 w0 w1 w2)
-          (* z4 w0 w1 w2 w3)
-          (* z5 w0 w1 w2 w3 w4)
-          (* z6 w0 w1 w2 w3 w4 w5)
-          (* z7 w0 w1 w2 w3 w4 w5 w6)))))))
+      (- 1 (+ (* L (- 1 R))
+              (* (+ (* (- 1 L) (- 1 R)) (* L R))
+                 (+ z0 (* z1 w0) (* z2 w0 w1) (* z3 w0 w1 w2)
+                    (* z4 w0 w1 w2 w3) (* z5 w0 w1 w2 w3 w4)
+                    (* z6 w0 w1 w2 w3 w4 w5) (* z7 w0 w1 w2 w3 w4 w5 w6)))))))
 
 (define bge-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
   :verify-guards nil
@@ -215,16 +204,11 @@
        (?w7  (tuple-lookup x8-7 y8-7 eq-subtable))) ;; ignore w7
       ;; Combine
       ;; (- 1 (slt-64 x y))
-      (- 1 (b-xor (b-and L (b-xor R 1))
-	     (b-and (b-xor (b-and (b-xor L 1) (b-xor R 1)) (b-and L R))
-        (+   z0
-          (* z1 w0)
-          (* z2 w0 w1)
-          (* z3 w0 w1 w2)
-          (* z4 w0 w1 w2 w3)
-          (* z5 w0 w1 w2 w3 w4)
-          (* z6 w0 w1 w2 w3 w4 w5)
-          (* z7 w0 w1 w2 w3 w4 w5 w6)))))))
+      (- 1 (+ (* L (- 1 R))
+              (* (+ (* (- 1 L) (- 1 R)) (* L R))
+                 (+ z0 (* z1 w0) (* z2 w0 w1) (* z3 w0 w1 w2)
+                    (* z4 w0 w1 w2 w3) (* z5 w0 w1 w2 w3 w4)
+                    (* z6 w0 w1 w2 w3 w4 w5) (* z7 w0 w1 w2 w3 w4 w5 w6)))))))
 
 (defthm bge-64-bge-semantics-64-equiv
  (equal (bge-64 x y)
