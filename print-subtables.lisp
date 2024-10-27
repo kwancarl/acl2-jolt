@@ -3,12 +3,15 @@
 (include-book "misc/file-io" :dir :system)
 
 (include-book "subtables/and")
+(include-book "subtables/div-by-zero")
 (include-book "subtables/eq")
 (include-book "subtables/eq-abs")
 (include-book "subtables/left-msb")
+(include-book "subtables/left-is-zero")
 (include-book "subtables/lt-abs")
 (include-book "subtables/ltu")
 (include-book "subtables/or")
+(include-book "subtables/right-is-zero")
 (include-book "subtables/right-msb")
 (include-book "subtables/sll")
 (include-book "subtables/sra-sign")
@@ -27,6 +30,11 @@
               'top-level
               state)
 
+(write-list (materialize-div-by-zero-subtable *indices* 32)
+              (concatenate 'string *output-dir* "/div_by_zero_subtable_acl2.txt")
+              'top-level
+              state)
+
 (write-list (materialize-eq-subtable *indices*)
               (concatenate 'string *output-dir* "/eq_subtable_acl2.txt")
               'top-level
@@ -34,6 +42,11 @@
 
 (write-list (materialize-eq-abs-subtable-8 *indices*)
               (concatenate 'string *output-dir* "/eq_abs_subtable_acl2.txt")
+              'top-level
+              state)
+
+(write-list (materialize-left-is-zero-subtable *indices*)
+              (concatenate 'string *output-dir* "/left_is_zero_subtable_acl2.txt")
               'top-level
               state)
 
@@ -54,6 +67,11 @@
 
 (write-list (materialize-or-subtable *indices*)
               (concatenate 'string *output-dir* "/or_subtable_acl2.txt")
+              'top-level
+              state)
+
+(write-list (materialize-right-is-zero-subtable *indices*)
+              (concatenate 'string *output-dir* "/right_is_zero_subtable_acl2.txt")
               'top-level
               state)
 

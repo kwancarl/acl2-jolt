@@ -34,3 +34,64 @@
             (equal (left-is-zero-w x y)
                    (if (zerop x) 1 0)))))
 ;; end define
+
+;; Materialize the left-is-zero subtable
+;; LeftIsZero(x, y) = 1 only when x = 00..0
+(defun materialize-left-is-zero-subtable (idx-lst)
+ (b* (;; Edge case
+      ((unless (alistp idx-lst))     nil)
+      ;; Base case
+      ((if (atom idx-lst))           nil)
+      ;; Bind head & tail in the index list
+      ((cons hd tl)              idx-lst)
+      ;; Edge case
+      ((unless (consp hd))           nil)
+      ;; Bind x & y operands in the head
+      ((cons x ?y)                     hd))
+     ;; Construct a key-value pair
+     ;;   key:    (x y)
+     ;;   value:  1 if x = 00..0, 0 otherwise
+     (cons (cons hd (if (equal x 0) 1 0))
+           (materialize-left-is-zero-subtable tl))))
+
+(defthm alistp-of-materialize-left-is-zero-subtable
+ (alistp (materialize-left-is-zero-subtable idx-lst)))
+
+(defthm member-idx-lst-assoc-materialize-left-is-zero-subtable
+ (implies (and (alistp idx-lst) (member idx idx-lst))
+          (assoc idx (materialize-left-is-zero-subtable idx-lst))))
+
+(defthm assoc-member-left-is-zero-subtable
+ (implies (assoc (cons i j) (materialize-left-is-zero-subtable idx-lst))
+          (member (cons i j) idx-lst)))
+
+(defthm assoc-left-is-zero-subtable
+ (implies (assoc (cons i j) (materialize-left-is-zero-subtable idx-lst))
+          (equal (assoc (cons i j) (materialize-left-is-zero-subtable idx-lst))
+                 (cons (cons i j) (if (equal i 0) 1 0)))))
+
+(defthm left-is-zero-subtable-correctness
+ (implies (and (natp x-hi)
+               (natp y-hi)
+               (natp i)
+               (natp j)
+               (<= i x-hi)
+               (<= j y-hi) )
+          (b* ((indices  (create-tuple-indices x-hi y-hi))
+               (subtable (materialize-left-is-zero-subtable indices)))
+              (equal (assoc-equal (cons i j) subtable)
+                     (cons (cons i j) (if (equal i 0) 1 0))))))
+
+;; Lookup values within the bounds of the subtable are equivalent to "x = 0"
+(defthm lookup-left-is-zero-subtable-correctness
+ (implies (and (natp x-hi)
+               (natp y-hi)
+               (natp i)
+               (natp j)
+               (<= i x-hi)
+               (<= j y-hi))
+          (b* ((indices  (create-tuple-indices x-hi y-hi))
+               (subtable (materialize-left-is-zero-subtable indices)))
+              (equal (tuple-lookup i j subtable)
+                     (if (equal i 0) 1 0))))
+ :hints (("Goal" :in-theory (enable tuple-lookup))))
