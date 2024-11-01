@@ -19,7 +19,7 @@
 (include-book "subtables/truncate-overflow")
 (include-book "subtables/xor")
 
-;; Instructions
+;; Base instructions
 (include-book "instructions/add")
 (include-book "instructions/and")
 (include-book "instructions/beq")
@@ -39,3 +39,15 @@
 (include-book "instructions/sub")
 (include-book "instructions/sw")
 (include-book "instructions/xor")
+
+;; M-extension instructions
+(include-book "instructions/mul")
+(include-book "instructions/mulu")
+(include-book "instructions/mulhu")
+(include-book "instructions/advice")
+(include-book "instructions/assert-lte")
+(include-book "instructions/assert-valid-div-0")
+(include-book "instructions/assert-valid-signed-remainder")
+(include-book "instructions/assert-valid-unsigned-remainder")
+(include-book "instructions/move")
+(include-book "instructions/movsign")
