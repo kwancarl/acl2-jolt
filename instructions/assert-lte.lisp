@@ -16,10 +16,11 @@
 
 (in-theory (disable (:EXECUTABLE-COUNTERPART EXPT)))
 (local (in-theory (e/d () ((:e create-tuple-indices)))))
+
 ;; 32-BIT VERSION
 
-;; SLTU without subtables, just lookup semantics
-(define sltu-semantics-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
+;; ASSERT-LTE without subtables, just lookup semantics
+(define assert-lte-semantics-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
   (b* (;; Edge cases
        ((unless (unsigned-byte-p 32 x)) 0)
        ((unless (unsigned-byte-p 32 y)) 0)
@@ -40,23 +41,21 @@
        (w0   (if (= x8-0 y8-0) 1 0))
        (w1   (if (= x8-1 y8-1) 1 0))
        (w2   (if (= x8-2 y8-2) 1 0))
-       (?w3  (if (= x8-3 y8-3) 1 0))) ;; ignore w3
-      ;; Combine
-      (+    z0
-         (* z1 w0)
-         (* z2 w0 w1)
-	 (* z3 w0 w1 w2))))
+       (w3   (if (= x8-3 y8-3) 1 0)))
+      ;; Combine: LTU(x,y) + EQ(x,y)
+      (+ z0 (* z1 w0) (* z2 w0 w1) (* z3 w0 w1 w2) (* w0 w1 w2 w3))))
 
-;; Correctness of SLTU intermediate semantics layer
-(gl::def-gl-thm sltu-semantics-32-correctness
+;; Correctness of ASSERT-LTE intermediate semantics layer
+(gl::def-gl-thm assert-lte-semantics-32-correctness
  :hyp (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
- :concl (equal (sltu-semantics-32 x y)
-	       (if (< x y) 1 0))
+ :concl (equal (assert-lte-semantics-32 x y)
+	       (if (<= x y) 1 0))
  :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
 
 
-;; Define SLTU with subtable lookups
-(define sltu-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y))) :verify-guards nil
+;; Define ASSERT-LTE with subtable lookups
+(define assert-lte-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
+  :verify-guards nil
   (b* (;; Edge cases
        ((unless (unsigned-byte-p 32 x)) 0)
        ((unless (unsigned-byte-p 32 y)) 0)
@@ -81,27 +80,25 @@
        (w0   (tuple-lookup x8-0 y8-0  eq-subtable))
        (w1   (tuple-lookup x8-1 y8-1  eq-subtable))
        (w2   (tuple-lookup x8-2 y8-2  eq-subtable))
-       (?w3  (tuple-lookup x8-3 y8-3  eq-subtable))) ;; ignore w3
-      ;; Combine
-      (+    z0
-         (* z1 w0)
-         (* z2 w0 w1)
-	 (* z3 w0 w1 w2)))
-  ///
- ;; Equivalence between sltu-32 & its intermediate semantics version
- (defthm sltu-32-sltu-semantics-32-equiv
-  (equal (sltu-32 x y) (sltu-semantics-32 x y))
-  :hints (("Goal" :in-theory (enable sltu-semantics-32)))))
+       (w3   (tuple-lookup x8-3 y8-3  eq-subtable)))
+      ;; Combine: LTU(x,y) + EQ(x,y)
+      (+ z0 (* z1 w0) (* z2 w0 w1) (* z3 w0 w1 w2) (* w0 w1 w2 w3))))
+
+;; Equivalence between ASSERT-LTE-32 & its intermediate semantics version
+(defthm assert-lte-32-assert-lte-semantics-32-equiv
+ (equal (assert-lte-32 x y) (assert-lte-semantics-32 x y))
+ :hints (("Goal" :in-theory (e/d (assert-lte-32 assert-lte-semantics-32)
+                                 ((:e create-tuple-indices))))))
 	        
-;; Correctness of Jolt SLTU
-(defthm sltu-32-correctness
+;; Correctness of ASSERT-LTE
+(defthm assert-lte-32-correctness
  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
-          (equal (sltu-32 x y) (if (< x y) 1 0))))
+          (equal (assert-lte-32 x y) (if (<= x y) 1 0))))
 
 
 ;; 64-BIT VERSION
 
-(define sltu-semantics-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
+(define assert-lte-semantics-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ((unless (unsigned-byte-p 64 y)) 0)
        ;; Chunk
@@ -137,19 +134,14 @@
        (w4   (if (= x8-4 y8-4) 1 0))
        (w5   (if (= x8-5 y8-5) 1 0))
        (w6   (if (= x8-6 y8-6) 1 0))
-       (?w7  (if (= x8-7 y8-7) 1 0))) ;; ignore w7
-       ;; Combine
-       (+  z0
-        (* z1 w0)
-        (* z2 w0 w1)
-        (* z3 w0 w1 w2)
-        (* z4 w0 w1 w2 w3)
-        (* z5 w0 w1 w2 w3 w4)
-        (* z6 w0 w1 w2 w3 w4 w5)
-        (* z7 w0 w1 w2 w3 w4 w5 w6))))
+       (w7   (if (= x8-7 y8-7) 1 0)))
+      ;; Combine: LTU(x,y) + EQ(x,y)
+      (+ z0 (* z1 w0) (* z2 w0 w1) (* z3 w0 w1 w2) (* z4 w0 w1 w2 w3) 
+         (* z5 w0 w1 w2 w3 w4) (* z6 w0 w1 w2 w3 w4 w5) (* z7 w0 w1 w2 w3 w4 w5 w6) 
+         (* w0 w1 w2 w3 w4 w5 w6 w7))))
 
-;; Define sltu with lookups to subtables
-(define sltu-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
+;; Define ASSERT-LTE with lookups to subtables
+(define assert-lte-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ((unless (unsigned-byte-p 64 y)) 0)
@@ -190,32 +182,27 @@
        (w4   (tuple-lookup x8-4 y8-4  eq-subtable))
        (w5   (tuple-lookup x8-5 y8-5  eq-subtable))
        (w6   (tuple-lookup x8-6 y8-6  eq-subtable))
-       (?w7  (tuple-lookup x8-7 y8-7  eq-subtable))) ;; ignore w7
-      ;; Combine
-      (+   z0
-        (* z1 w0)
-        (* z2 w0 w1)
-        (* z3 w0 w1 w2)
-        (* z4 w0 w1 w2 w3)
-        (* z5 w0 w1 w2 w3 w4)
-        (* z6 w0 w1 w2 w3 w4 w5)
-        (* z7 w0 w1 w2 w3 w4 w5 w6))))
+       (w7   (tuple-lookup x8-7 y8-7  eq-subtable)))
+      ;; Combine: LTU(x,y) + EQ(x,y)
+      (+ z0 (* z1 w0) (* z2 w0 w1) (* z3 w0 w1 w2) (* z4 w0 w1 w2 w3) 
+         (* z5 w0 w1 w2 w3 w4) (* z6 w0 w1 w2 w3 w4 w5) (* z7 w0 w1 w2 w3 w4 w5 w6) 
+         (* w0 w1 w2 w3 w4 w5 w6 w7))))
 
-(in-theory (disable (:EXECUTABLE-COUNTERPART EXPT)))
+;; Equivalence between ASSERT-LTE-64 & its intermediate semantics version
+(defthm assert-lte-64-assert-lte-semantics-64-equiv
+ (equal (assert-lte-64 x y)
+	(assert-lte-semantics-64 x y))
+ :hints (("goal" :in-theory (e/d (assert-lte-64 assert-lte-semantics-64)
+                                 ((:e create-tuple-indices))))))
 
-(defthm sltu-64-sltu-semantics-64-equiv
- (equal (sltu-64 x y)
-	(sltu-semantics-64 x y))
- :hints (("goal" :in-theory (e/d (sltu-64 sltu-semantics-64) ((:e create-tuple-indices))))))
-
-;; Semantic correctness of sltu
-(gl::def-gl-thm sltu-semantics-64-correctness
+;; Semantic correctness of ASSERT-LTE
+(gl::def-gl-thm assert-lte-semantics-64-correctness
  :hyp (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
- :concl (equal (sltu-semantics-64 x y)
-	       (if (< x y) 1 0))
+ :concl (equal (assert-lte-semantics-64 x y)
+	       (if (<= x y) 1 0))
  :g-bindings (gl::auto-bindings (:mix (:nat x 64) (:nat y 64))))
 
-;; Correctness of sltu
-(defthm sltu-64-correctness
+;; Correctness of ASSERT-LTE
+(defthm assert-lte-64-correctness
  (implies (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
-          (equal (sltu-64 x y) (if (< x y) 1 0))))
+          (equal (assert-lte-64 x y) (if (<= x y) 1 0))))
