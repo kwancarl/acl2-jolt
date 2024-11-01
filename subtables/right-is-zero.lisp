@@ -29,7 +29,7 @@
    (implies (natp y)
             (equal (right-is-zero-w x y)
                    (if (zerop y) 1 0))))
- (defthm left-is-zero-32-correctness
+ (defthm right-is-zero-32-correctness
    (implies (unsigned-byte-p 32 y)
             (equal (right-is-zero-w x y)
                    (if (zerop y) 1 0)))))

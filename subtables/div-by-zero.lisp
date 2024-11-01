@@ -66,16 +66,6 @@
        (y-rest  (ash y -1)))
       (b-and div0 (div-by-zero-w x-rest y-rest (1- w)))))
 
-(gl::def-gl-thm eqw-equal-equiv-gl
-  :hyp   (and (unsigned-byte-p 32 x)
-              (unsigned-byte-p 32 y))
-  :concl (equal (div-by-zero-w x y 32)
-	        (if (and (equal y (1- (expt 2 32)))
-                         (equal x 0)) 
-                            1 
-                            0))
-  :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
-
 ;; DivByZero(x, y) = 1 only when x = 00..0 and y = 11..1
 (defun div-by-zero (x y m)
   (declare (xargs :guard (and (natp x) (natp y) (natp m))))

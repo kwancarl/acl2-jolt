@@ -1,19 +1,15 @@
 (in-package "ACL2")
-(include-book "std/util/bstar" :dir :system)
-(include-book "std/util/define" :dir :system)
 (include-book "centaur/gl/gl" :dir :system)
 (include-book "arithmetic/top" :dir :system)
+(include-book "ihs/logops-lemmas" :dir :system)
 
 (include-book "centaur/bitops/ihsext-basics" :dir :system)
 (include-book "centaur/bitops/fast-logext" :dir :system)
+(include-book "centaur/bitops/part-select" :DIR :SYSTEM)
 
 (include-book "../subtables/ltu")
 (include-book "../subtables/eq")
 (include-book "../subtables/right-is-zero")
-
-(include-book "ihs/logops-lemmas" :dir :system)
-(include-book "centaur/bitops/part-select" :DIR :SYSTEM)
-(include-book "centaur/bitops/merge" :DIR :SYSTEM)
 
 
 (in-theory (disable (:EXECUTABLE-COUNTERPART expt)))

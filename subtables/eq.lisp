@@ -84,7 +84,7 @@
 	            (if (equal x y) 1 0)))
     :hints (("Subgoal *1/3" :use ((:instance equal-logapp-loghead-logtail-1)))))) ;; end define
 
-(gl::def-gl-thm eqw-equal-equiv-gl
+(gl::def-gl-thm eqw-equal-equiv-gl-128
   :hyp   (and (unsigned-byte-p 128 x)
               (unsigned-byte-p 128 y))
   :concl (equal (eqw x y)
