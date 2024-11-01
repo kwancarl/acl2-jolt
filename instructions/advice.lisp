@@ -47,12 +47,23 @@
       ;; Combine
       (merge-4-u16s x8-0 x8-1 x8-2 x8-3)))
 
+;; Auxiliary lemmas for proof of equivalence
+ 
+ (local
+  (gl::def-gl-thm auxiliary-lemma-1
+   :hyp (unsigned-byte-p 32 x)
+   :concl (< (logtail 16 x) (expt 2 16))
+   :g-bindings (gl::auto-bindings (:nat x 32))))
+
 (defthm advice-32-advice-semantics-32-equiv
  (equal (advice-32 x) (advice-semantics-32 x))
  :hints (("Goal" :in-theory (e/d (advice-semantics-32)
                                  ((:e materialize-identity-subtable) 
                                   (:e materialize-truncate-subtable)))
-                  :use ((:instance lookup-identity-subtable-correctness)))))
+                  :use ((:instance lookup-identity-subtable-correctness
+                                   (x-hi (expt 2 16))
+                                   (i (logtail 16 x)))
+		                    (:instance auxiliary-lemma-1)))))
 
 ;; Semantic correctness of ADVICE
 (gl::def-gl-thm advice-semantics-32-correctness
@@ -119,11 +130,21 @@
       ;; Combine
       (merge-8-u16s x8-0 x8-1 x8-2 x8-3 x8-4 x8-5 x8-6 x8-7)))
 
+ (local
+  (gl::def-gl-thm auxiliary-lemma-2
+   :hyp (unsigned-byte-p 64 x)
+   :concl (< (logtail 48 x) (expt 2 16))
+   :g-bindings (gl::auto-bindings (:nat x 64))))
+
 (defthm advice-64-advice-semantics-64-equiv
  (equal (advice-64 x) (advice-semantics-64 x))
- :hints (("Goal" :in-theory (e/d (advice-semantics-64 advice-64)
+ :hints (("Goal" :in-theory (e/d (advice-semantics-64)
                                  ((:e materialize-identity-subtable) 
-                                  (:e materialize-truncate-subtable))))))
+                                  (:e materialize-truncate-subtable)))
+                  :use ((:instance lookup-identity-subtable-correctness
+                                   (x-hi (expt 2 16))
+                                   (i (logtail 48 x)))
+		                    (:instance auxiliary-lemma-2)))))
 
 ;; Semantic correctness of ADVICE
 (gl::def-gl-thm advice-semantics-64-correctness
