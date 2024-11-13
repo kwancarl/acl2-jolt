@@ -9,6 +9,7 @@
 
 (include-book "../subtables/left-is-zero")
 (include-book "../subtables/div-by-zero")
+(include-book "../subtables/ltu")
 
 (in-theory (disable (:EXECUTABLE-COUNTERPART expt)))
 (local (in-theory (e/d () ((:e create-tuple-indices)))))
@@ -94,8 +95,8 @@
 (defthm assert-valid-div-0-32-assert-valid-div-0-semantics-32-equiv
  (equal (assert-valid-div-0-32 x y) (assert-valid-div-0-semantics-32 x y))
  :hints (("Goal" :in-theory (e/d (assert-valid-div-0-32 assert-valid-div-0-semantics-32)
-                                 ((:e create-tuple-indices))
-                  :use ((:instance auxiliary-lemma-1)))))
+                                 ((:e create-tuple-indices))))))
+
 	        
 ;; Correctness of ASSERT-VALID-DIV-0
 (defthm assert-valid-div-0-32-correctness
