@@ -107,7 +107,7 @@
 
 ;; 64-BIT VERSION
 
-(define assert-lte-semantics-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
+(define assert-valid-div-0-semantics-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ((unless (unsigned-byte-p 64 y)) 0)
        ;; Chunk
@@ -128,29 +128,27 @@
        (y8-1 (part-select y :low 48 :width 8))
        (y8-0 (part-select y :low 56 :width 8))
        ;; Lookup semantics
-       (z0   (if (< x8-0 y8-0) 1 0))
-       (z1   (if (< x8-1 y8-1) 1 0))
-       (z2   (if (< x8-2 y8-2) 1 0))
-       (z3   (if (< x8-3 y8-3) 1 0))
-       (z4   (if (< x8-4 y8-4) 1 0))
-       (z5   (if (< x8-5 y8-5) 1 0))
-       (z6   (if (< x8-6 y8-6) 1 0))
-       (z7   (if (< x8-7 y8-7) 1 0))
-       (w0   (if (= x8-0 y8-0) 1 0))
-       (w1   (if (= x8-1 y8-1) 1 0))
-       (w2   (if (= x8-2 y8-2) 1 0))
-       (w3   (if (= x8-3 y8-3) 1 0))
-       (w4   (if (= x8-4 y8-4) 1 0))
-       (w5   (if (= x8-5 y8-5) 1 0))
-       (w6   (if (= x8-6 y8-6) 1 0))
-       (w7   (if (= x8-7 y8-7) 1 0)))
-      ;; Combine: LTU(x,y) + EQ(x,y)
-      (+ z0 (* z1 w0) (* z2 w0 w1) (* z3 w0 w1 w2) (* z4 w0 w1 w2 w3) 
-         (* z5 w0 w1 w2 w3 w4) (* z6 w0 w1 w2 w3 w4 w5) (* z7 w0 w1 w2 w3 w4 w5 w6) 
-         (* w0 w1 w2 w3 w4 w5 w6 w7))))
+       (z0   (if (= x8-0 0) 1 0))
+       (z1   (if (= x8-1 0) 1 0))
+       (z2   (if (= x8-2 0) 1 0))
+       (z3   (if (= x8-3 0) 1 0))
+       (z4   (if (= x8-4 0) 1 0))
+       (z5   (if (= x8-5 0) 1 0))
+       (z6   (if (= x8-6 0) 1 0))
+       (z7   (if (= x8-7 0) 1 0))
+       (w0   (if (and (= x8-0 0) (= y8-0 (1- (expt 2 8)))) 1 0))
+       (w1   (if (and (= x8-1 0) (= y8-1 (1- (expt 2 8)))) 1 0))
+       (w2   (if (and (= x8-2 0) (= y8-2 (1- (expt 2 8)))) 1 0))
+       (w3   (if (and (= x8-3 0) (= y8-3 (1- (expt 2 8)))) 1 0))
+       (w4   (if (and (= x8-4 0) (= y8-4 (1- (expt 2 8)))) 1 0))
+       (w5   (if (and (= x8-5 0) (= y8-5 (1- (expt 2 8)))) 1 0))
+       (w6   (if (and (= x8-6 0) (= y8-6 (1- (expt 2 8)))) 1 0))
+       (w7   (if (and (= x8-7 0) (= y8-7 (1- (expt 2 8)))) 1 0)))
+      ;; Combine: 1 - (x = 0) + (x = 0 & y = 2 ^ (64) - 1)
+      (+ 1 (- (* z0 z1 z2 z3 z4 z5 z6 z7)) (* w0 w1 w2 w3 w4 w5 w6 w7))))
 
-;; Define ASSERT-LTE with lookups to subtables
-(define assert-lte-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
+;; Define ASSERT-VALID-DIV-0 with lookups to subtables
+(define assert-valid-div-0-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ((unless (unsigned-byte-p 64 y)) 0)
@@ -173,45 +171,43 @@
        (y8-0 (part-select y :low 56 :width 8))
        ;; Materialize subtables 
        (indices      (create-tuple-indices (expt 2 8) (expt 2 8)))
-       (ltu-subtable (materialize-ltu-subtable indices))
-       (eq-subtable  (materialize-eq-subtable indices))
+       (left-is-zero-subtable (materialize-left-is-zero-subtable indices))
+       (div-by-zero-subtable  (materialize-div-by-zero-subtable indices 8))
        ;; Perform lookups
-       (z0   (tuple-lookup x8-0 y8-0 ltu-subtable))
-       (z1   (tuple-lookup x8-1 y8-1 ltu-subtable))
-       (z2   (tuple-lookup x8-2 y8-2 ltu-subtable))
-       (z3   (tuple-lookup x8-3 y8-3 ltu-subtable))
-       (z4   (tuple-lookup x8-4 y8-4 ltu-subtable))
-       (z5   (tuple-lookup x8-5 y8-5 ltu-subtable))
-       (z6   (tuple-lookup x8-6 y8-6 ltu-subtable))
-       (z7   (tuple-lookup x8-7 y8-7 ltu-subtable))
-       (w0   (tuple-lookup x8-0 y8-0  eq-subtable))
-       (w1   (tuple-lookup x8-1 y8-1  eq-subtable))
-       (w2   (tuple-lookup x8-2 y8-2  eq-subtable))
-       (w3   (tuple-lookup x8-3 y8-3  eq-subtable))
-       (w4   (tuple-lookup x8-4 y8-4  eq-subtable))
-       (w5   (tuple-lookup x8-5 y8-5  eq-subtable))
-       (w6   (tuple-lookup x8-6 y8-6  eq-subtable))
-       (w7   (tuple-lookup x8-7 y8-7  eq-subtable)))
-      ;; Combine: LTU(x,y) + EQ(x,y)
-      (+ z0 (* z1 w0) (* z2 w0 w1) (* z3 w0 w1 w2) (* z4 w0 w1 w2 w3) 
-         (* z5 w0 w1 w2 w3 w4) (* z6 w0 w1 w2 w3 w4 w5) (* z7 w0 w1 w2 w3 w4 w5 w6) 
-         (* w0 w1 w2 w3 w4 w5 w6 w7))))
+       (z0   (tuple-lookup x8-0 y8-0 left-is-zero-subtable))
+       (z1   (tuple-lookup x8-1 y8-1 left-is-zero-subtable))
+       (z2   (tuple-lookup x8-2 y8-2 left-is-zero-subtable))
+       (z3   (tuple-lookup x8-3 y8-3 left-is-zero-subtable))
+       (z4   (tuple-lookup x8-4 y8-4 left-is-zero-subtable))
+       (z5   (tuple-lookup x8-5 y8-5 left-is-zero-subtable))
+       (z6   (tuple-lookup x8-6 y8-6 left-is-zero-subtable))
+       (z7   (tuple-lookup x8-7 y8-7 left-is-zero-subtable))
+       (w0   (tuple-lookup x8-0 y8-0 div-by-zero-subtable))
+       (w1   (tuple-lookup x8-1 y8-1 div-by-zero-subtable))
+       (w2   (tuple-lookup x8-2 y8-2 div-by-zero-subtable))
+       (w3   (tuple-lookup x8-3 y8-3 div-by-zero-subtable))
+       (w4   (tuple-lookup x8-4 y8-4 div-by-zero-subtable))
+       (w5   (tuple-lookup x8-5 y8-5 div-by-zero-subtable))
+       (w6   (tuple-lookup x8-6 y8-6 div-by-zero-subtable))
+       (w7   (tuple-lookup x8-7 y8-7 div-by-zero-subtable)))
+      ;; Combine: 1 - (x = 0) + (x = 0 & y = 2 ^ (64) - 1)
+      (+ 1 (- (* z0 z1 z2 z3 z4 z5 z6 z7)) (* w0 w1 w2 w3 w4 w5 w6 w7))))
 
-;; Equivalence between ASSERT-LTE-64 & its intermediate semantics version
-(defthm assert-lte-64-assert-lte-semantics-64-equiv
- (equal (assert-lte-64 x y)
-	(assert-lte-semantics-64 x y))
- :hints (("goal" :in-theory (e/d (assert-lte-64 assert-lte-semantics-64)
+;; Equivalence between ASSERT-VALID-DIV-0-64 & its intermediate semantics version
+(defthm assert-valid-div-0-64-assert-valid-div-0-semantics-64-equiv
+ (equal (assert-valid-div-0-64 x y)
+	(assert-valid-div-0-semantics-64 x y))
+ :hints (("goal" :in-theory (e/d (assert-valid-div-0-64 assert-valid-div-0-semantics-64)
                                  ((:e create-tuple-indices))))))
 
-;; Semantic correctness of ASSERT-LTE
-(gl::def-gl-thm assert-lte-semantics-64-correctness
+;; Semantic correctness of ASSERT-VALID-DIV-0
+(gl::def-gl-thm assert-valid-div-0-semantics-64-correctness
  :hyp (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
- :concl (equal (assert-lte-semantics-64 x y)
-	       (if (<= x y) 1 0))
+ :concl (equal (assert-valid-div-0-semantics-64 x y)
+	       (if (or (not (= x 0)) (= y (1- (expt 2 64)))) 1 0))
  :g-bindings (gl::auto-bindings (:mix (:nat x 64) (:nat y 64))))
 
-;; Correctness of ASSERT-LTE
-(defthm assert-lte-64-correctness
+;; Correctness of ASSERT-VALID-DIV-0
+(defthm assert-valid-div-0-64-correctness
  (implies (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
-          (equal (assert-lte-64 x y) (if (<= x y) 1 0))))
+          (equal (assert-valid-div-0-64 x y) (if (or (not (= x 0)) (= y (1- (expt 2 64)))) 1 0))))
