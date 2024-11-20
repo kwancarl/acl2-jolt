@@ -3,14 +3,18 @@
 # Array of subtable names
 subtables=(
     "and_subtable"
+    "div_by_zero_subtable"
     "eq_subtable"
     "eq_abs_subtable"
+    "left_is_zero_subtable"
     "left_msb_subtable"
     "lt_abs_subtable"
     "ltu_subtable"
     "or_subtable"
+    "right_is_zero_subtable"
     "right_msb_subtable"
     "xor_subtable"
+    "zero_lsb_subtable"
 
     "sll_subtable_0_32"
     "sll_subtable_1_32"
@@ -48,9 +52,6 @@ subtables=(
     "sign_extend_subtable_16"
     "truncate_overflow_subtable_8"
     "truncate_overflow_subtable_32"
-    # "div_by_zero_subtable"
-    # "left_is_zero_subtable"
-    # "right_is_zero_subtable"
 )
 
 # Add a new variable for the skip-generation flag

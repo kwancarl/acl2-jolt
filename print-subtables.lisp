@@ -13,13 +13,16 @@
 (include-book "subtables/or")
 (include-book "subtables/right-is-zero")
 (include-book "subtables/right-msb")
+(include-book "subtables/xor")
+
 (include-book "subtables/sll")
 (include-book "subtables/sra-sign")
 (include-book "subtables/srl")
-(include-book "subtables/xor")
+
 (include-book "subtables/identity")
 (include-book "subtables/sign-extend")
 (include-book "subtables/truncate-overflow")
+(include-book "subtables/zero-lsb")
 
 (defconst *indices* (create-tuple-indices 255 255))
 
@@ -30,7 +33,7 @@
               'top-level
               state)
 
-(write-list (materialize-div-by-zero-subtable *indices* 32)
+(write-list (materialize-div-by-zero-subtable *indices* 8)
               (concatenate 'string *output-dir* "/div_by_zero_subtable_acl2.txt")
               'top-level
               state)
@@ -243,5 +246,10 @@
 
 (write-list (materialize-truncate-subtable *range* 0)
               (concatenate 'string *output-dir* "/truncate_overflow_subtable_32_acl2.txt")
+              'top-level
+              state)
+
+(write-list (materialize-zero-lsb-subtable *range*)
+              (concatenate 'string *output-dir* "/zero_lsb_subtable_acl2.txt")
               'top-level
               state)

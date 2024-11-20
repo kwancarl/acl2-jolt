@@ -26,14 +26,16 @@ macro_rules! print_subtable_test {
             let mut writer = std::io::BufWriter::new(output);
 
             // We want to print the subtable in the same format as ACL2. For most tables, this is
-            // `((x . y) . val)\n` for decreasing x and y. For `identity`, `sign_extend`, and
-            // `truncate_overflow`, the output format is `(x . val)\n` for decreasing x.
+            // `((x . y) . val)\n` for decreasing x and y. For `identity`, `sign_extend`,
+            // `truncate_overflow`, and `zero_lsb`, the output format is `(x . val)\n` for
+            // decreasing x.
             let is_special_case = stringify!($test_name).contains("identity")
                 || stringify!($test_name).contains("sign_extend")
-                || stringify!($test_name).contains("truncate_overflow");
+                || stringify!($test_name).contains("truncate_overflow")
+                || stringify!($test_name).contains("zero_lsb");
             if is_special_case {
-            println!(
-                    "This is either identity, sign_extend, or truncate_overflow. Printing table of format \"(x . val)\"..."
+                println!(
+                    "This is either identity, sign_extend, truncate_overflow, or zero_lsb. Printing table of format \"(x . val)\"..."
                 );
             }
 
@@ -56,46 +58,27 @@ macro_rules! print_subtable_test {
 mod test {
     use crate::field::JoltField;
     use crate::jolt::subtable::{
-        and::AndSubtable, eq::EqSubtable, eq_abs::EqAbsSubtable, identity::IdentitySubtable,
-        left_msb::LeftMSBSubtable, lt_abs::LtAbsSubtable, ltu::LtuSubtable, or::OrSubtable,
-        right_msb::RightMSBSubtable, sign_extend::SignExtendSubtable, sll::SllSubtable,
-        sra_sign::SraSignSubtable, srl::SrlSubtable, truncate_overflow::TruncateOverflowSubtable,
-        xor::XorSubtable, LassoSubtable,
+        and::AndSubtable, div_by_zero::DivByZeroSubtable, eq::EqSubtable, eq_abs::EqAbsSubtable,
+        identity::IdentitySubtable, left_is_zero::LeftIsZeroSubtable, left_msb::LeftMSBSubtable,
+        lt_abs::LtAbsSubtable, ltu::LtuSubtable, or::OrSubtable,
+        right_is_zero::RightIsZeroSubtable, right_msb::RightMSBSubtable,
+        sign_extend::SignExtendSubtable, sll::SllSubtable, sra_sign::SraSignSubtable,
+        srl::SrlSubtable, truncate_overflow::TruncateOverflowSubtable, xor::XorSubtable,
+        zero_lsb::ZeroLSBSubtable, LassoSubtable,
     };
-    // div_by_zero::DivByZeroSubtable,
-    // left_is_zero::LeftIsZeroSubtable,
-    // right_is_zero::RightIsZeroSubtable,
     use ark_bn254::Fr;
     use ark_serialize::Write;
 
     print_subtable_test!(and_subtable, AndSubtable<Fr>, Fr, 8, true);
-    // print_subtable_test!(
-    //     div_by_zero_subtable,
-    //     DivByZeroSubtable<Fr>,
-    //     Fr,
-    //     8,
-    //     true
-    // );
+    print_subtable_test!(div_by_zero_subtable, DivByZeroSubtable<Fr>, Fr, 8, true);
     print_subtable_test!(eq_subtable, EqSubtable<Fr>, Fr, 8, true);
     print_subtable_test!(eq_abs_subtable, EqAbsSubtable<Fr>, Fr, 8, true);
-    // print_subtable_test!(
-    //     left_is_zero_subtable,
-    //     LeftIsZeroSubtable<Fr>,
-    //     Fr,
-    //     8,
-    //     true
-    // );
+    print_subtable_test!(left_is_zero_subtable, LeftIsZeroSubtable<Fr>, Fr, 8, true);
     print_subtable_test!(left_msb_subtable, LeftMSBSubtable<Fr>, Fr, 8, true);
     print_subtable_test!(lt_abs_subtable, LtAbsSubtable<Fr>, Fr, 8, true);
     print_subtable_test!(ltu_subtable, LtuSubtable<Fr>, Fr, 8, true);
     print_subtable_test!(or_subtable, OrSubtable<Fr>, Fr, 8, true);
-    // print_subtable_test!(
-    //     right_is_zero_subtable,
-    //     RightIsZeroSubtable<Fr>,
-    //     Fr,
-    //     8,
-    //     true
-    // );
+    print_subtable_test!(right_is_zero_subtable, RightIsZeroSubtable<Fr>, Fr, 8, true);
     print_subtable_test!(right_msb_subtable, RightMSBSubtable<Fr>, Fr, 8, true);
     print_subtable_test!(xor_subtable, XorSubtable<Fr>, Fr, 8, true);
 
@@ -137,4 +120,5 @@ mod test {
         true
     );
     print_subtable_test!(truncate_overflow_subtable_32, TruncateOverflowSubtable<Fr, 32>, Fr, 8, true);
+    print_subtable_test!(zero_lsb_subtable, ZeroLSBSubtable<Fr>, Fr, 8, true);
 }
