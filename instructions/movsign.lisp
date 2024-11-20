@@ -63,11 +63,13 @@
 (defthm movsign-32-movsign-semantics-32-equiv
  (equal (movsign-32 x) (movsign-semantics-32 x))
  :hints (("Goal" :in-theory (e/d (movsign-semantics-32)
-                                 ((:e expt) (:e sign-extend) (:e materialize-identity-subtable)))
-                  :use ((:instance lookup-identity-subtable-correctness
+                                 ((:e expt) (:e sign-extend) (:e materialize-identity-subtable)
+                                 (:e materialize-sign-extend-subtable)))
+                  :use ((:instance lookup-materialize-sign-extend-subtable-correctness
                                    (x-hi (expt 2 16))
+                                   (width 16)
                                    (i (logtail 16 x)))
-		                    (:instance auxiliary-lemma-1)))))
+		                         (:instance auxiliary-lemma-1)))))
 
 ;; Equivalence of MOVSIGN with its semantics
 (defthm movsign-32-correctness
@@ -81,14 +83,14 @@
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ;; Chunk
-       (x8-7 (part-select x :low  0 :width 16))
-       (x8-6 (part-select x :low 16 :width 16))
-       (x8-5 (part-select x :low 32 :width 16))
+       (?x8-7 (part-select x :low  0 :width 16))
+       (?x8-6 (part-select x :low 16 :width 16))
+       (?x8-5 (part-select x :low 32 :width 16))
        (x8-4 (part-select x :low 48 :width 16))
-       (x8-3 (part-select x :low 64 :width 16))
-       (x8-2 (part-select x :low 80 :width 16))
-       (x8-1 (part-select x :low 96 :width 16))
-       (x8-0 (part-select x :low 112 :width 16))
+       (?x8-3 (part-select x :low 64 :width 16))
+       (?x8-2 (part-select x :low 80 :width 16))
+       (?x8-1 (part-select x :low 96 :width 16))
+       (?x8-0 (part-select x :low 112 :width 16))
        ;; Lookup semantics
        (s (sign-extend x8-4 16)))
       ;; Combine
@@ -121,7 +123,7 @@
        (?x8-6 (single-lookup x8-6 id-subtable))
        (?x8-7 (single-lookup x8-7 id-subtable)))
       ;; Combine
-      (merge-8-u16s x8-0 x8-1 x8-2 x8-3 x8-4 x8-5 x8-6 x8-7)))
+      (merge-4-u16s s s s s)))
 
  (local
   (gl::def-gl-thm auxiliary-lemma-2
@@ -132,9 +134,11 @@
 (defthm movsign-64-movsign-semantics-64-equiv
  (equal (movsign-64 x) (movsign-semantics-64 x))
  :hints (("Goal" :in-theory (e/d (movsign-semantics-64)
-                                 ((:e expt) (:e materialize-identity-subtable)))
-                  :use ((:instance lookup-identity-subtable-correctness
+                                 ((:e expt) (:e materialize-identity-subtable)
+                                  (:e materialize-sign-extend-subtable)))
+                  :use ((:instance lookup-materialize-sign-extend-subtable-correctness
                                    (x-hi (expt 2 16))
+                                   (width 16)
                                    (i (logtail 48 x)))
 		                    (:instance auxiliary-lemma-2)))))
 
