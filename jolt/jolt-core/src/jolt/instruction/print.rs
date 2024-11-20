@@ -100,9 +100,16 @@ mod test {
     use crate::jolt::instruction::{
         add::ADDInstruction, and::ANDInstruction, beq::BEQInstruction, bge::BGEInstruction,
         bgeu::BGEUInstruction, bne::BNEInstruction, lb::LBInstruction, lh::LHInstruction,
-        or::ORInstruction, sb::SBInstruction, sh::SHInstruction, sll::SLLInstruction,
-        slt::SLTInstruction, sltu::SLTUInstruction, sra::SRAInstruction, srl::SRLInstruction,
-        sub::SUBInstruction, sw::SWInstruction, xor::XORInstruction, JoltInstruction,
+        mul::MULInstruction, mulhu::MULHUInstruction, mulu::MULUInstruction, or::ORInstruction,
+        sb::SBInstruction, sh::SHInstruction, sll::SLLInstruction, slt::SLTInstruction,
+        sltu::SLTUInstruction, sra::SRAInstruction, srl::SRLInstruction, sub::SUBInstruction,
+        sw::SWInstruction, virtual_advice::ADVICEInstruction,
+        virtual_assert_lte::ASSERTLTEInstruction,
+        virtual_assert_valid_div0::AssertValidDiv0Instruction,
+        virtual_assert_valid_signed_remainder::AssertValidSignedRemainderInstruction,
+        virtual_assert_valid_unsigned_remainder::AssertValidUnsignedRemainderInstruction,
+        virtual_move::MOVEInstruction, virtual_movsign::MOVSIGNInstruction, xor::XORInstruction,
+        JoltInstruction,
     };
     use crate::print_instruction_test;
     // use ark_bn254::Fr;
@@ -183,4 +190,130 @@ mod test {
     print_instruction_test!(srl_instruction_32, SRLInstruction::<32>, Fr, true, false);
 
     print_instruction_test!(srl_instruction_64, SRLInstruction::<64>, Fr, true, false);
+
+    // M-extension instructions
+
+    print_instruction_test!(
+        advice_instruction_32,
+        ADVICEInstruction::<32>,
+        Fr,
+        true,
+        true
+    );
+
+    print_instruction_test!(
+        advice_instruction_64,
+        ADVICEInstruction::<64>,
+        Fr,
+        true,
+        true
+    );
+
+    print_instruction_test!(
+        assert_lte_instruction_32,
+        ASSERTLTEInstruction::<32>,
+        Fr,
+        true,
+        false
+    );
+
+    print_instruction_test!(
+        assert_lte_instruction_64,
+        ASSERTLTEInstruction::<64>,
+        Fr,
+        true,
+        false
+    );
+
+    print_instruction_test!(
+        assert_valid_div0_instruction_32,
+        AssertValidDiv0Instruction::<32>,
+        Fr,
+        true,
+        false
+    );
+
+    print_instruction_test!(
+        assert_valid_div0_instruction_64,
+        AssertValidDiv0Instruction::<64>,
+        Fr,
+        true,
+        false
+    );
+
+    print_instruction_test!(
+        assert_valid_signed_remainder_instruction_32,
+        AssertValidSignedRemainderInstruction::<32>,
+        Fr,
+        true,
+        false
+    );
+
+    print_instruction_test!(
+        assert_valid_signed_remainder_instruction_64,
+        AssertValidSignedRemainderInstruction::<64>,
+        Fr,
+        true,
+        false
+    );
+
+    print_instruction_test!(
+        assert_valid_unsigned_remainder_instruction_32,
+        AssertValidUnsignedRemainderInstruction::<32>,
+        Fr,
+        true,
+        false
+    );
+
+    print_instruction_test!(
+        assert_valid_unsigned_remainder_instruction_64,
+        AssertValidUnsignedRemainderInstruction::<64>,
+        Fr,
+        true,
+        false
+    );
+
+    print_instruction_test!(move_instruction_32, MOVEInstruction::<32>, Fr, true, true);
+
+    print_instruction_test!(move_instruction_64, MOVEInstruction::<64>, Fr, true, true);
+
+    print_instruction_test!(
+        movsign_instruction_32,
+        MOVSIGNInstruction::<32>,
+        Fr,
+        true,
+        true
+    );
+
+    print_instruction_test!(
+        movsign_instruction_64,
+        MOVSIGNInstruction::<64>,
+        Fr,
+        true,
+        true
+    );
+
+    print_instruction_test!(mul_instruction_32, MULInstruction::<32>, Fr, true, false);
+
+    print_instruction_test!(mul_instruction_64, MULInstruction::<64>, Fr, true, false);
+
+    print_instruction_test!(
+        mulhu_instruction_32,
+        MULHUInstruction::<32>,
+        Fr,
+        true,
+        false
+    );
+
+    print_instruction_test!(
+        mulhu_instruction_64,
+        MULHUInstruction::<64>,
+        Fr,
+        true,
+        false
+    );
+
+    print_instruction_test!(mulu_instruction_32, MULUInstruction::<32>, Fr, true, false);
+
+    print_instruction_test!(mulu_instruction_64, MULUInstruction::<64>, Fr, true, false);
 }

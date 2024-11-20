@@ -40,6 +40,27 @@ instructions=(
     "sll_instruction_64"
     "srl_instruction_32"
     "srl_instruction_64"
+    # M extension
+    "mul_instruction_32"
+    "mul_instruction_64"
+    "mulu_instruction_32"
+    "mulu_instruction_64"
+    "mulhu_instruction_32"
+    "mulhu_instruction_64"
+    "advice_instruction_32"
+    "advice_instruction_64"
+    "assert_lte_instruction_32"
+    "assert_lte_instruction_64"
+    "assert_valid_div0_instruction_32"
+    "assert_valid_div0_instruction_64"
+    "assert_valid_signed_remainder_instruction_32"
+    "assert_valid_signed_remainder_instruction_64"
+    "assert_valid_unsigned_remainder_instruction_32"
+    "assert_valid_unsigned_remainder_instruction_64"
+    "move_instruction_32"
+    "move_instruction_64"
+    "movsign_instruction_32"
+    "movsign_instruction_64"
 )
 
 # Add a new variable for the skip-generation flag

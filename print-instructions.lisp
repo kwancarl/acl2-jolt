@@ -6,6 +6,10 @@
 
 (include-book "centaur/gl/gl" :dir :system)
 
+(include-book "centaur/fgl/top" :dir :system)
+(value-triple (acl2::tshell-ensure))
+
+;; Base instructions
 (include-book "instructions/add")
 (include-book "instructions/and")
 (include-book "instructions/beq")
@@ -25,6 +29,18 @@
 (include-book "instructions/sub")
 (include-book "instructions/sw")
 (include-book "instructions/xor")
+
+;; Instructions in the M extension
+(include-book "instructions/advice")
+(include-book "instructions/assert-lte")
+(include-book "instructions/assert-valid-div0")
+(include-book "instructions/assert-valid-signed-remainder")
+(include-book "instructions/assert-valid-unsigned-remainder")
+(include-book "instructions/move")
+(include-book "instructions/movsign")
+(include-book "instructions/mul")
+(include-book "instructions/mulhu")
+(include-book "instructions/mulu")
 
 ;; Output directory
 (defconst *output-dir* "validation/instructions")
@@ -772,3 +788,360 @@
             (concatenate 'string *output-dir* "/sra_instruction_64_acl2.txt")
             'top-level
             state)
+
+;; ===================
+;; BEGINNING M-EXTENSION INSTRUCTIONS
+
+;; Function to generate test results for advice-32
+(defun generate-advice-32-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (result (advice-semantics-32 x)))
+      (cons (cons x result)
+            (generate-advice-32-results (cdr inputs))))))
+
+;; Generate and write results for advice-32
+(write-list (generate-advice-32-results *test-inputs-32*)
+            (concatenate 'string *output-dir* "/advice_instruction_32_acl2.txt")
+            'top-level
+            state)
+
+;; Function to generate test results for advice-64
+(defun generate-advice-64-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (result (advice-semantics-64 x)))
+      (cons (cons x result)
+            (generate-advice-64-results (cdr inputs))))))
+
+;; Generate and write results for advice-64
+(write-list (generate-advice-64-results *test-inputs-64*)
+            (concatenate 'string *output-dir* "/advice_instruction_64_acl2.txt")
+            'top-level
+            state)
+
+;; ===================
+
+;; Function to generate test results for assert-lte-32
+(defun generate-assert-lte-32-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (y (cdr input))
+           (result (assert-lte-semantics-32 x y)))
+      (cons (cons input result)
+            (generate-assert-lte-32-results (cdr inputs))))))
+
+;; Generate and write results for assert-lte-32
+(write-list (generate-assert-lte-32-results *test-inputs-32*)
+            (concatenate 'string *output-dir* "/assert_lte_instruction_32_acl2.txt")
+            'top-level
+            state)
+
+;; Function to generate test results for assert-lte-64
+(defun generate-assert-lte-64-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (y (cdr input))
+           (result (assert-lte-semantics-64 x y)))
+      (cons (cons input result)
+            (generate-assert-lte-64-results (cdr inputs))))))
+
+;; Generate and write results for assert-lte-64
+(write-list (generate-assert-lte-64-results *test-inputs-64*)
+            (concatenate 'string *output-dir* "/assert_lte_instruction_64_acl2.txt")
+            'top-level
+            state)
+
+;; ===================
+
+;; Function to generate test results for assert-valid-div0-32
+(defun generate-assert-valid-div0-32-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (y (cdr input))
+           (result (assert-valid-div0-semantics-32 x y)))
+      (cons (cons input result)
+            (generate-assert-valid-div0-32-results (cdr inputs))))))
+
+;; Generate and write results for assert-valid-div0-32
+(write-list (generate-assert-valid-div0-32-results *test-inputs-32*)
+            (concatenate 'string *output-dir* "/assert_valid_div0_instruction_32_acl2.txt")
+            'top-level
+            state)
+
+;; Function to generate test results for assert-valid-div0-64
+(defun generate-assert-valid-div0-64-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (y (cdr input))
+           (result (assert-valid-div0-semantics-64 x y)))
+      (cons (cons input result)
+            (generate-assert-valid-div0-64-results (cdr inputs))))))
+
+;; Generate and write results for assert-valid-div0-64
+(write-list (generate-assert-valid-div0-64-results *test-inputs-64*)
+            (concatenate 'string *output-dir* "/assert_valid_div0_instruction_64_acl2.txt")
+            'top-level
+            state)
+
+;; ===================
+
+;; Function to generate test results for assert-valid-signed-remainder-32
+(defun generate-assert-valid-signed-remainder-32-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (y (cdr input))
+           (result (assert-valid-signed-remainder-semantics-32 x y)))
+      (cons (cons input result)
+            (generate-assert-valid-signed-remainder-32-results (cdr inputs))))))
+
+;; Generate and write results for assert-valid-signed-remainder-32
+(write-list (generate-assert-valid-signed-remainder-32-results *test-inputs-32*)
+            (concatenate 'string *output-dir* "/assert_valid_signed_remainder_instruction_32_acl2.txt")
+            'top-level
+            state)
+
+;; Function to generate test results for assert-valid-signed-remainder-64
+(defun generate-assert-valid-signed-remainder-64-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (y (cdr input))
+           (result (assert-valid-signed-remainder-semantics-64 x y)))
+      (cons (cons input result)
+            (generate-assert-valid-signed-remainder-64-results (cdr inputs))))))
+
+;; Generate and write results for assert-valid-signed-remainder-64
+(write-list (generate-assert-valid-signed-remainder-64-results *test-inputs-64*)
+            (concatenate 'string *output-dir* "/assert_valid_signed_remainder_instruction_64_acl2.txt")
+            'top-level
+            state)
+
+;; ===================
+
+;; Function to generate test results for assert-valid-unsigned-remainder-32
+(defun generate-assert-valid-unsigned-remainder-32-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (y (cdr input))
+           (result (assert-valid-unsigned-remainder-semantics-32 x y)))
+      (cons (cons input result)
+            (generate-assert-valid-unsigned-remainder-32-results (cdr inputs))))))
+
+;; Generate and write results for assert-valid-unsigned-remainder-32
+(write-list (generate-assert-valid-unsigned-remainder-32-results *test-inputs-32*)
+            (concatenate 'string *output-dir* "/assert_valid_unsigned_remainder_instruction_32_acl2.txt")
+            'top-level
+            state)
+
+;; Function to generate test results for assert-valid-unsigned-remainder-64
+(defun generate-assert-valid-unsigned-remainder-64-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (y (cdr input))
+           (result (assert-valid-unsigned-remainder-semantics-64 x y)))
+      (cons (cons input result)
+            (generate-assert-valid-unsigned-remainder-64-results (cdr inputs))))))
+
+;; Generate and write results for assert-valid-unsigned-remainder-64
+(write-list (generate-assert-valid-unsigned-remainder-64-results *test-inputs-64*)
+            (concatenate 'string *output-dir* "/assert_valid_unsigned_remainder_instruction_64_acl2.txt")
+            'top-level
+            state)
+
+;; ===================
+
+;; Function to generate test results for move-32
+(defun generate-move-32-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (result (move-semantics-32 x)))
+      (cons (cons x result)
+            (generate-move-32-results (cdr inputs))))))
+
+;; Generate and write results for move-32
+(write-list (generate-move-32-results *test-inputs-32*)
+            (concatenate 'string *output-dir* "/move_instruction_32_acl2.txt")
+            'top-level
+            state)
+
+;; Function to generate test results for move-64
+(defun generate-move-64-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (result (move-semantics-64 x)))
+      (cons (cons x result)
+            (generate-move-64-results (cdr inputs))))))
+
+;; Generate and write results for move-64
+(write-list (generate-move-64-results *test-inputs-64*)
+            (concatenate 'string *output-dir* "/move_instruction_64_acl2.txt")
+            'top-level
+            state)
+
+;; ===================
+
+;; Function to generate test results for movsign-32
+(defun generate-movsign-32-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (result (movsign-semantics-32 x)))
+      (cons (cons x result)
+            (generate-movsign-32-results (cdr inputs))))))
+
+;; Generate and write results for movsign-32
+(write-list (generate-movsign-32-results *test-inputs-32*)
+            (concatenate 'string *output-dir* "/movsign_instruction_32_acl2.txt")
+            'top-level
+            state)
+
+;; Function to generate test results for movsign-64
+(defun generate-movsign-64-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (result (movsign-semantics-64 x)))
+      (cons (cons x result)
+            (generate-movsign-64-results (cdr inputs))))))
+
+;; Generate and write results for movsign-64
+(write-list (generate-movsign-64-results *test-inputs-64*)
+            (concatenate 'string *output-dir* "/movsign_instruction_64_acl2.txt")
+            'top-level
+            state)
+
+;; ===================
+
+;; Function to generate test results for mul-32
+(defun generate-mul-32-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (y (cdr input))
+           (result (mul-semantics-32 x y)))
+      (cons (cons input result)
+            (generate-mul-32-results (cdr inputs))))))
+
+;; Generate and write results for mul-32
+(write-list (generate-mul-32-results *test-inputs-32*)
+            (concatenate 'string *output-dir* "/mul_instruction_32_acl2.txt")
+            'top-level
+            state)
+
+;; Function to generate test results for mul-64
+(defun generate-mul-64-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (y (cdr input))
+           (result (mul-semantics-64 x y)))
+      (cons (cons input result)
+            (generate-mul-64-results (cdr inputs))))))
+
+;; Generate and write results for mul-64
+(write-list (generate-mul-64-results *test-inputs-64*)
+            (concatenate 'string *output-dir* "/mul_instruction_64_acl2.txt")
+            'top-level
+            state)
+
+;; ===================
+
+;; Function to generate test results for mulu-32
+(defun generate-mulu-32-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (y (cdr input))
+           (result (mulu-semantics-32 x y)))
+      (cons (cons input result)
+            (generate-mulu-32-results (cdr inputs))))))
+
+;; Generate and write results for mulu-32
+(write-list (generate-mulu-32-results *test-inputs-32*)
+            (concatenate 'string *output-dir* "/mulu_instruction_32_acl2.txt")
+            'top-level
+            state)
+
+;; Function to generate test results for mulu-64
+(defun generate-mulu-64-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (y (cdr input))
+           (result (mulu-semantics-64 x y)))
+      (cons (cons input result)
+            (generate-mulu-64-results (cdr inputs))))))
+
+;; Generate and write results for mulu-64
+(write-list (generate-mulu-64-results *test-inputs-64*)
+            (concatenate 'string *output-dir* "/mulu_instruction_64_acl2.txt")
+            'top-level
+            state)
+
+;; ===================
+
+;; Function to generate test results for mulhu-32
+(defun generate-mulhu-32-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (y (cdr input))
+           (result (mulhu-semantics-32 x y)))
+      (cons (cons input result)
+            (generate-mulhu-32-results (cdr inputs))))))
+
+;; Generate and write results for mulhu-32
+(write-list (generate-mulhu-32-results *test-inputs-32*)
+            (concatenate 'string *output-dir* "/mulhu_instruction_32_acl2.txt")
+            'top-level
+            state)
+
+;; Function to generate test results for mulhu-64
+(defun generate-mulhu-64-results (inputs)
+  (if (endp inputs)
+      nil
+    (let* ((input (car inputs))
+           (x (car input))
+           (y (cdr input))
+           (result (mulhu-semantics-64 x y)))
+      (cons (cons input result)
+            (generate-mulhu-64-results (cdr inputs))))))
+
+;; Generate and write results for mulhu-64
+(write-list (generate-mulhu-64-results *test-inputs-64*)
+            (concatenate 'string *output-dir* "/mulhu_instruction_64_acl2.txt")
+            'top-level
+            state)
+
+;; ===================

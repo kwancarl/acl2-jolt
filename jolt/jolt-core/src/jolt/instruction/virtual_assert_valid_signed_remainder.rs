@@ -95,7 +95,9 @@ impl<const WORD_SIZE: usize> JoltInstruction for AssertValidSignedRemainderInstr
                 } else {
                     let remainder_sign = remainder >> 31;
                     let divisor_sign = divisor >> 31;
-                    (remainder.abs() < divisor.abs() && remainder_sign == divisor_sign).into()
+                    (remainder.unsigned_abs() < divisor.unsigned_abs()
+                        && remainder_sign == divisor_sign)
+                        .into()
                 }
             }
             64 => {
@@ -109,7 +111,9 @@ impl<const WORD_SIZE: usize> JoltInstruction for AssertValidSignedRemainderInstr
                 } else {
                     let remainder_sign = remainder >> 63;
                     let divisor_sign = divisor >> 63;
-                    (remainder.abs() < divisor.abs() && remainder_sign == divisor_sign).into()
+                    (remainder.unsigned_abs() < divisor.unsigned_abs()
+                        && remainder_sign == divisor_sign)
+                        .into()
                 }
             }
             _ => panic!("Unsupported WORD_SIZE: {}", WORD_SIZE),
@@ -170,6 +174,7 @@ mod test {
             AssertValidSignedRemainderInstruction::<WORD_SIZE>(u32_max, u32_max),
             AssertValidSignedRemainderInstruction::<WORD_SIZE>(u32_max, 1 << 8),
             AssertValidSignedRemainderInstruction::<WORD_SIZE>(1 << 8, u32_max),
+            AssertValidSignedRemainderInstruction::<WORD_SIZE>(2147483648, 2147483648),
         ];
         for instruction in instructions {
             jolt_instruction_test!(instruction);
