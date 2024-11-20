@@ -16,8 +16,8 @@
 
 ;; 32-BIT VERSION
 
-;; ASSERT-VALID-DIV-0 without subtables, just lookup semantics
-(define assert-valid-div-0-semantics-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
+;; ASSERT-VALID-div0 without subtables, just lookup semantics
+(define assert-valid-div0-semantics-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
   (b* (;; Edge cases
        ((unless (unsigned-byte-p 32 x)) 0)
        ((unless (unsigned-byte-p 32 y)) 0)
@@ -42,16 +42,16 @@
       ;; Combine: 1 - (x = 0) + (x = 0 & y = 2 ^ (32) - 1)
       (+ 1 (- (* z0 z1 z2 z3)) (* w0 w1 w2 w3))))
 
-;; Correctness of ASSERT-VALID-DIV-0 intermediate semantics layer
-(gl::def-gl-thm assert-valid-div-0-semantics-32-correctness
+;; Correctness of ASSERT-VALID-div0 intermediate semantics layer
+(gl::def-gl-thm assert-valid-div0-semantics-32-correctness
  :hyp (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
- :concl (equal (assert-valid-div-0-semantics-32 x y)
+ :concl (equal (assert-valid-div0-semantics-32 x y)
 	       (if (or (not (= x 0)) (= y (1- (expt 2 32)))) 1 0))
  :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
 
 
-;; Define ASSERT-VALID-DIV-0 with subtable lookups
-(define assert-valid-div-0-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
+;; Define ASSERT-VALID-div0 with subtable lookups
+(define assert-valid-div0-32 ((x (unsigned-byte-p 32 x)) (y (unsigned-byte-p 32 y)))
   :verify-guards nil
   (b* (;; Edge cases
        ((unless (unsigned-byte-p 32 x)) 0)
@@ -91,23 +91,23 @@
    :concl (equal (+ -1 (expt 2 32)) y)
    :g-bindings (gl::auto-bindings (:nat y 32))))
 
-;; Equivalence between ASSERT-VALID-DIV-0-32 & its intermediate semantics version
-(defthm assert-valid-div-0-32-assert-valid-div-0-semantics-32-equiv
- (equal (assert-valid-div-0-32 x y) (assert-valid-div-0-semantics-32 x y))
- :hints (("Goal" :in-theory (e/d (assert-valid-div-0-32 assert-valid-div-0-semantics-32)
+;; Equivalence between ASSERT-VALID-div0-32 & its intermediate semantics version
+(defthm assert-valid-div0-32-assert-valid-div0-semantics-32-equiv
+ (equal (assert-valid-div0-32 x y) (assert-valid-div0-semantics-32 x y))
+ :hints (("Goal" :in-theory (e/d (assert-valid-div0-32 assert-valid-div0-semantics-32)
                                  ((:e create-tuple-indices))))))
 
 	        
-;; Correctness of ASSERT-VALID-DIV-0
-(defthm assert-valid-div-0-32-correctness
+;; Correctness of ASSERT-VALID-div0
+(defthm assert-valid-div0-32-correctness
  (implies (and (unsigned-byte-p 32 x) (unsigned-byte-p 32 y))
-          (equal (assert-valid-div-0-32 x y) 
+          (equal (assert-valid-div0-32 x y) 
                  (if (or (not (= x 0)) (= y (1- (expt 2 32)))) 1 0))))
 
 
 ;; 64-BIT VERSION
 
-(define assert-valid-div-0-semantics-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
+(define assert-valid-div0-semantics-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ((unless (unsigned-byte-p 64 y)) 0)
        ;; Chunk
@@ -147,8 +147,8 @@
       ;; Combine: 1 - (x = 0) + (x = 0 & y = 2 ^ (64) - 1)
       (+ 1 (- (* z0 z1 z2 z3 z4 z5 z6 z7)) (* w0 w1 w2 w3 w4 w5 w6 w7))))
 
-;; Define ASSERT-VALID-DIV-0 with lookups to subtables
-(define assert-valid-div-0-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
+;; Define ASSERT-VALID-div0 with lookups to subtables
+(define assert-valid-div0-64 ((x (unsigned-byte-p 64 x)) (y (unsigned-byte-p 64 y)))
   :verify-guards nil
   (b* (((unless (unsigned-byte-p 64 x)) 0)
        ((unless (unsigned-byte-p 64 y)) 0)
@@ -193,21 +193,21 @@
       ;; Combine: 1 - (x = 0) + (x = 0 & y = 2 ^ (64) - 1)
       (+ 1 (- (* z0 z1 z2 z3 z4 z5 z6 z7)) (* w0 w1 w2 w3 w4 w5 w6 w7))))
 
-;; Equivalence between ASSERT-VALID-DIV-0-64 & its intermediate semantics version
-(defthm assert-valid-div-0-64-assert-valid-div-0-semantics-64-equiv
- (equal (assert-valid-div-0-64 x y)
-	(assert-valid-div-0-semantics-64 x y))
- :hints (("goal" :in-theory (e/d (assert-valid-div-0-64 assert-valid-div-0-semantics-64)
+;; Equivalence between ASSERT-VALID-div0-64 & its intermediate semantics version
+(defthm assert-valid-div0-64-assert-valid-div0-semantics-64-equiv
+ (equal (assert-valid-div0-64 x y)
+	(assert-valid-div0-semantics-64 x y))
+ :hints (("goal" :in-theory (e/d (assert-valid-div0-64 assert-valid-div0-semantics-64)
                                  ((:e create-tuple-indices))))))
 
-;; Semantic correctness of ASSERT-VALID-DIV-0
-(gl::def-gl-thm assert-valid-div-0-semantics-64-correctness
+;; Semantic correctness of ASSERT-VALID-div0
+(gl::def-gl-thm assert-valid-div0-semantics-64-correctness
  :hyp (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
- :concl (equal (assert-valid-div-0-semantics-64 x y)
+ :concl (equal (assert-valid-div0-semantics-64 x y)
 	       (if (or (not (= x 0)) (= y (1- (expt 2 64)))) 1 0))
  :g-bindings (gl::auto-bindings (:mix (:nat x 64) (:nat y 64))))
 
-;; Correctness of ASSERT-VALID-DIV-0
-(defthm assert-valid-div-0-64-correctness
+;; Correctness of ASSERT-VALID-div0
+(defthm assert-valid-div0-64-correctness
  (implies (and (unsigned-byte-p 64 x) (unsigned-byte-p 64 y))
-          (equal (assert-valid-div-0-64 x y) (if (or (not (= x 0)) (= y (1- (expt 2 64)))) 1 0))))
+          (equal (assert-valid-div0-64 x y) (if (or (not (= x 0)) (= y (1- (expt 2 64)))) 1 0))))
