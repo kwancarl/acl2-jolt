@@ -31,59 +31,47 @@ For convenience, we include the following instructions which worked for one auth
 
 ### Step 1: Install ACL2
 
-1. Install Common Lisp:
+1. Install Dependencies:
    - For macOS (make sure Homebrew is installed): `brew install sbcl`
-   - For Ubuntu: `sudo apt-get install sbcl`
+   - For Ubuntu: `sudo apt-get install sbcl make gcc`
+   - Install Rust
+   - `rustup update nightly`
+   - `rustup default nightly`
 
 2. Download ACL2:
    ```
    git clone https://github.com/acl2/acl2.git
    cd acl2
+   git checkout 8.5
    ```
 
 3. Build ACL2:
    ```
    make LISP=sbcl
+   ln -s saved_acl2 acl2
    ```
 
 4. Add ACL2 to your PATH:
-   - For Bash: `echo 'export PATH=$PATH:/path/to/acl2/saved_acl2' >> ~/.bashrc`
-   - For Zsh: `echo 'export PATH=$PATH:/path/to/acl2/saved_acl2' >> ~/.zshrc`
+   - For Bash: `echo 'export PATH=$PATH:/path/to/acl2' >> ~/.bashrc`
+   - For Zsh: `echo 'export PATH=$PATH:/path/to/acl2' >> ~/.zshrc`
    Replace `/path/to/acl2` with the actual path where you cloned ACL2.
 
 5. Reload your shell configuration:
    `source ~/.bashrc` or `source ~/.zshrc`
 
-### Step 2: Certify GL
+### Step 2: Certify some dependencies (optional)
 
-1. Navigate to the ACL2 books directory:
+1. Certify FGL:
    ```
-   cd /path/to/acl2/books
+   cd /path/to/acl2/books/centaur/fgl
+   ../../build/cert.pl top.lisp
    ```
 
 2. Certify GL:
    ```
    cd /path/to/acl2/books/centaur/gl
-   ../../build/cert.pl top.lisp
+   ../../build/cert.pl gl.lisp
    ```
-
-5. Add GL to your ACL2 initialization file:
-   - Create or edit `~/.acl2rc`
-   - Add the following lines:
-     ```lisp
-     (ld "/path/to/acl2/books/centaur/gl/gl-init.lisp")
-     ```
-   Replace `/path/to/acl2` with the actual path to your ACL2 installation.
-
-
-6. Verify installation:
-   - Start ACL2: type `acl2` in your terminal
-   - In the ACL2 prompt, try:
-     ```lisp
-     (gl::gl-satlink-config)
-     ```
-   If these commands execute without errors, GL and FGL are properly installed.
-
 
 ### Step 3: Certify Subtables and Instructions
 
